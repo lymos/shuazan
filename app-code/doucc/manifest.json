@@ -1,7 +1,7 @@
 {
     "@platforms" : [ "android", "iPhone", "iPad" ],
     "id" : "H5A20BAC3", /*应用的标识，创建应用时自动生成，勿手动修改*/
-    "name" : "test-tab", /*应用名称，程序桌面图标名称*/
+    "name" : "doucc", /*应用名称，程序桌面图标名称*/
     "version" : {
         "name" : "1.0", /*应用版本名称*/
         "code" : ""
@@ -167,7 +167,7 @@
                         {
                             "tag" : "font",
                             "id" : "newsText",
-                            "text" : "消息",
+                            "text" : "任务",
                             "position" : {
                                 "top" : "23px",
                                 "left" : "20%",
@@ -182,7 +182,7 @@
                         {
                             "tag" : "font",
                             "id" : "contactIcon",
-                            "text" : "",
+                            "text" : "",
                             "position" : {
                                 "top" : "4px",
                                 "left" : "55%",
@@ -198,7 +198,7 @@
                         {
                             "tag" : "font",
                             "id" : "contactText",
-                            "text" : "通讯录",
+                            "text" : "收益",
                             "position" : {
                                 "top" : "24px",
                                 "left" : "55%",
@@ -229,7 +229,7 @@
                         {
                             "tag" : "font",
                             "id" : "newwindowText",
-                            "text" : "新窗口",
+                            "text" : "我",
                             "position" : {
                                 "top" : "24px",
                                 "left" : "75%",

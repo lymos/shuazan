@@ -29,16 +29,7 @@
 		</header>
 		<div class="mui-content">
 			
-			<div class="title">
-				<p>这是使用nativeObj 原生控件绘制的底部选项卡示例，当前为父页面，显示第一个tab项内容；</p>
-				<p>这里采用将第一个tab项内容放在父页面显示，因为是入口页面，会在启动中进行渲染，使首页显示速度更快</p>
-				<p>选项卡常用于App首页，为加快渲染，原生底部选项卡是在manifest.json中通过plus -> launchwebview -> subNViews 节点配置的；</p>
-				<p>选项卡图标使用字体绘制，点击可切换对应选项卡的高亮状态，开发者可自定义相应的点击事件；</p>
-				<p>本示例中，点击第二个选项卡打开一个支持下拉刷新的webview；点击第四个选项卡，打开一个新窗口。</p>
-
-				<p>中间悬浮大球图标，因涉及屏幕分辨率动态计算，目前是在首页plusReady事件中实现绘制的。该悬浮大球支持点击事件，开发者可定制实现对应的点击逻辑。</P>
-				<p>为提高性能，本示例选项卡图标全部使用字体文件绘制（推荐），实际使用中也可以使用图片绘制。</p>
-			</div>
+			<h2>首页</h2>
 		</div>
 
 		<script src="js/util.js"></script>
@@ -59,7 +50,7 @@
 					 * 	 id为iconBg的红色背景图
 					 *   id为icon的字体图标
 					 *   注意创建先后顺序，创建越晚的层级越高
-					 */
+					 *//*
 					var drawNativeIcon = util.drawNative('icon', {
 						bottom: '5px',
 						left: leftPos + 'px',
@@ -124,8 +115,9 @@
 					}]);
 					// append 到父webview中
 					self.append(drawNativeIcon);
-
+					*/
 					//自定义监听图标点击事件
+					/*
 					var active_color = '#fff';
 					drawNativeIcon.addEventListener('click', function(e) {
 						mui.alert('你点击了图标，你在此可以打开摄像头或者新窗口等自定义点击事件。', '悬浮球点击事件');
@@ -149,6 +141,7 @@
 						}
 
 					});
+					*/
 					// 中间凸起图标绘制及监听点击完毕
 
 					// 创建子webview窗口 并初始化
@@ -188,7 +181,7 @@
 							return;
 						}
 
-						if(currIndex !== 3) { 
+						if(currIndex !== 4) { 
 							//底部选项卡切换
 							util.toggleNview(currIndex);
 							// 子页面切换
@@ -200,6 +193,23 @@
 							plus.webview.open('html/new-webview.html', 'new', {}, 'slide-in-right', 200);
 						}
 					});
+					
+					document.getElementById('link-login').addEventListener('tap', function(event) {
+						mui.openWindow({
+							url: 'login.html',
+							id: 'link-login',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
 				});
 			})();
 		</script>
