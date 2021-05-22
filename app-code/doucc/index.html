@@ -89,32 +89,15 @@
 	</head>
 
 	<body>
-		<header class="mui-bar mui-bar-nav">
-			<h1 class="mui-title">登录</h1>
+		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<h1 class="mui-title">抖财财</h1>
+			<button id='link-login' class=" mui-pull-right mui-btn-link">登录</button>
 		</header>
 		<div class="mui-content">
 			<div class="header">
 				抖财财
 			</div>
-			<form id='login-form' class="mui-input-group">
-				<div class="mui-input-row">
-					<label>手机号</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
-				</div>
-				<div class="mui-input-row">
-					<label>验证码</label>
-					<input id='password' style="width: 60%; float: left; " type="text" class="mui-input-clear mui-input" placeholder="请输入验证码">
-					<button type="button" style="float: right; margin-right: 4px; " class="mui-btn" id="btn-code">发送</button>
-				</div>
-			</form>
 			
-			<div class="mui-content-padded">
-				<button id='login' class="mui-btn mui-btn-block mui-btn-primary">登录</button>
-				<div class="link-area">
-					<a id="reg">注册账号</a>
-					<a id="link-index">首页</a>
-				</div>
-			</div>
 			
 		</div>
 		<script src="js/mui.min.js"></script>
@@ -307,19 +290,11 @@
 					};
 				});
 				
-				//tap为mui封装的单击事件，可参考手势事件章节
-				document.getElementById('link-index').addEventListener('tap', function() {
-				  //打开关于页面
-				  mui.openWindow({
-				    url: 'index.html', 
-				    id:'link-index'
-				  });
-				});
 				
-				document.getElementById('reg').addEventListener('tap', function(event) {
+				document.getElementById('link-login').addEventListener('tap', function(event) {
 					$.openWindow({
-						url: 'reg.html',
-						id: 'reg',
+						url: 'login.html',
+						id: 'link-login',
 						preload: true,
 						show: {
 							aniShow: 'pop-in'
