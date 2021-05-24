@@ -37,3 +37,7 @@ form.mui-input-group{
 .r-right{
 	float: right;
 }
+.action-box{
+	text-align: center;
+	margin-top: 20px;
+}
