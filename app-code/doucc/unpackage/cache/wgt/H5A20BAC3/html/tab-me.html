@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>me</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<style>
+			html,
+			body {
+				background-color: #efeff4;
+			}
+
+			.title {
+				margin: 20px 15px 10px;
+				color: #6d6d72;
+				font-size: 15px;
+			}
+
+			.oa-contact-cell.mui-table .mui-table-cell {
+				padding: 11px 0;
+				vertical-align: middle;
+			}
+
+			.oa-contact-cell {
+				position: relative;
+				margin: -11px 0;
+			}
+
+			.oa-contact-avatar {
+				width: 75px;
+			}
+
+			.oa-contact-avatar img {
+				border-radius: 50%;
+			}
+
+			.oa-contact-content {
+				width: 100%;
+			}
+
+			.oa-contact-name {
+				margin-right: 20px;
+			}
+
+			.oa-contact-name,
+			oa-contact-position {
+				float: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<h1 class="mui-title">个人中心</h1>
+		</header>
+		<div class="mui-content">
+			<div class="header-top">
+				<div class="me">
+					<div class="me-icon"></div>
+					<div class="account">1888888888</div>
+				</div>
+				<div class="me-info">
+					<p>我的邀请码：<span>8888</span>
+						<button type="button">复制</button>
+					</p>
+					<p>已邀请用户： <span>8</span></p>
+					<p>二级用户数：<span>88</span></p>
+				</div>
+
+			</div>
+
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell icon-link">
+					<a id="link-card" class="mui-navigate-right"><span
+							class="mui-icon mui-icon-plusempty"></span>卡号绑定</a>
+				</li>
+				<li class="mui-table-view-cell icon-link">
+					<a id="link-shop" class="mui-navigate-right"><span
+							class="mui-icon mui-icon-spinner-cycle"></span>商城</a>
+				</li>
+				<li class="mui-table-view-cell icon-link">
+					<a class="mui-navigate-right"><span class="mui-icon mui-icon-redo"></span>邀请用户</a>
+				</li>
+				<li class="mui-table-view-cell icon-link">
+					<a class="mui-navigate-right"><span class="mui-icon mui-icon-paperplane"></span>收益规则</a>
+				</li>
+
+			</ul>
+		</div>
+	</body>
+	<script src="../js/mui.min.js"></script>
+	<script>
+		mui.init({
+			swipeBack: true //启用右滑关闭功能
+		});
+		mui.plusReady(function() { 
+			document.getElementById('link-shop').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'shop.html',
+					id: 'link-shop',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			document.getElementById('link-card').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'card.html',
+					id: 'link-card',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+		});
+
+		
+	</script>
+</html>

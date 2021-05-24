@@ -1,0 +1,56 @@
+.header{
+	padding: 40px;
+	text-align: center;
+	background-color: #fff;
+}
+form.mui-input-group{
+	margin-top: 0;
+}
+.me{
+	display: flex;
+}
+.me-icon{
+	width: 40px;
+	height: 40px;
+	border: 1px solid #ccc;
+	border-radius: 50%;
+}
+.account{
+	margin-left: 20px;
+	line-height: 40px;
+}
+.header-top{
+	padding: 20px;
+}
+.me-info{
+	margin-top: 10px;
+}
+.icon-link span{
+	margin-right: 10px;
+}
+.c-item div{
+	display: inline-block;
+}
+.c-item .t-info{
+	padding-top: 5px;
+}
+.r-right{
+	float: right;
+}
+.action-box{
+	text-align: center;
+	margin-top: 20px;
+}
+.index-action-box{
+	margin-top: 40px;
+	text-align: center;
+}
+.shop-text{
+	text-align: left;
+}
+.shop-img{
+	width: 75px;
+}
+.shop-action{
+	text-align: right;
+}

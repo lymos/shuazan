@@ -7,6 +7,7 @@
 		<title>首页</title>
 		<script src="js/mui.min.js"></script>
 		<link href="css/mui.min.css" rel="stylesheet" />
+		<link href="css/main.css" rel="stylesheet" />
 		<style>
 			html,
 			body {
@@ -29,12 +30,31 @@
 		</header>
 		<div class="mui-content">
 			
-			<h2>首页</h2>
+			<div class="mui-slider">
+			  <div class="mui-slider-group mui-slider-loop">
+			    <!--支持循环，需要重复图片节点-->
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="4.jpg" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="images/logo.png" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="images/ma.png" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="images/logo.png" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="images/ma.png" /></a></div>
+			    <!--支持循环，需要重复图片节点-->
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="1.jpg" /></a></div>
+			  </div>
+			</div>
+			
+			<div class="index-action-box">
+				<button type="button" class="mui-btn mui-btn-primary">签到</button>
+				<button type="button" class="mui-btn mui-btn-primary">绑定</button>
+				<button type="button" class="mui-btn mui-btn-primary">任务领取</button>
+				<button type="button" class="mui-btn mui-btn-primary">提现</button>
+			</div>
 		</div>
 
 		<script src="js/util.js"></script>
 		<script type="text/javascript">
 			(function() {
+				
 				mui.init({
 					swipeBack: true //启用右滑关闭功能
 				});
@@ -210,6 +230,12 @@
 							}
 						});
 					}, false);
+				});
+				
+				//获得slider插件对象
+				var gallery = mui('.mui-slider');
+				gallery.slider({
+				  interval: 3000//自动轮播周期，若为0则不自动播放，默认为0；
 				});
 			})();
 		</script>

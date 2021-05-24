@@ -41,3 +41,16 @@ form.mui-input-group{
 	text-align: center;
 	margin-top: 20px;
 }
+.index-action-box{
+	margin-top: 40px;
+	text-align: center;
+}
+.shop-text{
+	text-align: left;
+}
+.shop-img{
+	width: 75px;
+}
+.shop-action{
+	text-align: right;
+}

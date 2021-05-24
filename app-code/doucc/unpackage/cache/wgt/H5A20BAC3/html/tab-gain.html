@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>Hello MUI</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<style>
+			html,body {
+				background-color: #efeff4;
+			}
+			
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<h1 class="mui-title">我的收益</h1>
+		</header>
+		<div class="mui-content">
+			
+			<ul class="mui-table-view">
+			    <li class="mui-table-view-cell c-item">
+					<div class="t-info">
+						<span>账户余额：</span><span>1800</span> <span>(lv1)</span>
+					</div>
+					<div class="r-right">
+						<button type="button">升级</button>
+					</div>
+					
+				</li>
+			    <li class="mui-table-view-cell c-item">
+			    	<div class="t-info">
+			    		<span>任务收益：</span><span>99</span>
+			    	</div>
+			    	<div class="r-right">
+			    		<button type="button">接任务</button>
+			    	</div>
+			    	
+			    </li>
+				<li class="mui-table-view-cell c-item">
+					<div class="t-info">
+						<span>佣金收益：</span><span>800</span>
+					</div>
+					<div class="r-right">
+						<button type="button">邀请用户</button>
+					</div>
+					
+				</li>
+				<li class="mui-table-view-cell c-item">
+					<div class="t-info">
+						<span>可提醒总额：</span><span>1800</span>
+					</div>
+					
+					
+				</li>
+			</ul>
+		</div>
+		<div class="action-box">
+			<button type="button" class="mui-btn mui-btn-primary">提现</button>
+		</div>
+	</body>
+	<script src="../js/mui.min.js"></script>
+	<script>
+		mui.init({
+			swipeBack:true //启用右滑关闭功能
+		});
+	</script>
+</html>
