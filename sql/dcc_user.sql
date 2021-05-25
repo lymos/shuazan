@@ -7,6 +7,7 @@ create table dcc_user(
 	login_code varchar(6) not null default "",
 	signup_code_expire int(11) not null default 0,
 	login_code_expire int(11) not null default 0,
+	invite_code varchar(6) not null default "",
 	`type` tinyint(1) not null default 0 comment "0.user 1.admin",
 	added_date datetime default null,
 	
