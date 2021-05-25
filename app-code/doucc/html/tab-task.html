@@ -29,6 +29,9 @@
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
 						<span>任务标题1</span>
+						<div id="demo1" class="mui-progressbar">
+							<span></span>
+						</div>
 					</div>
 					<div class="r-right">
 						<span class="mui-badge mui-badge-primary">进行中</span>
@@ -38,6 +41,9 @@
 			    <li class="mui-table-view-cell c-item">
 			    	<div class="t-info">
 			    		<span>任务标题2</span>
+						<div id="demo2" class="mui-progressbar">
+							<span></span>
+						</div>
 			    	</div>
 			    	<div class="r-right">
 			    		<span class="mui-badge mui-badge-success">已完成</span>
@@ -54,5 +60,9 @@
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
 		});
+		
+		mui("#demo1").progressbar({progress:20}).show();
+		mui("#demo2").progressbar({progress:100}).show();
+		
 	</script>
 </html>
