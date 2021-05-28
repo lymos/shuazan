@@ -91,4 +91,8 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
+	public function verify_token(){
+		return true;
+		return false;
+	}
 }
