@@ -106,4 +106,11 @@ class Index extends BaseController
 		];
 		return json($ret);
 	}
+	
+	/**
+	 * 短信验证码
+	 */
+	public function smsCode(){
+		
+	}
 }
