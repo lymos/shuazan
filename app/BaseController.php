@@ -115,10 +115,8 @@ abstract class BaseController
 	public function sendSms($mobile, $msg){
 		$url = 'http://211.149.137.53:8045/Port/default.ashx?method=SendSms&username=doucaicai&password=a123456789';
 		$url .= '&phonelist=' . $mobile . '&msg=' . $msg . '&SendDatetime=';
-		echo $url;
 		$ret = $this->curl($url);
 		$ret = explode(',', $ret);
-		echo '<pre>'; print_r($ret); die;
 		if(intval($ret[0]) === 1){
 			return true;
 		}else{

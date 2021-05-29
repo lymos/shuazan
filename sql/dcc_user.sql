@@ -12,7 +12,8 @@ create table dcc_user(
 	`status` tinyint(1) not null default 0 comment "0.未成功 1.success",
 	added_date datetime default null,
 	
-	primary key(id)
+	primary key(id),
+	unique key(mobile)
 )ENGINE=INNODB default charset=utf8mb4 comment "用户表";
 
 insert into dcc_user (mobile, invite_code, added_date) values ("15323452222", "123456", "2021-05-28 12:12:12");
