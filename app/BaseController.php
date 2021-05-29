@@ -95,4 +95,27 @@ abstract class BaseController
 		return true;
 		return false;
 	}
+	
+	public function curl($url, $method = 'GET', $data = [], $header = []){
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, false);
+		if(strtoupper($method) == 'POST'){
+			curl_setopt( $ch, CURLOPT_POST, true );
+			curl_setopt( $ch, CURLOPT_POSTFIELDS, $data );
+		}
+
+		$ret = curl_exec($ch);
+		
+		curl_close($ch);
+		return $ret;
+	}
+	
+	public function sendSms($mobile, $msg){
+		$url = '';
+		$data = [];
+		$ret = $this->curl($url, 'post', $data);
+		return true;
+	}
 }

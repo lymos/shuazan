@@ -111,6 +111,6 @@ class Index extends BaseController
 	 * 短信验证码
 	 */
 	public function smsCode(){
-		
+		$this->sendSms();
 	}
 }
