@@ -65,7 +65,7 @@
 			</form>
 			
 			<div class="mui-content-padded">
-				<button id='login' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
+				<button id='btn-add' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
 				
 			</div>
 			
@@ -77,7 +77,45 @@
 					statusBarBackground: '#f7f7f7'
 				});
 				$.plusReady(function() {
+					$(".mui-content-padded").on('tap','.btn-add',function(){
+						submit();
+					});
 					
+					var submit = function(){
+						mui.alert(888)
+						mui.ajax(config.host + 'index.php?s=user/addCard', {
+							data:{
+								username:'username',
+								password:'password'
+							},
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							headers:{'Content-Type':'application/json'},
+							success:function(data){
+								console.log(data)
+								alert(JSON.stringify(data));
+								//服务器返回响应，根据响应结果，分析是否登录成功；
+								if(data.code == 0){
+									mui.alert(data.msg);
+								}else{
+									var html = "";
+									for(var i in data.data){
+										html += '<li class="mui-table-view-cell">';
+									}
+									var plist = document.getElementById("product-list");
+									plist.innerHTML = html;
+								}
+								
+							},
+							error:function(xhr,type,errorThrown){
+								//异常处理；
+								mui.alert(999);
+								document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
+								console.log(type);
+							}
+						});
+					}
 				});
 			}(mui, document));
 		</script>

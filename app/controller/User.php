@@ -49,4 +49,61 @@ class Index extends BaseController
 			->where('id', 1)->find();
 		return $data;
 	}
+	
+	/**
+	 * add card
+	 */
+	public function addCard(){
+		if(! $this->verify_token()){
+			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		}
+		$data = Db::table('dcc_user')
+			->field('invite_code, mobile, id')
+			->where('id', 1)->find();
+		$invite_data = $this->getUserInvite();
+		$ret = [
+			'code' => 1,
+			'data' => $data,
+			'msg' => ''
+		];
+		return json($ret);
+	}
+	
+	/**
+	 * 生成二维码和邀请码
+	 */
+	public function getInviteInfo(){
+		if(! $this->verify_token()){
+			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		}
+		$data = Db::table('dcc_user')
+			->field('invite_code, mobile, id')
+			->where('id', 1)->find();
+		$invite_data = $this->getUserInvite();
+		$ret = [
+			'code' => 1,
+			'data' => $data,
+			'msg' => ''
+		];
+		return json($ret);
+	}
+	
+	/**
+	 * 获取用户收益信息
+	 */
+	public function getUserGain(){
+		if(! $this->verify_token()){
+			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		}
+		$data = Db::table('dcc_user')
+			->field('invite_code, mobile, id')
+			->where('id', 1)->find();
+		$invite_data = $this->getUserInvite();
+		$ret = [
+			'code' => 1,
+			'data' => $data,
+			'msg' => ''
+		];
+		return json($ret);
+	}
 }
