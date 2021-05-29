@@ -183,8 +183,7 @@
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
 						$.ajax(config.host + 'index.php?s=user/smsCode', {
 								data:{
-									username:'username',
-									password:'password'
+									mobile: mobile.value,
 								},
 								dataType:'json',//服务器返回json格式数据
 								type:'post',//HTTP请求类型

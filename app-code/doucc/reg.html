@@ -113,8 +113,7 @@
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
 						$.ajax(config.host + 'index.php?s=user/regSmsCode', {
 								data:{
-									username:'username',
-									password:'password'
+									mobile: mobile.value,
 								},
 								dataType:'json',//服务器返回json格式数据
 								type:'post',//HTTP请求类型
@@ -127,12 +126,7 @@
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										var html = "";
-										for(var i in data.data){
-											html += '<li class="mui-table-view-cell">';
-										}
-										var tlist = document.getElementById("task-list");
-										tlist.innerHTML = html;
+										mui.nativeUI.toast("短信验证码发送成功");
 									}
 									
 								},

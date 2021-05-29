@@ -6,8 +6,9 @@ use think\facade\View;
 use app\model\User;
 use think\response\Json;
 use think\facade\Db;
+use think\facade\Request;
  
-class Index extends BaseController
+class DccUser extends BaseController
 {
     public function index()
     {
@@ -124,7 +125,7 @@ class Index extends BaseController
 	}
 	
 	private function _genCode(){
-		return round(100001, 999998);
+		return rand(100001, 999998);
 	}
 	
 	/**
@@ -146,12 +147,27 @@ class Index extends BaseController
 			return json($ret);
 		}
 		$code = $this->_genCode();
-		$msg = '您的注册验证码是：' . $code;
+		$msg = '【抖财财】您的注册验证码是：' . $code;
 		$ret = $this->sendSms($mobile, $msg);
 		if(! $ret){
 			$ret['msg'] = '短信发送失败';
 			return json($ret);
 		}
+		$now = time();
+		$date = date('Y-m-d H:i:s');
 		// 插入数据
+		$data = [
+			'mobile' => $mobile,
+			'signup_code' => $code,
+			'signup_code_expire' => $now + 300,
+			'added_date' => $date
+		];
+		$userid = Db::name('user')->insertGetId($data);
+		if(! $userid){
+			$ret['msg'] = '短信发送失败, code 10001';
+			return json($ret);
+		}
+		$ret['data'] = $userid;
+		return json($ret);
 	}
 }
