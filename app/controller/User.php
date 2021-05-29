@@ -113,4 +113,45 @@ class Index extends BaseController
 	public function smsCode(){
 		$this->sendSms();
 	}
+	
+	private function _checkMobile($mobile){
+		$chars = "/^((\(\d{2,3}\))|(\d{3}\-))?1(3|5|8|9)\d{9}$/";
+		if (preg_match($chars, $mobile)){
+		    return true;
+		}else{
+		    return false;
+		}
+	}
+	
+	private function _genCode(){
+		return round(100001, 999998);
+	}
+	
+	/**
+	 * 短信验证码
+	 */
+	public function regSmsCode(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$mobile = trim(Request::param('mobile'));
+		if(! $mobile){
+			$ret['msg'] = '请输入手机号';
+			return json($ret);
+		}
+		if(! $this->_checkMobile($mobile)){
+			$ret['msg'] = '请输入正确的手机号';
+			return json($ret);
+		}
+		$code = $this->_genCode();
+		$msg = '您的注册验证码是：' . $code;
+		$ret = $this->sendSms($mobile, $msg);
+		if(! $ret){
+			$ret['msg'] = '短信发送失败';
+			return json($ret);
+		}
+		// 插入数据
+	}
 }

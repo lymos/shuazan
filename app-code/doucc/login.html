@@ -100,7 +100,7 @@
 			<form id='login-form' class="mui-input-group">
 				<div class="mui-input-row">
 					<label>手机号</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
 				</div>
 				<div class="mui-input-row">
 					<label>验证码</label>
@@ -127,15 +127,38 @@
 				$.plusReady(function() {
 					
 					var loginButton = doc.getElementById('login');
-					var accountBox = doc.getElementById('account');
+					var mobile = doc.getElementById('mobile');
 					var verify_codeBox = doc.getElementById('verify-code');
 					var regButton = doc.getElementById('reg');
 					loginButton.addEventListener('tap', function(event) {
 						var loginInfo = {
-							account: accountBox.value,
+							mobile: mobile.value,
 							verify_code: verify_codeBox.value
 						};
 						// 登录操作
+						mui.ajax(config.host + 'index.php?s=login/login', {
+								data: loginInfo,
+								dataType:'json',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								headers:{'Content-Type':'application/json'},
+								success:function(data){
+									console.log(data)
+									alert(JSON.stringify(data));
+									//服务器返回响应，根据响应结果，分析是否登录成功；
+									if(data.code == 0){
+										mui.alert(data.msg);
+									}else{
+										
+									}
+									
+								},
+								error:function(xhr,type,errorThrown){
+									//异常处理；
+									document.getElementById("ddddd").innerHTML = "123488";
+									console.log(type);
+								}
+						});
 					});
 					
 					
