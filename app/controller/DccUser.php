@@ -239,4 +239,24 @@ class DccUser extends BaseController
 			->where(['mobile' => $mobile])->find();
 		return $data;
 	}
+	
+	/**
+	 * 签到
+	 */
+	public function signin(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$mobile = trim(Request::param('mobile'));
+		if(! $mobile){
+			$ret['msg'] = '请输入手机号';
+			return json($ret);
+		}
+		$data = [
+			''
+		];
+		return json($ret);
+	}
 }

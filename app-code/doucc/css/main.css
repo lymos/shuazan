@@ -54,3 +54,17 @@ form.mui-input-group{
 .shop-action{
 	text-align: right;
 }
+.signin-box{
+	margin-top: 20px;
+	padding: 20px;
+}
+.signin-box span{
+	margin-right: 20px;
+	margin-bottom: 10px;
+}
+.center{
+	text-align: center;
+}
+.signin-tip{
+	padding: 10px;
+}

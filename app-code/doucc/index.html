@@ -44,7 +44,7 @@
 			</div>
 			
 			<div class="index-action-box">
-				<button type="button" class="mui-btn mui-btn-primary">签到</button>
+				<button id="link-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
 				<button type="button" class="mui-btn mui-btn-primary">绑定</button>
 				<button type="button" class="mui-btn mui-btn-primary">任务领取</button>
 				<button type="button" class="mui-btn mui-btn-primary">提现</button>
@@ -62,6 +62,24 @@
 					var self = plus.webview.currentWebview(),
 						leftPos = Math.ceil((window.innerWidth - 60) / 2); // 设置凸起大图标为水平居中
 
+					document.getElementById('link-signin').addEventListener('tap', function(event) {
+						mui.openWindow({
+							url: 'signin.html',
+							id: 'link-signin',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					
 					/**	
 					 * drawNativeIcon 绘制带边框的半圆，
 					 * 实现原理：

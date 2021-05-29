@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>invite</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<style>
+			html,body {
+				background-color: #efeff4;
+			}
+			
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="center">
+				<button id="btn-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
+			</div>
+			
+		</header>
+		<div class="mui-content">
+			<div class="signin-tip">
+				累计签到<span id="singin-num">2</span>天
+			</div>
+			<div class="signin-box center">
+				<span class="mui-badge mui-badge-primary">12</span>
+				<span class="mui-badge mui-badge-primary">12</span>
+				<span class="mui-badge mui-badge-primary">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">12</span>
+		
+			</div>
+			<div class="signin-tip">
+				签到满一个周期（14天），相当于邀请一位新用户
+			</div>
+		</div>
+	</body>
+	<script src="../js/mui.min.js"></script>
+	<script>
+		mui.init({
+			swipeBack:true //启用右滑关闭功能
+		});
+		
+		mui.plusReady(function() {
+			doc.getElementById("btn-signin").addEventListener('tap', function(event) {
+				$.ajax(config.host + 'index.php?s=user/signin', {
+						data:{
+							mobile: mobile.value,
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},
+						success:function(data){
+							console.log(data)
+							alert(JSON.stringify(data));
+							//服务器返回响应，根据响应结果，分析是否登录成功；
+							if(data.code == 0){
+								mui.alert(data.msg);
+							}else{
+								var html = "";
+								for(var i in data.data){
+									html += '<li class="mui-table-view-cell">';
+								}
+								var tlist = document.getElementById("task-list");
+								tlist.innerHTML = html;
+							}
+							
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							mui.alert("signin ");
+							document.getElementById("ddddd").innerHTML = "123488";
+							console.log(type);
+						}
+				});
+			});
+			
+			
+		});
+	</script>
+</html>
