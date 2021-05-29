@@ -13,3 +13,5 @@ create table dcc_user(
 	
 	primary key(id)
 )ENGINE=INNODB default charset=utf8mb4 comment "用户表";
+
+insert into dcc_user (mobile, invite_code, added_date) values ("15323452222", "123456", "2021-05-28 12:12:12");

@@ -25,10 +25,10 @@
 		</header>
 		<div class="mui-content">
 			
-			<ul class="mui-table-view">
+			<ul id="task-list" class="mui-table-view">
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span>任务标题1</span>
+						<span id="ddddd">任务标题1</span>
 						<div id="demo1" class="mui-progressbar">
 							<span></span>
 						</div>
@@ -56,9 +56,45 @@
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
+		});
+		
+		mui.plusReady(function() {
+			mui.ajax(config.host + 'index.php?s=task/get_task', {
+				data:{
+					username:'username',
+					password:'password'
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},
+				success:function(data){
+					console.log(data)
+					alert(JSON.stringify(data));
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 0){
+						mui.alert(data.msg);
+					}else{
+						var html = "";
+						for(var i in data.data){
+							html += '<li class="mui-table-view-cell">';
+						}
+						var tlist = document.getElementById("task-list");
+						tlist.innerHTML = html;
+					}
+					
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					mui.alert(999);
+					document.getElementById("ddddd").innerHTML = "任务标题88";
+					console.log(type);
+				}
+			});
 		});
 		
 		mui("#demo1").progressbar({progress:20}).show();

@@ -66,7 +66,7 @@
 					<div class="account">1888888888</div>
 				</div>
 				<div class="me-info">
-					<p>我的邀请码：<span>8888</span>
+					<p>我的邀请码：<span id="ddddd">8888</span>
 						<button type="button">复制</button>
 					</p>
 					<p>已邀请用户： <span>8</span></p>
@@ -95,11 +95,45 @@
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack: true //启用右滑关闭功能
 		});
 		mui.plusReady(function() { 
+			mui.ajax(config.host + 'index.php?s=user/info', {
+					data:{
+						username:'username',
+						password:'password'
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						alert(JSON.stringify(data));
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else{
+							var html = "";
+							for(var i in data.data){
+								html += '<li class="mui-table-view-cell">';
+							}
+							var tlist = document.getElementById("task-list");
+							tlist.innerHTML = html;
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.alert(999);
+						document.getElementById("ddddd").innerHTML = "123488";
+						console.log(type);
+					}
+			});
+			
 			document.getElementById('link-shop').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'shop.html',
