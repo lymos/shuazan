@@ -37,9 +37,19 @@ class Cash extends BaseController
 	
 	public function unionpay(){
 		$merid = Config::get('app.unionpay_merid');
-		$orderid = 'dcc202105300002';
+		
+		$userid = intval(Request::param('userid'));
+		$orderid = intval(Request::param('orderid'));
+		$orderid = 'dcc202105300002'; // debug
+		// 查处订单信息
+		$order = $this->_getOrder($userid, $orderid);
+		if(! $order){
+			echo '订单不存在';
+			exit;
+		}
+		$total = $order['total'];
 		$time = date('YmdHis');
-		$amt = 10;
+		$amt = $total;
 		$params = array(
 				
 				//以下信息非特殊情况不需要改动
@@ -91,6 +101,18 @@ class Cash extends BaseController
 		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	
+	private function _getOrder($userid, $orderid){
+		$where = [
+			'orderid' => $orderid,
+			'userid' => $userid,
+			'status' => 0
+		];
+		$order = Db::name('order')
+			->field('total')
+			->where($where)->find();
+		return $order;
+	}
+	
 	public function frontReceive(){
 		error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
@@ -126,7 +148,7 @@ class Cash extends BaseController
 			echo '付款失败';
 			exit;
 		}
-		echo '付款成功';
+		echo '付款成功<a href="">首页</a>';
 		exit;
 	}
 	

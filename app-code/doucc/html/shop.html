@@ -41,7 +41,7 @@
 								
 							</div>
 							<div class="mui-table-cell shop-action">
-								<button type="button" class="mui-btn mui-btn-primary btn-buy">购买</button>
+								<button data-id="1" type="button" class="mui-btn mui-btn-primary btn-buy">购买</button>
 							</div>
 							
 						</div>
@@ -91,8 +91,52 @@
 				}
 			});
 			
-			$("#product-list").on('tap', '.btn-buy', function(){
-				
+			document.getElementById("#product-list").on('tap', '.btn-buy', function(){
+				var productid = this.attr("data-id");
+				mui.ajax(config.host + 'index.php?s=order/createOrder', {
+					data:{
+						productid: productid,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						alert(JSON.stringify(data));
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else{
+							// http://doucc.com/index.php?s=cash/unionpay
+							var url = "https://baidu.com";
+							plus.webview.loadURL(url);
+							/*
+							mui.openWindow({
+								url: 'signin.html',
+								id: 'link-signin',
+								preload: true,
+								show: {
+									aniShow: 'pop-in'
+								},
+								styles: {
+									popGesture: 'hide'
+								},
+								waiting: {
+									autoShow: false
+								}
+							});
+							*/
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						mui.alert("商城");
+						document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
+						console.log(type);
+					}
+				});
 			});
 		});
 		
