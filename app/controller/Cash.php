@@ -10,6 +10,7 @@ use app\model\User;
 use think\response\Json;
 use think\facade\Db;
 use think\facade\Request;
+use think\facade\Config;
  
 class Cash extends BaseController
 {
@@ -35,8 +36,8 @@ class Cash extends BaseController
 	}
 	
 	public function unionpay(){
-		$merid = '2';
-		$orderid = 'dcc202105300001';
+		$merid = Config::get('app.unionpay_merid');
+		$orderid = 'dcc202105300002';
 		$time = date('YmdHis');
 		$amt = 10;
 		$params = array(
@@ -86,8 +87,38 @@ class Cash extends BaseController
 		\com\unionpay\acp\sdk\AcpService::sign ( $params );
 		$uri = \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->frontTransUrl;
 		$html_form = \com\unionpay\acp\sdk\AcpService::createAutoFormHtml( $params, $uri );
-		// echo $html_form;
+		 echo $html_form;
 		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	
+	public function frontReceive(){
+		error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		$merId = Request::param('merId');
+		$orderId = Request::param('orderId');
+		$respCode = Request::param('respCode');
+		$respMsg = Request::param('respMsg');
+		
+		if(Config::get('app.unionpay_merid') != $merId){
+			echo '非法操作';
+			exit;
+		}
+		
+		if($respCode != '00' && $respMsg != 'success'){
+			echo '付款失败';
+			exit;
+		}
+		
+		// 修改订单状态
+		
+		
+	}
+	
+	public function backReceive(){
+		error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		
+	}
 }
