@@ -21,6 +21,7 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<a id="is-back" class="hide mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">我的任务</h1>
 		</header>
 		<div class="mui-content">
@@ -63,6 +64,12 @@
 		});
 		
 		mui.plusReady(function() {
+			var self = plus.webview.currentWebview();  
+			var is_back = self.is_back;  
+			if(is_back === true){
+				document.getElementById("is-back").classList.remove("hide");
+			}
+			
 			mui.ajax(config.host + 'index.php?s=task/get_task', {
 				data:{
 					username:'username',
@@ -90,7 +97,7 @@
 				},
 				error:function(xhr,type,errorThrown){
 					//异常处理；
-					mui.alert("task");
+					// mui.alert("task");
 					document.getElementById("ddddd").innerHTML = "任务标题88";
 					console.log(type);
 				}

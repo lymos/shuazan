@@ -68,3 +68,6 @@ form.mui-input-group{
 .signin-tip{
 	padding: 10px;
 }
+.hide{
+	display: none;
+}

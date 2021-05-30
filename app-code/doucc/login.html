@@ -105,6 +105,8 @@
 				<div class="mui-input-row">
 					<label>验证码</label>
 					<input id='verify-code' style="width: 60%; float: left; " type="text" class="mui-input-clear mui-input" placeholder="请输入验证码">
+					<button type="button" style="margin-right: 4px; " class="mui-btn hide" id="timer">59</button>
+					
 					<button type="button" style="float: right; margin-right: 4px; " class="mui-btn" id="btn-code">发送</button>
 				</div>
 			</form>
@@ -196,12 +198,27 @@
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										var html = "";
-										for(var i in data.data){
-											html += '<li class="mui-table-view-cell">';
+										var timer = document.getElementById("timer");
+										var btn = document.getElementById("btn-code");
+										var wait = 60;
+										timer.classList.remove("hide");
+										btn.classList.add("hide");
+										var time = function(o) {
+											if (wait == 0) {
+												timer.classList.add("hide");
+												btn.classList.remove("hide");
+												wait = 60;
+											} else { 
+												
+												wait--;
+												timer.innerText = wait;
+												
+												setTimeout(function() {
+														time(o)
+													}, 1000);
+											}
 										}
-										var tlist = document.getElementById("task-list");
-										tlist.innerHTML = html;
+										mui.nativeUI.toast("短信验证码发送成功");
 									}
 									
 								},

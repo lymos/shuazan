@@ -61,16 +61,34 @@
 			</ul>
 		</div>
 		<div class="action-box">
-			<button type="button" class="mui-btn mui-btn-primary">提现</button>
+			<button id="link-cashout" type="button" class="mui-btn mui-btn-primary">提现</button>
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
 		});
 		
 		mui.plusReady(function() {
+			document.getElementById('link-cashout').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'cashout.html',
+					id: 'link-cashout',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
 			mui.ajax(config.host + 'index.php?s=user/getUserGain', {
 				data:{
 					username:'username',
@@ -98,11 +116,13 @@
 				},
 				error:function(xhr,type,errorThrown){
 					//异常处理；
-					mui.alert("收益");
+					// mui.alert("收益");
 					document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
 					console.log(type);
 				}
 			});
+			
+			
 		});
 	</script>
 </html>
