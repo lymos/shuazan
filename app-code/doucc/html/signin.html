@@ -61,7 +61,7 @@
 		
 		mui.plusReady(function() {
 			doc.getElementById("btn-signin").addEventListener('tap', function(event) {
-				$.ajax(config.host + 'index.php?s=user/signin', {
+				mui.ajax(config.host + 'index.php?s=user/signin', {
 						data:{
 							mobile: mobile.value,
 						},
@@ -76,12 +76,8 @@
 							if(data.code == 0){
 								mui.alert(data.msg);
 							}else{
-								var html = "";
-								for(var i in data.data){
-									html += '<li class="mui-table-view-cell">';
-								}
-								var tlist = document.getElementById("task-list");
-								tlist.innerHTML = html;
+								mui.nativeUI.toast("签到成功");
+								// 刷新页面？
 							}
 							
 						},

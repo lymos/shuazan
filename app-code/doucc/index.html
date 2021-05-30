@@ -45,9 +45,9 @@
 			
 			<div class="index-action-box">
 				<button id="link-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
-				<button type="button" class="mui-btn mui-btn-primary">绑定</button>
-				<button type="button" class="mui-btn mui-btn-primary">任务领取</button>
-				<button type="button" class="mui-btn mui-btn-primary">提现</button>
+				<button id="link-card" type="button" class="mui-btn mui-btn-primary">绑定</button>
+				<button id="link-task" type="button" class="mui-btn mui-btn-primary">任务领取</button>
+				<button id="link-cashout" type="button" class="mui-btn mui-btn-primary">提现</button>
 			</div>
 		</div>
 
@@ -66,6 +66,57 @@
 						mui.openWindow({
 							url: 'signin.html',
 							id: 'link-signin',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-card').addEventListener('tap', function(event) {
+						mui.openWindow({
+							url: 'card.html',
+							id: 'link-card',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-task').addEventListener('tap', function(event) {
+						mui.openWindow({
+							url: 'task.html',
+							id: 'link-task',
+							preload: true,
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-cashout').addEventListener('tap', function(event) {
+						mui.openWindow({
+							url: 'cashout.html',
+							id: 'link-cashout',
 							preload: true,
 							show: {
 								aniShow: 'pop-in'

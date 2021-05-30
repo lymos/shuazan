@@ -254,21 +254,64 @@ class DccUser extends BaseController
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
-		// 查询最大days
-		$days = $this->_findMaxDays($userid);
-		
+	
 		$date = date('Y-m-d');
 		$time = date('Y-m-d H:i:s');
+		
+		Db::startTrans();
+		// 判断是否连续 不连续需把之前的废弃
+		$days = $this->_findContinue($userid, $date);
+		if(! $days){
+			Db::rollback();
+			$ret['msg'] = '发生错误';
+			return json($ret);
+		}
+
 		$data = [
 			'userid' => $userid,
 			'signin_date' => $date,
+			'days' => $days,
 			'added_date' => $time
 		];
-		
+		$res = Db::name('user_signin')->insert($data);
+		if($res === false){
+			Db::rollback();
+			$ret['msg'] = '发生错误';
+			return json($ret);
+		}
+		Db::commit();
 		return json($ret);
 	}
 	
-	private function _findMaxDays(){
-		
+	private function _findContinue($userid, $date){
+		$days = 0;
+		$perv = date('Y-m-d', strtotime(strtotime($data), '-1 day'));
+		$where = [
+			['status', '=', 0],
+			['userid', '=', $userid],
+			['signin_date', '=', $perv]
+		];
+		$data = Db::name('user_signin')
+			->field('id, days')
+			->where($where)->find();
+		if(! $data){
+			$days = 1;
+			// 以前的设置为废弃
+			$update_data = [
+				'status' => 2
+			];
+			$update_where = [
+				'status' => 0,
+				'userid' => $userid
+			];
+			$update_status = Db::name('user_signin')
+				->where($update_where)->update($update_data);
+			if($update_status === false){
+				return false;
+			}
+		}else{
+			$days = $data['days'] + 1;
+		}
+		return $days;
 	}
 }
