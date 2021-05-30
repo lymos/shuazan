@@ -60,6 +60,34 @@
 		});
 		
 		mui.plusReady(function() {
+			
+			mui.ajax(config.host + 'index.php?s=user/signininfo', {
+					data:{
+						mobile: mobile.value,
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						alert(JSON.stringify(data));
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else{
+							
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						// mui.alert("signin ");
+						document.getElementById("ddddd").innerHTML = "123488";
+						console.log(type);
+					}
+			});
+			
 			doc.getElementById("btn-signin").addEventListener('tap', function(event) {
 				mui.ajax(config.host + 'index.php?s=user/signin', {
 						data:{

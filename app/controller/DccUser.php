@@ -241,6 +241,34 @@ class DccUser extends BaseController
 	}
 	
 	/**
+	 * 获取签到数据
+	 */
+	public function signinInfo(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$userid = trim(Request::param('userid'));
+		if(! $userid){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$where = [
+			'userid' => $userid,
+			'status' => 0
+		];
+		$data = Db::name('user_signin')
+			->field('signin_date, days')
+			->where($where)->select();
+		$ret['data'] = [
+			'days' => count($data),
+			'list' => $data
+		];
+		return json($ret);
+	}
+	
+	/**
 	 * 签到
 	 */
 	public function signin(){
