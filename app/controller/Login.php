@@ -56,6 +56,7 @@ class Login extends BaseController
 	
 	/**
 	 * 发送验证码时，先user表插入一条数据，存验证码
+	 * 注册
 	 */
 	public function reg(){
 		$ret = [
@@ -88,6 +89,20 @@ class Login extends BaseController
 			$ret['msg'] = '手机号或验证码错误';
 			return json($ret);
 		}
+		$new_invite_code = 'DCC' . $data['id'];
+		$update_data = [
+			'status' => 1,
+			'invite_code' => $new_invite_code
+		];
+		$update_status = Db::table('dcc_user')
+			->where(['id' => $data['id']])
+			->update($update_data);
+		
+		if($update_status === false){
+			$ret['msg'] = '发生错误';
+			return json($ret);
+		}
+		
 		$this->setLoginSession($data[id]);
 		$ret['code'] = 1;
 		return json($ret);
