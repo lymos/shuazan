@@ -110,9 +110,24 @@ class Cash extends BaseController
 			exit;
 		}
 		
+		$date = date('Y-m-d H:i:s');
 		// 修改订单状态
-		
-		
+		$update_data = [
+			'status' => 1,
+			'updated_date' => $date
+		];
+		$update_where = [
+			'orderid' => $orderId
+		];
+		$update_status = Db::name('order')
+			->where($update_where)
+			->update($update_data);
+		if($update_status === false){
+			echo '付款失败';
+			exit;
+		}
+		echo '付款成功';
+		exit;
 	}
 	
 	public function backReceive(){

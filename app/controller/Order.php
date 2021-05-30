@@ -7,18 +7,9 @@ use app\model\User;
 use think\response\Json;
 use think\facade\Db;
  
-class Index extends BaseController
+class Order extends BaseController
 {
-    public function index()
-    {
-        print_r(User::getList()->toArray());
-        return View::fetch('index');
-    }
-
-    public function hello($name = 'ThinkPHP6')
-    {
-        return 'hello,' . $name;
-    }
+ 
 	
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
