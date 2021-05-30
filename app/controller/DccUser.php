@@ -249,14 +249,26 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		$mobile = trim(Request::param('mobile'));
-		if(! $mobile){
-			$ret['msg'] = '请输入手机号';
+		$userid = trim(Request::param('userid'));
+		if(! $userid){
+			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
+		// 查询最大days
+		$days = $this->_findMaxDays($userid);
+		
+		$date = date('Y-m-d');
+		$time = date('Y-m-d H:i:s');
 		$data = [
-			''
+			'userid' => $userid,
+			'signin_date' => $date,
+			'added_date' => $time
 		];
+		
 		return json($ret);
+	}
+	
+	private function _findMaxDays(){
+		
 	}
 }
