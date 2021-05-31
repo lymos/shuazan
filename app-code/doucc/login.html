@@ -151,7 +151,9 @@
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										
+										var token = data.data;
+										puls.storage.setItem(token, token.token);
+										puls.storage.setItem(token_expire, token.token_expire);
 									}
 									
 								},

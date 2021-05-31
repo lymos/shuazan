@@ -13,6 +13,7 @@ class Login extends BaseController
     
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
+	 * 返回token API 访问携带token
 	 */
 	public function login(){
 		$ret = [
@@ -45,18 +46,34 @@ class Login extends BaseController
 			$ret['msg'] = '手机号或验证码错误';
 			return json($ret);
 		}
-		$this->setLoginSession($data[id]);
+		$token_data = $this->setLoginSession($data[id]);
+		if($token_data === false){
+			$ret['msg'] = '登录失败';
+			return json($ret);
+		}
+		$ret['data'] = $token_data;
 		$ret['code'] = 1;
 		return json($ret);
 	}
 	
 	public function setLoginSession($userid){
-		
+		$token = md5(md5('doucc' . rand(10000, 99999) . $userid));
+		$data = [
+			'token' => $token,
+			'token_expire' => time() + (24 * 3600) * 5
+		];
+		$status = Db::name('user')
+			->where(['userid' => $userid])
+			->update($data)
+		if($status){
+			return $data;
+		}
+		return false;
 	}
 	
 	/**
 	 * 发送验证码时，先user表插入一条数据，存验证码
-	 * 注册
+	 * 注册 返回token API 访问携带token
 	 */
 	public function reg(){
 		$ret = [
@@ -103,7 +120,12 @@ class Login extends BaseController
 			return json($ret);
 		}
 		
-		$this->setLoginSession($data[id]);
+		$token_data = $this->setLoginSession($data[id]);
+		if($token_data === false){
+			$ret['msg'] = '登录失败';
+			return json($ret);
+		}
+		$ret['data'] = $token_data;
 		$ret['code'] = 1;
 		return json($ret);
 	}

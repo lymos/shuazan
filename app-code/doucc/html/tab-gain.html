@@ -38,7 +38,7 @@
 			    		<span>任务收益：</span><span>99</span>
 			    	</div>
 			    	<div class="r-right">
-			    		<button type="button">接任务</button>
+			    		<button id="link-task" type="button">接任务</button>
 			    	</div>
 			    	
 			    </li>
@@ -47,7 +47,7 @@
 						<span>佣金收益：</span><span>800</span>
 					</div>
 					<div class="r-right">
-						<button type="button">邀请用户</button>
+						<button id="link-invite" type="button">邀请用户</button>
 					</div>
 					
 				</li>
@@ -76,6 +76,40 @@
 				mui.openWindow({
 					url: 'cashout.html',
 					id: 'link-cashout',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			document.getElementById('link-task').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'tab-task.html',
+					id: 'link-task',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			document.getElementById('link-invite').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'invite.html',
+					id: 'link-invite',
 					preload: true,
 					show: {
 						aniShow: 'pop-in'
