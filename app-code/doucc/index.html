@@ -66,6 +66,9 @@
 					// var self = plus.webview.currentWebview();
 
 					document.getElementById('link-signin').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							return ;
+						}
 						mui.openWindow({
 							url: 'html/signin.html',
 							id: 'link-signin',
@@ -83,6 +86,9 @@
 					}, false);
 					
 					document.getElementById('link-card').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							return ;
+						}
 						mui.openWindow({
 							url: 'html/card.html',
 							id: 'link-card',
@@ -100,6 +106,9 @@
 					}, false);
 					
 					document.getElementById('link-task').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							return ;
+						}
 						mui.openWindow({
 							url: 'html/tab-task.html',
 							id: 'link-task',
@@ -126,6 +135,9 @@
 					*/
 				   
 					document.getElementById('link-cashout').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							return ;
+						}
 						mui.openWindow({
 							url: 'html/cashout.html',
 							id: 'link-cashout',

@@ -1,13 +1,13 @@
 var config = {
 		host: "http://localhost/",
 };
-var isLogin = function(mui){
+var isLogin = function(path){
 	// return true;
 	var token = plus.storage.getItem("token"),
 		token_expire = plus.storage.getItem("token_expire");
 	if(token == "" || ! token){
 		mui.openWindow({
-			url: '../login.html',
+			url: path + 'login.html',
 			// id: 'reg',
 			preload: true,
 			show: {
