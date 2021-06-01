@@ -25,4 +25,69 @@ class Task extends BaseController
 		];
 		return json($ret);
 	}
+
+	/**
+	 * 领取任务
+	 */
+	public function takeTask(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$taskid = trim(Request::param('taskid'));
+		$userid = trim(Request::param('userid'));
+		if(! $taskid){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$date = date('Y-m-d');
+
+		if(! $this->_checkCanTake($userid, $taskid, $date)){
+			$ret['msg'] = '您不能领取此任务';
+			return json($ret);
+		}
+		
+		$data = [
+			'taskid' => $taskid,
+			'userid' => $userid,
+			'date' => $date,
+			'status' => 1,
+			'process' => 100
+		];
+		$status = Db::name('user_task')->insert($data);
+		if(! $status){
+			$ret['msg'] = '领取失败';
+			return json($ret);
+		}
+		$ret['code'] = 1;
+		return json($ret);
+	}
+
+	private function _checkCanTake($userid, $taskid, $date){
+		$old_data = Db::name('user_task')
+			->field('id')
+			->where([
+				'taskid' => $taskid,
+				'userid' => $userid,
+				'date' => $date
+			])->find();
+		if($old_data){
+			return false;
+		}
+
+		$order = Db::name('order')
+			->field('id')
+			->where(
+				[
+					'userid' => $userid,
+					'status' => 1,
+					'total' => '1800'
+				]
+			)->find();
+		if(! $order){
+			return false;
+		}
+		return true;
+	}
 }
