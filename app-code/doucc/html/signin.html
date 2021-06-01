@@ -54,6 +54,7 @@
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
@@ -63,7 +64,7 @@
 			
 			mui.ajax(config.host + 'index.php?s=user/signininfo', {
 					data:{
-						mobile: mobile.value,
+						userid: 888
 					},
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
@@ -83,15 +84,14 @@
 					error:function(xhr,type,errorThrown){
 						//异常处理；
 						// mui.alert("signin ");
-						document.getElementById("ddddd").innerHTML = "123488";
-						console.log(type);
+						
 					}
 			});
 			
-			doc.getElementById("btn-signin").addEventListener('tap', function(event) {
+			document.getElementById("btn-signin").addEventListener('tap', function(event) {
 				mui.ajax(config.host + 'index.php?s=user/signin', {
 						data:{
-							mobile: mobile.value,
+							userid: 888
 						},
 						dataType:'json',//服务器返回json格式数据
 						type:'post',//HTTP请求类型
@@ -112,8 +112,7 @@
 						error:function(xhr,type,errorThrown){
 							//异常处理；
 							mui.alert("signin ");
-							document.getElementById("ddddd").innerHTML = "123488";
-							console.log(type);
+							
 						}
 				});
 			});

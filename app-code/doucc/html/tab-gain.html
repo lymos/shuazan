@@ -94,6 +94,9 @@
 					url: 'tab-task.html',
 					id: 'link-task',
 					preload: true,
+					extras: {
+						is_back:true 
+					},
 					show: {
 						aniShow: 'pop-in'
 					},
@@ -139,20 +142,16 @@
 					if(data.code == 0){
 						mui.alert(data.msg);
 					}else{
-						var html = "";
-						for(var i in data.data){
-							html += '<li class="mui-table-view-cell">';
-						}
-						var plist = document.getElementById("product-list");
-						plist.innerHTML = html;
+						
+						// plist.innerHTML = html;
 					}
 					
 				},
 				error:function(xhr,type,errorThrown){
 					//异常处理；
 					// mui.alert("收益");
-					document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
-					console.log(type);
+					//document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
+					//console.log(type);
 				}
 			});
 			

@@ -145,6 +145,7 @@
                                 "size" : "10px"
                             }
                         },
+						
                         {
                             "tag" : "font",
                             "id" : "newsIcon",
@@ -176,6 +177,7 @@
                                 "size" : "10px"
                             }
                         },
+						
                         {
                             "tag" : "font",
                             "id" : "contactIcon",
@@ -207,6 +209,7 @@
                                 "size" : "10px"
                             }
                         },
+						
                         {
                             "tag" : "font",
                             "id" : "newwindowIcon",
@@ -238,6 +241,7 @@
                                 "size" : "10px"
                             }
                         },
+						
                         {
                             "tag" : "rect",
                             "id" : "tabBorder",

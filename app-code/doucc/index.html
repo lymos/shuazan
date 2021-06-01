@@ -55,6 +55,7 @@
 		</div>
 
 		<script src="js/util.js"></script>
+		<script src="js/main.js"></script>
 		<script type="text/javascript">
 			(function() {
 				
@@ -62,8 +63,7 @@
 					swipeBack: true //启用右滑关闭功能
 				});
 				mui.plusReady(function() {
-					var self = plus.webview.currentWebview(),
-						leftPos = Math.ceil((window.innerWidth - 60) / 2); // 设置凸起大图标为水平居中
+					// var self = plus.webview.currentWebview();
 
 					document.getElementById('link-signin').addEventListener('tap', function(event) {
 						mui.openWindow({
@@ -190,7 +190,7 @@
 							activePage = targetPage;
 						} else {
 							//第四个tab 打开新窗口
-							plus.webview.open('html/new-webview.html', 'new', {}, 'slide-in-right', 200);
+							// plus.webview.open('html/new-webview.html', 'new', {}, 'slide-in-right', 200);
 						}
 					});
 					

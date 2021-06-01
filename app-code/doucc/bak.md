@@ -1,8 +1,6 @@
-var config = {
-		host: "http://localhost/",
-};
+/*
 var isLogin = function(mui){
-	// return true;
+	return true;
 	var token = plus.storage.getItem("token"),
 		token_expire = plus.storage.getItem("token_expire");
 	if(token == "" || ! token){
@@ -24,3 +22,5 @@ var isLogin = function(mui){
 	}
 	return true;
 };
+*/
+

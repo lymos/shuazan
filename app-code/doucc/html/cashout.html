@@ -64,6 +64,7 @@
 			</div>
 		</div>
 		<script src="../js/mui.min.js"></script> 
+		<script src="../js/main.js"></script> 
 		<script>
 			(function($, doc) {
 				$.init({
@@ -71,9 +72,7 @@
 				});
 				$.plusReady(function() {
 					
-					
-					
-					$(".mui-content-padded").on('tap','.btn-add',function(){
+					$(".mui-content-padded").on('tap','.btn-add', function(){
 						submit();
 					});
 					
