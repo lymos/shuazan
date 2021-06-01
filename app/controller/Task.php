@@ -53,16 +53,17 @@ class Task extends BaseController
 			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
 		}
 
-		$userid = trim(Request::param('userid'));
+		$userid = intval(Request::param('userid'));
 		$date = date('Y-m-d');
 		$where = [
-			'a.userid' => $userid,
-			'a.date' => $date
+			['b.userid', '=', $userid],
+			['b.date', '=', $date],
+			['b.id', 'is', 'null']
 		];
-		$list = Db::name('user_task')
+		$list = Db::name('task')
 			->alias('a')
-			->leftJoin('task b','a.taskid = b.id')
-			->field('b.id, b.name, b.process, b.status')
+			->leftJoin('user_task b','b.taskid = a.id')
+			->field('a.id, a.name')
 			->where($where)
 			->select();
 		
