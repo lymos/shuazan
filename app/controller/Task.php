@@ -13,16 +13,61 @@ class Task extends BaseController
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 */
-	public function get_task(){
+	public function getMeTask(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+
 		if(! $this->verify_token()){
 			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
 		}
-		$data = Db::table('dcc_task')->where('id', 1)->find();
+
+		$userid = trim(Request::param('userid'));
+		$date = date('Y-m-d');
+		$where = [
+			'a.userid' => $userid,
+			'a.date' => $date
+		];
+		$list = Db::name('user_task')
+			->alias('a')
+			->leftJoin('task b','a.taskid = b.id')
+			->field('b.id, b.name, b.process, b.status')
+			->where($where)
+			->select();
+		
+		$ret['code'] = 1;
+		$ret['data'] = $list;
+		return json($ret);
+	}
+
+	public function getAllTask(){
 		$ret = [
-			'code' => 1,
-			'data' => $data,
+			'code' => 0,
+			'data' => '',
 			'msg' => ''
 		];
+
+		if(! $this->verify_token()){
+			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		}
+
+		$userid = trim(Request::param('userid'));
+		$date = date('Y-m-d');
+		$where = [
+			'a.userid' => $userid,
+			'a.date' => $date
+		];
+		$list = Db::name('user_task')
+			->alias('a')
+			->leftJoin('task b','a.taskid = b.id')
+			->field('b.id, b.name, b.process, b.status')
+			->where($where)
+			->select();
+		
+		$ret['code'] = 1;
+		$ret['data'] = $list;
 		return json($ret);
 	}
 
