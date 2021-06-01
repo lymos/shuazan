@@ -60,7 +60,8 @@ class Login extends BaseController
 		$token = md5(md5('doucc' . rand(10000, 99999) . $userid));
 		$data = [
 			'token' => $token,
-			'token_expire' => time() + (24 * 3600) * 5
+			'token_expire' => time() + (24 * 3600) * 5,
+			'userid' => $userid
 		];
 		$status = Db::name('user')
 			->where(['userid' => $userid])
