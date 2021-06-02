@@ -76,3 +76,10 @@ form.mui-input-group{
 	margin-bottom: 10px;
 	padding-left: 14px;
 }
+.signin-box span{
+	width: 36px;
+	height: 36px;
+	line-height: 36px;
+	text-align: center;
+	padding: 0;
+}
