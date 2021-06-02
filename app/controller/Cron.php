@@ -1,10 +1,10 @@
 <?php
 /**
  * 存放自动任务
- * 执行：php think action admin/cron/sendEmailMain(方法名)
- * 频率：每2分钟执行一次
+ * 执行：php think action admin/cron/settleMain(方法名)
+ * 频率：每分钟执行一次
  */
-namespace app\admin\controller;
+namespace app\controller;
 use \think\Controller;
 use \think\Db;
 use \think\Request;
@@ -17,98 +17,170 @@ class Cron extends Controller{
     public $del_status = false;
     public $dir_flag = '';
     public $date_filename = '';
+    public $date = '';
 
     /**
-     * 自动任务发送邮件入口
+     * 每天11点执行
+     * 结算入口
      */
-    public function sendEmailMain(){
-        $this->dir_flag = 'sendemailmain_logs';
+    public function settleMain(){
+        $this->dir_flag = 'settleMain-logs';
         $this->date_filename = date('Y-m-d');
+        $this->date = date('Y-m-d H:i:s');
         $this->log('start');
-        $data = $this->getEmailData();
+        $user_data = $this->userData();
         if(! $data){
             $this->log('no data');
             $this->log('end');
             return ;
         }
-        
-        // 状态改成发送中
-        $ids = array_column($data, 'id');
-        $where = ['id' => $ids];
-        $update_data = [
-            'send_status' => 1,
-            'updated_time' => date('Y-m-d H:i:s')
-        ];
-        $update_status = Db::name('invite_email_record')
-            ->where($where)
-            ->update($update_data);
-
-        if(! $update_status){
-            $this->log('update status = 1 failed');
-            $this->log('end');
-            return ;
+        $gain = [];
+        foreach($user_data as $rs){
+            $task_gain = $this->_taskGain($rs['id']);
+            // 任务是前提
+            if(! $task_gain){
+                continue;
+            }
+            $invite_gain = $this->_inviteGain($rs['id']);
+            $gain[$rs['id']] = [
+                'task_gain' => $task_gain,
+                'invite_gain' => $invite_gain
+            ];
         }
 
-        foreach($data as $rs){
-            $ret = $this->sendEmail($rs['email'], $rs['email_title'], $rs['email_content']);            
-            if($ret){
-                $rs['send_status'] = 2;
-                $this->log('send email success id: ' . $rs['id']);
-            }else{
-                $this->log('send email failed id: ' . $rs['id'] . ' email: ' . $rs['email']);
-                $rs['send_status'] = 3;
-            }
-            if(! $this->updateEmailData($rs)){
-                $this->log('update status failed id: ' . $rs['id']);
-            }
+        // 更新记录表
+        $status = $this->_insertGain($gain);
+        if(! $status){
+            $this->log('failed');
+        }else{
+            $this->log('success');
         }
         $this->log('end');
         exit;
     }
 
-    /**
-     * 发送邮件
-     */
-    public function sendEmail($to, $subject, $content){
-        $mail = new Email();
-        $data = [
-            'user_email' => $to,
-            'theme' => $subject,
-            'content' => str_replace(["\r\n", "\n"], ['<br />', '<br />'], $content)
+    private function _insertGain($gain){
+        $date = date('Y-m-d H:i:s');
+        foreach($gain as $userid => $rs){
+            $capital = Db::name('order')
+			->field('total')
+			->where(['userid' => $userid, 'status' => 1])
+            ->find();
+            if(! $capital){
+                // log
+
+                continue;
+            }
+            $data1 = [
+                'userid' => $userid,
+                'percent' => $rs['task_gain'],
+                'type' => 0,
+                'capital' => $capital['capital'],
+                'gain' => $capital['capital'] * $rs['task_gain'],
+                'gain_date' => $this->date,
+                'added_date' => $date
+            ];
+            Db::startTrans();
+            $status1 = Db::name('user_gain')
+                ->insert($data1);
+            if($status1 === false){
+                $this->log('');
+                Db::rollback();
+                return false;
+            }
+            $data2 = [
+                'userid' => $userid,
+                'percent' => $rs['invite_gain'],
+                'type' => 1,
+                'capital' => $capital['capital'],
+                'gain' => $capital['capital'] * $rs['invite_gain'],
+                'gain_date' => $this->date,
+                'added_date' => $date
+            ];
+            Db::startTrans();
+            $status2 = Db::name('user_gain')
+                ->insert($data2);
+            if($status2 === false){
+                $this->log('');
+                Db::rollback();
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private function _taskGain($userid){
+        $rate = 0;
+        $where = [
+			'userid' => $userid,
+            'date' => $this->date,
+            'process' => 100,
+            'status' => 1
+		];
+		$list = Db::name('user_task')
+			->field('id')
+			->where($where)
+            ->select();
+        if(! $list){
+            return false;
+        }
+        $count = count($list);
+        // 满2个才给
+        if($count < 2){
+            return false;
+        }
+        $rate = 1;
+
+        // 算邀请
+        $invite_data = $this->_getInviteUser($userid);
+        $count = $invite_data['count'];
+        if($count >= 5 && $count < 15){
+            $rate = 2; 
+        }else if($count >= 15 && $count < 50){
+            $rate = 4;
+        }else if($count >= 50 && $count < 100){
+            $rate = 10;
+        }else if($count >= 100){
+            $rate = 30;
+        }
+        return $rate;
+    }
+
+    private function _getInviteUser($userid){
+        $where = [
+			'userid' => $userid,
+            'status' => 1
+		];
+		$list = Db::name('user_invite')
+			->field('invite_userid')
+			->where($where)
+            ->select();
+        $count = count($list);
+        return [
+            'count' => $count,
+            'list' => $list
         ];
-        return $mail->sendEmail($data, 'review@esrgear.com', 'Esr16888999');
     }
 
-    /**
-     * 更新邮件记录信息
-     */
-    public function updateEmailData($data){
-        $where = ['id' => $data['id']];
-        $update_data = [
-            'send_status' => $data['send_status'],
-            'send_time' => $data['send_time'] + 1,
-            'updated_time' => date('Y-m-d H:i:s')
-        ];
-        return Db::name('invite_email_record')
-            ->where($where)
-            ->update($update_data);
+    private function _inviteGain($userid){
+        $rate = 0;
+        $invite_data = $this->_getInviteUser($userid);
+        if(! $invite_data || ! $invite_data['count']){
+            return $rate;
+        }
+        $rate = 0.5 * $invite_data['count'];
+
+        // 算二级
+        foreach($invite_data['list'] as $rs){
+            $temp = $this->_getInviteUser($rs['invite_userid']);
+            if(! $temp || ! $temp['count']){
+                continue;
+            }
+            $rate += 0.25 * $temp['count'];
+        }
+        return $rate;
     }
 
-    /**
-     * 获取待发送邮件记录
-     */
-    public function getEmailData(){  
-        $time = date('H:i:s');
-        
-        $where = 'send_status not in (1, 2) and send_time < 5 and ((sendtime_start <= "' . $time . '" and sendtime_end >= "' . $time . '") or (sendtime_start = sendtime_end))';
-
-        $data = Db::name('invite_email_record')
-                ->field('id, email, email_title, email_content, send_status, send_time')
-                ->where($where)
-                ->order('id desc')
-                ->paginate(20);
-        return $data->items();
-    }
 
     /**
      * 记录日志

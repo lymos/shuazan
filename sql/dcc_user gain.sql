@@ -5,7 +5,7 @@ create table dcc_user_gain(
 	userid int(11) not null default 0,
 	
 	percent tinyint(1) not null default 0,
-	capital int(11) not null default 0,
+	capital int(11) not null default 0 comment "本金",
 	gain varchar(6) not null default "",
 	
 	gain_date date DEFAULT null,
