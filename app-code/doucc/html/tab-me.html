@@ -66,8 +66,8 @@
 					<div class="account">1888888888</div>
 				</div>
 				<div class="me-info">
-					<p>我的邀请码：<span id="ddddd">8888</span>
-						<button type="button">复制</button>
+					<p>我的邀请码：<span id="invite-code">8888</span>
+						<button type="button" id="btn-copy">复制</button>
 					</p>
 					<p>已邀请用户： <span>8</span></p>
 					<p>二级用户数：<span>88</span></p>
@@ -129,10 +129,15 @@
 					error:function(xhr,type,errorThrown){
 						//异常处理；
 						// mui.alert("我 ");
-						document.getElementById("ddddd").innerHTML = "123488";
 						console.log(type);
 					}
 			});
+			
+			document.getElementById('btn-copy').addEventListener('tap', function(event) {
+				var text = document.getElementById("invite-code").innerHTML;
+				copyFun(text);
+				
+			}, false);
 			
 			document.getElementById('link-shop').addEventListener('tap', function(event) {
 				mui.openWindow({
