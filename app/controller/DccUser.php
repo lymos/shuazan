@@ -307,6 +307,31 @@ class DccUser extends BaseController
 			$ret['msg'] = '发生错误';
 			return json($ret);
 		}
+		if($days == 14){
+			// 满送1个邀请用户
+			$insert_data = [
+				'mobile' => uuid_v5('name'),
+				'type' => 2,
+				'added_date' => $time
+			];
+			$insert_userid = Db::name('user')->insertGetId($insert_data);
+			if($insert_userid === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误';
+				return json($ret);
+			}
+			$invite_data = [
+				'userid' => $userid,
+				'invite_userid' => $insert_userid
+			]
+			$invite_status = Db::name('user_invite')->insertGetId($invite_data);
+			if($invite_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 30001';
+				return json($ret);
+			}
+		}
+
 		Db::commit();
 		return json($ret);
 	}

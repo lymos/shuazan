@@ -11,7 +11,7 @@ create table dcc_user(
 	token varchar(60) not null default "",
 	token_expire int(11) not null default 0,
 	invite_code varchar(6) not null default "",
-	`type` tinyint(1) not null default 0 comment "0.user 1.admin",
+	`type` tinyint(1) not null default 0 comment "0.user 1.admin 2.签到赠送",
 	`status` tinyint(1) not null default 0 comment "0.未成功 1.success",
 	added_date datetime default null,
 	updated_by int(11) not null default 0,
