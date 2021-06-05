@@ -181,7 +181,7 @@
                         {
                             "tag" : "font",
                             "id" : "contactIcon",
-                            "text" : "",
+                            "text" : "\ue465",
                             "position" : {
                                 "top" : "4px",
                                 "left" : "55%",
@@ -213,7 +213,7 @@
                         {
                             "tag" : "font",
                             "id" : "newwindowIcon",
-                            "text" : "",
+                            "text" : "\ue101",
                             "position" : {
                                 "top" : "4px",
                                 "left" : "75%",
@@ -221,7 +221,7 @@
                                 "height" : "24px"
                             },
                             "textStyles" : {
-                                "fontSrc" : "_www/fonts/iconfont.ttf",
+                                "fontSrc" : "_www/fonts/mui.ttf",
                                 "align" : "center",
                                 "size" : "24px"
                             }

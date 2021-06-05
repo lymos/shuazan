@@ -177,13 +177,19 @@
 							currIndex = 0;
 						} else if(clientX > parseInt(pageW * 0.25) && clientX <= parseInt(pageW * 0.45)) {
 							currIndex = 1;
-						} else if(clientX > parseInt(pageW * 0.45) && clientX <= parseInt(pageW * 0.8)) {
+						} else if(clientX > parseInt(pageW * 0.45) && clientX <= parseInt(pageW * 0.8)) {			
 							currIndex = 2;
 						} else {
 							currIndex = 3;
 						}
 						// 匹配对应tab窗口	
 						if(currIndex > 0) {
+							// 检查登录
+							/*
+							if(! isLogin("")){
+								return ;
+							}
+							*/
 							targetPage = plus.webview.getWebviewById(subpages[currIndex - 1]);
 						} else {
 							targetPage = plus.webview.currentWebview();
