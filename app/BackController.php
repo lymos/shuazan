@@ -67,11 +67,18 @@ abstract class BackController
     }
 
     public function setLogin($userid){
-        set_session('userid', $userid);
+        session('userid', $userid);
         $token = md5('dcc' . $userid . '8923');
-        set_session('token', $token);
+        session('token', $token);
         return true;
     }
+	
+	public function url($uri){
+		$host = $_SERVER['HTTP_HOST'];
+		$scheme = $_SERVER['REQUEST_SCHEME'];
+		$url = $scheme . '://' . $host . $uri;
+		return $url;
+	}
 
     // 初始化
     protected function initialize()

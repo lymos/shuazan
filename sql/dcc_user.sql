@@ -3,7 +3,7 @@ drop table if exists dcc_user;
 create table dcc_user(
 	id int(11) not null auto_increment,
 	mobile varchar(11) not null default "",
-	pwd varchar(25) not null default "",
+	pwd varchar(60) not null default "",
 	signup_code varchar(6) not null default "",
 	login_code varchar(6) not null default "",
 	signup_code_expire int(11) not null default 0,
@@ -21,4 +21,4 @@ create table dcc_user(
 	unique key(mobile)
 )ENGINE=INNODB default charset=utf8mb4 comment "用户表";
 
-insert into dcc_user (mobile, invite_code, added_date) values ("15323452222", "123456", "2021-05-28 12:12:12");
+insert into dcc_user (mobile, pwd, invite_code, added_date) values ("15323454221", md5(md5('123456dcc')), "123456", "2021-05-28 12:12:12");

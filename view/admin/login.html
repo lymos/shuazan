@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="static/extend/layui/css/layui.css" rel="stylesheet">
+		<link href="static/backend.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="layui-container login-form">
+			<div class="l-title">抖财财后台管理系统</div>
+			<div class="layui-row">
+				<form class="layui-form" action="{$url}" method="POST">
+					<div class="layui-form-item">
+						<label class="layui-form-label">用户名</label>
+						<div class="layui-input-block">
+							<input type="text" name="mobile" required lay-verify="required" placeholder="请输入用户名"
+								autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<label class="layui-form-label">密码</label>
+						<div class="layui-input-block">
+							<input type="password" name="pwd" required lay-verify="required" placeholder="请输入密码"
+								autocomplete="off" class="layui-input">
+						</div>
+					</div>
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button class="layui-btn" lay-submit lay-filter="form">登录</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="static/extend/layui/layui.js">
+		<script>
+			layui.use('form', function() {
+				var form = layui.form;
+
+				//监听提交
+				form.on('submit(form)', function(data) {
+					layer.msg(JSON.stringify(data.field));
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

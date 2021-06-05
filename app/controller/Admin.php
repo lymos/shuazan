@@ -3,20 +3,26 @@ namespace app\controller;
 
 use app\BackController;
 use think\facade\View;
-use app\model\User;
+use app\model\User; 
+use think\facade\Request;
+use think\facade\Db;
+// use think\App;
 
 class Admin extends BackController
 {
 
     public function __construct()
     {
-        parent::__construct(null);
+       // parent::__construct(new App);
     }
     
     public function index()
     {
-        print_r(User::getList()->toArray());
-        return View::fetch('index');
+		$host = $_SERVER['HTTP_HOST'];
+		$scheme = $_SERVER['REQUEST_SCHEME'];
+		$url = $scheme . '://' . $host . '/index.php?s=admin/login';
+		View::assign('url', $url);
+        return View::fetch('login');
     }
 
     public function login(){
@@ -31,6 +37,7 @@ class Admin extends BackController
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
+		$pwd = md5(md5($pwd . 'dcc'));
 		$where = [
 			'mobile' => $mobile,
             'pwd' => $pwd,
@@ -46,6 +53,9 @@ class Admin extends BackController
             $ret['msg'] = '账号或密码错误';
         }
 		
+		$url = $this->url('/index.php?s=admin/taskList');
+		return redirect($url);
+		
 		return json($ret);
     }
 
@@ -59,11 +69,13 @@ class Admin extends BackController
 		$list = Db::name('task')
 			->field('id, name')
             ->where(1)
-            ->orderby('id', 'desc')
+            ->order('id', 'desc')
 			->select();
 		
 		$ret['code'] = 1;
 		$ret['data'] = $list;
+		View::assign('list', $list);
+		return View::fetch('taskList');
 		return json($ret);
     }
 
