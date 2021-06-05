@@ -35,6 +35,9 @@ abstract class BackController
      * @var array
      */
     protected $middleware = [];
+	
+	public $userid;
+	public $is_check_login = true;
 
     /**
      * 构造方法
@@ -46,17 +49,20 @@ abstract class BackController
         $this->app     = $app;
         $this->request = $this->app->request;
 
-        if(! $this->islogin()){
-            exit('404');
+        if($this->is_check_login && ! $this->islogin()){
+          //  exit('404');
         }
 
         // 控制器初始化
         $this->initialize();
+		
+		
     }
 
     public function isLogin(){
-        $userid = get_session('userid');
-        $token = get_session('token');
+        $userid = intval(session('userid'));
+		$this->userid = $userid;
+        $token = session('token');
         if(! $userid || ! $token){
             return false;
         }

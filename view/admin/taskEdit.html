@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="static/extend/layui/css/layui.css" rel="stylesheet">
+		<link href="static/backend.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="layui-container">
+			<div class="layui-row">
+				<form class="layui-form" method="POST">
+					<div class="layui-form-item">
+						<label class="layui-form-label">任务名称</label>
+						<div class="layui-input-block">
+							<input type="text" name="name" required lay-verify="required" placeholder="请输入任务名称"
+								autocomplete="off" class="layui-input">
+						</div>
+					</div>
+			
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button class="layui-btn" lay-submit lay-filter="task-form">提交</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="static/extend/layui/layui.js"></script>
+		<script>
+			layui.use(['element', 'layer', 'util', 'jquery'], function() {
+				var form = layui.form,
+					element = layui.element,
+					layer = layui.layer,
+					util = layui.util,
+					$ = layui.$;
+				//监听提交
+				form.on('submit(task-form)', function(data) {
+					console.log("333333")
+					alert(99)
+					$.ajax({
+						type: "POST",
+						async: false,
+						data: data,
+						url: "{$url}",
+						success: function(res){
+							console.log(res);
+							// layer.msg(JSON.stringify(data.field));
+						}
+					});
+					
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

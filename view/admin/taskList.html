@@ -10,7 +10,7 @@
 	<body>
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header">
-				<div class="layui-logo layui-hide-xs layui-bg-black">抖财财</div>
+				<div class="layui-logo layui-hide-xs layui-bg-black">抖财财系统</div>
 				<!-- 头部区域（可配合layui 已有的水平导航） -->
 				<ul class="layui-nav layui-layout-left">
 					<!-- 移动端显示 -->
@@ -86,11 +86,11 @@
 
 			<div class="layui-body">
 				<!-- 内容主体区域 -->
-				<div style="padding: 15px;"><button type="button" class="layui-btn">添加</button></div>
+				<div style="padding: 15px;"><button id="btn-add" type="button" class="layui-btn">添加</button></div>
 				<table class="layui-table">
 					<colgroup>
 						<col width="150">
-						<col width="200">
+						<col width="400">
 						<col>
 					</colgroup>
 					<thead>
@@ -101,16 +101,13 @@
 						</tr>
 					</thead>
 					<tbody>
+						{foreach $list as $rs}
 						<tr>
-							<td>贤心</td>
-							<td>2016-11-29</td>
-							<td>人生就像是一场修行</td>
+							<td>{$rs.id}</td>
+							<td>{$rs.name}</td>
+							<td>{$rs.added_date}</td>
 						</tr>
-						<tr>
-							<td>许闲心</td>
-							<td>2016-11-28</td>
-							<td>于千万人之中遇见你所遇见的人，于千万年之中，时间的无涯的荒野里…</td>
-						</tr>
+						{/foreach}
 					</tbody>
 				</table>
 			</div>
@@ -121,10 +118,10 @@
 			</div>
 			-->
 		</div>
-		<script src="static/extend/layui/layui.js">
-			< script >
+		<script src="static/extend/layui/layui.js"></script>
+		<script>
 				//JS 
-				layui.use(['element', 'layer', 'util'], function() {
+				layui.use(['element', 'layer', 'util', 'jquery'], function() {
 					var element = layui.element,
 						layer = layui.layer,
 						util = layui.util,
@@ -150,8 +147,19 @@
 							});
 						}
 					});
+					
+					$("#btn-add").on("click", function(){
+						layer.open({
+							title: "添加任务",
+							type: 2,
+							area: ["680px", "320px"],
+							content: '{$url}' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+						}); 
+					});
 
 				});
+				
+			
 		</script>
 	</body>
 </html>

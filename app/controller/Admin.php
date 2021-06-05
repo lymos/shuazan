@@ -10,22 +10,17 @@ use think\facade\Db;
 
 class Admin extends BackController
 {
-
-    public function __construct()
-    {
-       // parent::__construct(new App);
-    }
     
     public function index()
     {
-		$host = $_SERVER['HTTP_HOST'];
-		$scheme = $_SERVER['REQUEST_SCHEME'];
-		$url = $scheme . '://' . $host . '/index.php?s=admin/login';
+		$this->is_check_login = false;
+		$url = $this->url('/index.php?s=admin/login');
 		View::assign('url', $url);
         return View::fetch('login');
     }
 
     public function login(){
+		$this->is_check_login = false;
         $ret = [
 			'code' => 0,
 			'data' => '',
@@ -67,7 +62,7 @@ class Admin extends BackController
 		];
 
 		$list = Db::name('task')
-			->field('id, name')
+			->field('id, name, added_date')
             ->where(1)
             ->order('id', 'desc')
 			->select();
@@ -75,15 +70,19 @@ class Admin extends BackController
 		$ret['code'] = 1;
 		$ret['data'] = $list;
 		View::assign('list', $list);
+		$url = $this->url('/index.php?s=admin/taskEdit');
+		View::assign('url', $url);
 		return View::fetch('taskList');
 		return json($ret);
     }
 
     public function taskEdit(){
-        return View::fetch('taskedit');
+		$url = $this->url('/index.php?s=admin/actionTaskAdd');
+		View::assign('url', $url);
+        return View::fetch('taskEdit');
     }
 
-    public function taskEditAction(){
+    public function actionTaskEditAction(){
         $ret = [
 			'code' => 0,
 			'data' => '',
@@ -115,7 +114,7 @@ class Admin extends BackController
 		return json($ret);
     }
 
-    public function addTaskAction(){
+    public function actionTaskAdd(){
 		$ret = [
 			'code' => 0,
 			'data' => '',
