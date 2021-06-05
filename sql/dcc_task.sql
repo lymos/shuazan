@@ -9,7 +9,8 @@ create table dcc_task(
 	updated_by int(11) not null default 0,
 	updated_date datetime default null,
 	
-	primary key(id)
+	primary key(id),
+	unique key(name)
 )ENGINE=INNODB default charset=utf8mb4 comment "任务表";
 
 insert into dcc_task (name, added_by, added_date) values ("点赞+评论（10字以上），截图上传", 0, "2021-05-29 12:12:12");

@@ -6,6 +6,7 @@ namespace app;
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;
+use think\facade\View;
 
 /**
  * 控制器基础类
@@ -50,32 +51,29 @@ abstract class BackController
         $this->request = $this->app->request;
 
         if($this->is_check_login && ! $this->islogin()){
-          //  exit('404');
+			$login_url = $this->url('/index.php?s=adminlogin');
+			header('Location: ' . $login_url);
+            exit;
         }
 
         // 控制器初始化
         $this->initialize();
 		
+		$logout_url = $this->url('/index.php?s=adminlogin/logout');
+		View::assign('logout_url', $logout_url);
 		
     }
 
     public function isLogin(){
-        $userid = intval(session('userid'));
+        $userid = intval(cookie('userid'));
 		$this->userid = $userid;
-        $token = session('token');
+        $token = cookie('token');
         if(! $userid || ! $token){
             return false;
         }
         if($token != md5('dcc' . $userid . '8923')){
             return false;
         }
-        return true;
-    }
-
-    public function setLogin($userid){
-        session('userid', $userid);
-        $token = md5('dcc' . $userid . '8923');
-        session('token', $token);
         return true;
     }
 	

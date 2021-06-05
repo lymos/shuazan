@@ -10,12 +10,14 @@ use think\facade\Db;
 
 class Admin extends BackController
 {
-    
+    /*
     public function index()
     {
 		$this->is_check_login = false;
 		$url = $this->url('/index.php?s=admin/login');
 		View::assign('url', $url);
+		$task_list_url = $this->url('/index.php?s=admin/taskList');
+		View::assign('task_list_url', $task_list_url);
         return View::fetch('login');
     }
 
@@ -48,11 +50,16 @@ class Admin extends BackController
             $ret['msg'] = '账号或密码错误';
         }
 		
-		$url = $this->url('/index.php?s=admin/taskList');
-		return redirect($url);
+		//$url = $this->url('/index.php?s=admin/taskList');
+		//return redirect($url);
 		
 		return json($ret);
     }
+	
+	public function logout(){
+		$this->setLogout();
+	}
+	*/
 
     public function taskList(){
         $ret = [

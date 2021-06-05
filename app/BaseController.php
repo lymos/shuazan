@@ -49,6 +49,13 @@ abstract class BaseController
         // 控制器初始化
         $this->initialize();
     }
+	
+	public function url($uri){
+		$host = $_SERVER['HTTP_HOST'];
+		$scheme = $_SERVER['REQUEST_SCHEME'];
+		$url = $scheme . '://' . $host . $uri;
+		return $url;
+	}
 
     // 初始化
     protected function initialize()

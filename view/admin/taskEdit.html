@@ -26,7 +26,7 @@
 		</div>
 		<script src="static/extend/layui/layui.js"></script>
 		<script>
-			layui.use(['element', 'layer', 'util', 'jquery'], function() {
+			layui.use(['element', 'layer', 'util', 'jquery', "form"], function() {
 				var form = layui.form,
 					element = layui.element,
 					layer = layui.layer,
@@ -34,16 +34,23 @@
 					$ = layui.$;
 				//监听提交
 				form.on('submit(task-form)', function(data) {
-					console.log("333333")
-					alert(99)
+				
 					$.ajax({
 						type: "POST",
-						async: false,
-						data: data,
+						// async: false,
+						dataType: "json",
+						data: data.field,
 						url: "{$url}",
 						success: function(res){
 							console.log(res);
-							// layer.msg(JSON.stringify(data.field));
+							if(res.code == 1){
+								layer.msg("提交成功");
+								window.parent.location.reload();//刷新父页面
+								var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+								parent.layer.close(index);
+							}else{
+								layer.msg(res.msg);
+							}
 						}
 					});
 					
