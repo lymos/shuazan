@@ -23,6 +23,8 @@ abstract class BaseController
      * @var \think\App
      */
     protected $app;
+	
+	protected $key = 'doucc-encrype-key';
 
     /**
      * 是否批量验证
@@ -55,6 +57,22 @@ abstract class BaseController
 		$scheme = $_SERVER['REQUEST_SCHEME'];
 		$url = $scheme . '://' . $host . $uri;
 		return $url;
+	}
+	
+	public function encrypt($data, $key = '') {
+		if(! $key){
+			$key = $this->key;
+		}
+	    $data = openssl_encrypt($data, 'aes-128-ecb', base64_decode($key), OPENSSL_RAW_DATA);
+	    return base64_encode($data);
+	}
+	
+	public function decrypt($data, $key = '') {
+		if(! $key){
+			$key = $this->key;
+		}
+	    $encrypted = base64_decode($data);
+	    return openssl_decrypt($encrypted, 'aes-128-ecb', base64_decode($key), OPENSSL_RAW_DATA);
 	}
 
     // 初始化

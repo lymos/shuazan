@@ -21,14 +21,18 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<a id="is-back" class="hide mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">我的任务</h1>
 		</header>
-		<div class="mui-content">
+		<div class="mui-content mui-scroll-wrapper" id="task-box">
 			
-			<ul class="mui-table-view">
+			<ul id="task-list" class="mui-table-view mui-scroll">
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span>任务标题1</span>
+						<span id="ddddd">任务标题1</span>
+						<div id="demo1" class="mui-progressbar">
+							<span></span>
+						</div>
 					</div>
 					<div class="r-right">
 						<span class="mui-badge mui-badge-primary">进行中</span>
@@ -38,6 +42,9 @@
 			    <li class="mui-table-view-cell c-item">
 			    	<div class="t-info">
 			    		<span>任务标题2</span>
+						<div id="demo2" class="mui-progressbar">
+							<span></span>
+						</div>
 			    	</div>
 			    	<div class="r-right">
 			    		<span class="mui-badge mui-badge-success">已完成</span>
@@ -46,13 +53,101 @@
 			    </li>
 			</ul>
 			
-			
+			<div class="task-tip">任务大厅</div>
+			<ul id="task-list" class="mui-table-view">
+			    <li class="mui-table-view-cell c-item">
+					<div class="t-info">
+						<span id="ddddd">任务标题1</span>
+						<div id="demo1" class="mui-progressbar">
+							<span></span>
+						</div>
+					</div>
+					<div class="r-right">
+						<button id="link-task" type="button">领取</button>
+					</div>
+					
+				</li>
+			    <li class="mui-table-view-cell c-item">
+			    	<div class="t-info">
+			    		<span>任务标题2</span>
+						<div id="demo2" class="mui-progressbar">
+							<span></span>
+						</div>
+			    	</div>
+			    	<div class="r-right">
+			    		<button id="link-task" type="button">领取</button>
+			    	</div>
+			    	
+			    </li>
+			</ul>
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
-			swipeBack:true //启用右滑关闭功能
+			swipeBack:true, //启用右滑关闭功能
+			pullRefresh : {
+			    container:"#task-box",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
+			    down : {
+			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
+			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
+			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
+			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
+			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
+			      auto: true,//可选,默认false.首次加载自动上拉刷新一次
+			      callback : getTaskList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
+			    }
+			  }
 		});
+		
+		mui.plusReady(function() {
+			var self = plus.webview.currentWebview();  
+			var is_back = self.is_back;  
+			if(is_back === true){
+				document.getElementById("is-back").classList.remove("hide");
+			}
+			
+			mui.ajax(config.host + 'index.php?s=task/get_task', {
+				data:{
+					username:'username',
+					password:'password'
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},
+				success:function(data){
+					console.log(data)
+					alert(JSON.stringify(data));
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 0){
+						mui.alert(data.msg);
+					}else{
+						var html = "";
+						for(var i in data.data){
+							html += '<li class="mui-table-view-cell">';
+						}
+						var tlist = document.getElementById("task-list");
+						tlist.innerHTML = html;
+					}
+					
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					// mui.alert("task");
+					document.getElementById("ddddd").innerHTML = "任务标题88";
+					console.log(type);
+				}
+			});
+		});
+		
+		mui("#demo1").progressbar({progress:20}).show();
+		mui("#demo2").progressbar({progress:100}).show();
+		
+		var getTaskList = function(){
+			mui.alert("pull");
+		};
+		
 	</script>
 </html>

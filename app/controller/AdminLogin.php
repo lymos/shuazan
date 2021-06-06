@@ -19,13 +19,21 @@ class AdminLogin extends BaseController
         return View::fetch('login');
     }
 
-    public function login(){
+    public function login(Request $request){
+		
 		$this->is_check_login = false;
         $ret = [
 			'code' => 0,
 			'data' => '',
 			'msg' => ''
 		];
+		
+		$check = $request->checkToken('__token__');
+		        
+		        if(false === $check) {
+		            throw new ValidateException('invalid token');
+		        }
+				
         $mobile = trim(Request::param('mobile'));
         $pwd = trim(Request::param('pwd'));
 		if(! $mobile || ! $pwd){

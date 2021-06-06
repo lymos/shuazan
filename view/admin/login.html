@@ -3,6 +3,7 @@
 	<head>
 		<link href="static/extend/layui/css/layui.css" rel="stylesheet">
 		<link href="static/backend.css" rel="stylesheet">
+		<meta name="csrf-token" content="{:token()}">
 	</head>
 	<body>
 		<div class="layui-container login-form">
@@ -44,6 +45,9 @@
 						// async: false,
 						dataType: "json",
 						data: data.field,
+						headers: {
+						        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+						    },
 						url: "{$url}",
 						success: function(res){
 							console.log(res);

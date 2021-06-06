@@ -1,4 +1,5 @@
 var util = {
+
 	options: {
 		ACTIVE_COLOR: "#007aff",
 		NORMAL_COLOR: "#000",

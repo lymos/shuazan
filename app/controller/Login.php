@@ -61,12 +61,13 @@ class Login extends BaseController
 		$data = [
 			'token' => $token,
 			'token_expire' => time() + (24 * 3600) * 5,
-			'userid' => $userid
+			
 		];
 		$status = Db::name('user')
-			->where(['userid' => $userid])
+			->where(['id' => $userid])
 			->update($data)
 		if($status){
+			$data['userid'] = $this->encrypt($userid);
 			return $data;
 		}
 		return false;

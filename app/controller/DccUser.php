@@ -254,6 +254,7 @@ class DccUser extends BaseController
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
+		$userid = $this->decrypt($userid);
 		$where = [
 			'userid' => $userid,
 			'status' => 0

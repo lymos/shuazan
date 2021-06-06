@@ -28,19 +28,18 @@
 			<ul class="mui-table-view">
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span>账户余额：</span><span>1800</span> <span>(lv1)</span>
+						<span>账户余额：</span><span>1800</span>
 					</div>
-					<div class="r-right">
-						<button type="button">升级</button>
-					</div>
+					
 					
 				</li>
 			    <li class="mui-table-view-cell c-item">
 			    	<div class="t-info">
-			    		<span>任务收益：</span><span>99</span>
+						<!-- 当前可提现的收益 -->
+			    		<span>任务收益：</span><span>200</span>
 			    	</div>
 			    	<div class="r-right">
-			    		<button type="button">接任务</button>
+			    		<button id="link-task" type="button">接任务</button>
 			    	</div>
 			    	
 			    </li>
@@ -49,13 +48,14 @@
 						<span>佣金收益：</span><span>800</span>
 					</div>
 					<div class="r-right">
-						<button type="button">邀请用户</button>
+						<button id="link-invite" type="button">邀请用户</button>
 					</div>
 					
 				</li>
 				<li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span>可提醒总额：</span><span>1800</span>
+						<!-- 上面3项相加 -->
+						<span>可提现总额：</span><span>2800</span>
 					</div>
 					
 					
@@ -63,13 +63,101 @@
 			</ul>
 		</div>
 		<div class="action-box">
-			<button type="button" class="mui-btn mui-btn-primary">提现</button>
+			<button id="link-cashout" type="button" class="mui-btn mui-btn-primary">提现</button>
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
+		});
+		
+		mui.plusReady(function() {
+			document.getElementById('link-cashout').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'cashout.html',
+					id: 'link-cashout',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			document.getElementById('link-task').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'tab-task.html',
+					id: 'link-task',
+					preload: true,
+					extras: {
+						is_back:true 
+					},
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			document.getElementById('link-invite').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'invite.html',
+					id: 'link-invite',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
+			mui.ajax(config.host + 'index.php?s=user/getUserGain', {
+				data:{
+					username:'username',
+					password:'password'
+				},
+				dataType:'json',//服务器返回json格式数据
+				type:'post',//HTTP请求类型
+				timeout:10000,//超时时间设置为10秒；
+				headers:{'Content-Type':'application/json'},
+				success:function(data){
+					console.log(data)
+					alert(JSON.stringify(data));
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if(data.code == 0){
+						mui.alert(data.msg);
+					}else{
+						
+						// plist.innerHTML = html;
+					}
+					
+				},
+				error:function(xhr,type,errorThrown){
+					//异常处理；
+					// mui.alert("收益");
+					//document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
+					//console.log(type);
+				}
+			});
+			
+			
 		});
 	</script>
 </html>

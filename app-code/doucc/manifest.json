@@ -145,7 +145,6 @@
                                 "size" : "10px"
                             }
                         },
-						
                         {
                             "tag" : "font",
                             "id" : "newsIcon",
@@ -177,11 +176,10 @@
                                 "size" : "10px"
                             }
                         },
-						
                         {
                             "tag" : "font",
                             "id" : "contactIcon",
-                            "text" : "\ue465",
+                            "text" : "",
                             "position" : {
                                 "top" : "4px",
                                 "left" : "55%",
@@ -209,11 +207,10 @@
                                 "size" : "10px"
                             }
                         },
-						
                         {
                             "tag" : "font",
                             "id" : "newwindowIcon",
-                            "text" : "\ue101",
+                            "text" : "",
                             "position" : {
                                 "top" : "4px",
                                 "left" : "75%",
@@ -241,7 +238,6 @@
                                 "size" : "10px"
                             }
                         },
-						
                         {
                             "tag" : "rect",
                             "id" : "tabBorder",
