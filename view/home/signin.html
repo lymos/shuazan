@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>invite</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="../css/mui.min.css">
+		<link rel="stylesheet" href="../css/main.css">
+		<style>
+			html,body {
+				background-color: #efeff4;
+			}
+			
+			
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<div class="center">
+				<button id="btn-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
+			</div>
+			
+		</header>
+		<div class="mui-content">
+			<div class="signin-tip">
+				累计签到<span id="singin-num">2</span>天
+			</div>
+			<div class="signin-box center">
+				<span class="mui-badge mui-badge-primary">1</span>
+				<span class="mui-badge mui-badge-primary">2</span>
+				<span class="mui-badge mui-badge-primary">3</span>
+				<span class="mui-badge">4</span>
+				<span class="mui-badge">5</span>
+				<span class="mui-badge">6</span>
+				<span class="mui-badge">7</span>
+				<span class="mui-badge">8</span>
+				<span class="mui-badge">9</span>
+				<span class="mui-badge">10</span>
+				<span class="mui-badge">11</span>
+				<span class="mui-badge">12</span>
+				<span class="mui-badge">13</span>
+				<span class="mui-badge">14</span>
+		
+			</div>
+			<div class="signin-tip">
+				签到满一个周期（14天），相当于邀请一位新用户
+			</div>
+		</div>
+	</body>
+	<script src="../js/mui.min.js"></script>
+	<script src="../js/main.js"></script>
+	<script>
+		mui.init({
+			swipeBack:true //启用右滑关闭功能
+		});
+		
+		mui.plusReady(function() {
+			mui.ajax(config.host + 'index.php?s=user/signininfo', {
+					data:{
+						userid: 888
+					},
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						alert(JSON.stringify(data));
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else{
+							
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						// mui.alert("signin ");
+						
+					}
+			});
+			
+			document.getElementById("btn-signin").addEventListener('tap', function(event) {
+				mui.ajax(config.host + 'index.php?s=user/signin', {
+						data:{
+							userid: 888
+						},
+						dataType:'json',//服务器返回json格式数据
+						type:'post',//HTTP请求类型
+						timeout:10000,//超时时间设置为10秒；
+						headers:{'Content-Type':'application/json'},
+						success:function(data){
+							console.log(data)
+							alert(JSON.stringify(data));
+							//服务器返回响应，根据响应结果，分析是否登录成功；
+							if(data.code == 0){
+								mui.alert(data.msg);
+							}else{
+								mui.nativeUI.toast("签到成功");
+								// 刷新页面？
+							}
+							
+						},
+						error:function(xhr,type,errorThrown){
+							//异常处理；
+							mui.alert("signin ");
+							
+						}
+				});
+			});
+			
+			
+		});
+	</script>
+</html>

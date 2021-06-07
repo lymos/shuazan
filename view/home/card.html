@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html class="ui-page-login">
+
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<title></title>
+		<link href="../css/mui.min.css" rel="stylesheet" />
+		<link href="../css/main.css" rel="stylesheet" />
+		<style>
+		
+			.mui-input-group {
+				margin-top: 10px;
+			}
+			
+			.mui-input-group:first-child {
+				margin-top: 20px;
+			}
+			
+			.mui-input-group label {
+				width: 35%;
+			}
+			
+			.mui-input-row label~input,
+			.mui-input-row label~select,
+			.mui-input-row label~textarea {
+				width: 65%;
+			}
+			.mui-content-padded {
+				margin-top: 25px;
+			}
+			
+			.mui-btn {
+				padding: 10px;
+			}
+			
+		</style>
+
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">添加卡号</h1>
+		</header>
+		<div class="mui-content">
+			
+			<form id='login-form' class="mui-input-group">
+				<div class="mui-input-row">
+					<label>开户名</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="开户名">
+				</div>
+				<div class="mui-input-row">
+					<label>卡号</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="卡号">
+				</div>
+				<div class="mui-input-row">
+					<label>银行名称</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="银行名称">
+				</div>
+				<div class="mui-input-row">
+					<label>预留手机号</label>
+					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
+				</div>
+			</form>
+			
+			<div class="mui-content-padded">
+				<button id='btn-add' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
+				
+			</div>
+			
+		</div>
+		<script src="../js/mui.min.js"></script> 
+		<script src="../js/main.js"></script>
+		<script>
+			(function($, doc) {
+				$.init({
+					statusBarBackground: '#f7f7f7'
+				});
+				$.plusReady(function() {
+					$(".mui-content-padded").on('tap','.btn-add',function(){
+						submit();
+					});
+					
+					var submit = function(){
+						mui.alert(888)
+						mui.ajax(config.host + 'index.php?s=user/addCard', {
+							data:{
+								username:'username',
+								password:'password'
+							},
+							dataType:'json',//服务器返回json格式数据
+							type:'post',//HTTP请求类型
+							timeout:10000,//超时时间设置为10秒；
+							headers:{'Content-Type':'application/json'},
+							success:function(data){
+								console.log(data)
+								alert(JSON.stringify(data));
+								//服务器返回响应，根据响应结果，分析是否登录成功；
+								if(data.code == 0){
+									mui.alert(data.msg);
+								}else{
+									var html = "";
+									for(var i in data.data){
+										html += '<li class="mui-table-view-cell">';
+									}
+									var plist = document.getElementById("product-list");
+									plist.innerHTML = html;
+								}
+								
+							},
+							error:function(xhr,type,errorThrown){
+								//异常处理；
+								mui.alert("card");
+								document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
+								console.log(type);
+							}
+						});
+					}
+				});
+			}(mui, document));
+		</script>
+	</body> 
+
+</html>
