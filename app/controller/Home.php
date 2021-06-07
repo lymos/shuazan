@@ -1,13 +1,13 @@
 <?php
 namespace app\controller;
 
-use app\BackController;
+use app\BaseController;
 use think\facade\View;
 use app\model\User; 
 use think\facade\Request;
 use think\facade\Db;
 
-class Home extends BaceController
+class Home extends BaseController
 {
     public function index()
     {
