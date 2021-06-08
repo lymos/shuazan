@@ -57,3 +57,96 @@ var copyFun = function(copy,tips) {
         }  
     });  
 }
+
+document.getElementById('link-task2').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							//return ;
+						}
+						mui.openWindow({
+							url: 'index.php?s=home/tabtask',
+							id: 'link-task',
+							preload: true,
+							extras: {
+								is_back:true 
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-gain').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							//return ;
+						}
+						mui.openWindow({
+							url: 'index.php?s=home/tabgain',
+							id: 'link-task',
+							preload: true,
+							extras: {
+								is_back:true 
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-me').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							//return ;
+						}
+						mui.openWindow({
+							url: 'index.php?s=home/tabme',
+							id: 'link-task',
+							preload: true,
+							extras: {
+								is_back:true 
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					
+					document.getElementById('link-home').addEventListener('tap', function(event) {
+						if(! isLogin("")){
+							//return ;
+						}
+						mui.openWindow({
+							url: 'index.php?s=home',
+							id: 'link-task',
+							preload: true,
+							extras: {
+								is_back:true 
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+					}, false);
+					

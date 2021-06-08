@@ -24,9 +24,9 @@
 			<a id="is-back" class="hide mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">我的任务</h1>
 		</header>
-		<div class="mui-content mui-scroll-wrapper" id="task-box">
+		<div class="mui-content" id="task-box">
 			
-			<ul id="task-list" class="mui-table-view mui-scroll">
+			<ul id="task-list" class="mui-table-view">
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
 						<span id="ddddd">任务标题1</span>
@@ -81,32 +81,29 @@
 			    </li>
 			</ul>
 		</div>
+		
+		<div class="footer">
+			<div id="link-home" class="footer-item">首页</div>
+			<div id="link-task2" class="footer-item primary">任务</div>
+			<div id="link-gain" class="footer-item">收益</div>
+			<div id="link-me" class="footer-item">我</div>
+		</div>
 	</body>
 	<script src="../../static/js/mui.min.js"></script>
 		<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true, //启用右滑关闭功能
-			pullRefresh : {
-			    container:"#task-box",//下拉刷新容器标识，querySelector能定位的css选择器均可，比如：id、.class等
-			    down : {
-			      style:'circle',//必选，下拉刷新样式，目前支持原生5+ ‘circle’ 样式
-			      color:'#2BD009', //可选，默认“#2BD009” 下拉刷新控件颜色
-			      height:'50px',//可选,默认50px.下拉刷新控件的高度,
-			      range:'100px', //可选 默认100px,控件可下拉拖拽的范围
-			      offset:'0px', //可选 默认0px,下拉刷新控件的起始位置
-			      auto: true,//可选,默认false.首次加载自动上拉刷新一次
-			      callback : getTaskList //必选，刷新函数，根据具体业务来编写，比如通过ajax从服务器获取新数据；
-			    }
-			  }
 		});
 		
 		// mui.plusReady(function() {
+			/*
 			var self = plus.webview.currentWebview();  
 			var is_back = self.is_back;  
 			if(is_back === true){
 				document.getElementById("is-back").classList.remove("hide");
 			}
+			*/
 			
 			mui.ajax(config.host + 'index.php?s=task/get_task', {
 				data:{
@@ -144,10 +141,6 @@
 		
 		mui("#demo1").progressbar({progress:20}).show();
 		mui("#demo2").progressbar({progress:100}).show();
-		
-		var getTaskList = function(){
-			mui.alert("pull");
-		};
 		
 	</script>
 </html>

@@ -7,4 +7,5 @@ return [
     'type'    => 'Html',
     // 读取的日志通道名
     'channel' => '',
+	'SHOW_PAGE_TRACE' => false
 ];
