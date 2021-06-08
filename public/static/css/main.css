@@ -1,0 +1,106 @@
+.header{
+	padding: 40px;
+	text-align: center;
+	background-color: #fff;
+}
+form.mui-input-group{
+	margin-top: 0;
+}
+.me{
+	display: flex;
+}
+.me-icon{
+	padding-top: 8px;
+}
+.account{
+	margin-left: 8px;
+	line-height: 40px;
+}
+.header-top{
+	padding: 20px;
+}
+.me-info{
+	margin-top: 10px;
+}
+.icon-link span{
+	margin-right: 10px;
+}
+.c-item div{
+	display: inline-block;
+}
+.c-item .t-info{
+	padding-top: 5px;
+}
+.r-right{
+	float: right;
+}
+.action-box{
+	text-align: center;
+	margin-top: 20px;
+}
+.index-action-box{
+	margin-top: 40px;
+	text-align: center;
+}
+.shop-text{
+	text-align: left;
+	width: 50%
+}
+.shop-img{
+	width: 20%;
+}
+.shop-action{
+	text-align: right;
+	width: 30%;
+	padding-top: 20px;
+}
+.signin-box{
+	margin-top: 20px;
+	padding: 20px;
+}
+.signin-box span{
+	margin-right: 20px;
+	margin-bottom: 10px;
+}
+.center{
+	text-align: center;
+}
+.signin-tip{
+	padding: 10px;
+}
+.hide{
+	display: none;
+}
+.task-tip{
+	margin-top: 40px;
+	margin-bottom: 10px;
+	padding-left: 14px;
+}
+.signin-box span{
+	width: 36px;
+	height: 36px;
+	line-height: 36px;
+	text-align: center;
+	padding: 0;
+}
+.product-item{
+	display: flex;
+}
+.btn-copy{
+	vertical-align: -1px;
+	margin-left: 10px;
+}
+.footer{
+	display: flex;
+	width: 100%;
+	height: 40px;
+	padding: 10px;
+	border-top: 1px solid #ccc;
+	position: fixed;
+	bottom: 0;
+}
+.footer-item{
+	width: 25%;
+	height: 100%;
+	text-align: center;
+}
