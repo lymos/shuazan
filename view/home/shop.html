@@ -8,8 +8,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-		<link rel="stylesheet" href="../css/mui.min.css">
-		<link rel="stylesheet" href="../css/main.css">
+		<link href="../../static/css/mui.min.css" rel="stylesheet" />
+		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
 			html,body {
 				background-color: #efeff4;
@@ -51,8 +51,8 @@
 			</ul>
 		</div>
 	</body>
-	<script src="../js/mui.min.js"></script>
-	<script src="../js/main.js"></script>
+	<script src="../../static/js/mui.min.js"></script>
+		<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true ,//启用右滑关闭功能
@@ -69,7 +69,7 @@
 			    }
 			  }
 		});
-		mui.plusReady(function() {
+		// mui.plusReady(function() {
 			mui.ajax(config.host + 'index.php?s=product/get_product', {
 				data:{
 					username:'username',
@@ -159,7 +159,7 @@
 			};
 			*/
 			
-		});
+		// });
 		var getTaskList = function(){
 			mui.alert("pull");
 			setTimeout(function() {

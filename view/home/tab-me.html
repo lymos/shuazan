@@ -8,8 +8,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-		<link rel="stylesheet" href="../css/mui.min.css">
-		<link rel="stylesheet" href="../css/main.css">
+		<link href="../../static/css/mui.min.css" rel="stylesheet" />
+		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
 			html,
 			body {
@@ -95,13 +95,13 @@
 			</ul>
 		</div>
 	</body>
-	<script src="../js/mui.min.js"></script>
-	<script src="../js/main.js"></script>
+	<script src="../../static/js/mui.min.js"></script>
+		<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack: true //启用右滑关闭功能
 		});
-		mui.plusReady(function() { 
+		// mui.plusReady(function() { 
 			mui.ajax(config.host + 'index.php?s=user/info', {
 					data:{
 						username:'username',
@@ -142,7 +142,7 @@
 			
 			document.getElementById('link-shop').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'shop.html',
+					url: 'index.php?s=home/shop',
 					id: 'link-shop',
 					preload: true,
 					show: {
@@ -159,7 +159,7 @@
 			
 			document.getElementById('link-card').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'card.html',
+					url: 'index.php?s=home/card',
 					id: 'link-card',
 					preload: true,
 					show: {
@@ -176,7 +176,7 @@
 			
 			document.getElementById('link-invite').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'invite.html',
+					url: 'index.php?s=home/invite',
 					id: 'link-invite',
 					preload: true,
 					show: {
@@ -193,7 +193,7 @@
 			
 			document.getElementById('link-rule').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'rule.html',
+					url: 'index.php?s=home/rule',
 					id: 'link-rule',
 					preload: true,
 					show: {
@@ -207,7 +207,7 @@
 					}
 				});
 			}, false);
-		});
+		// });
 
 		
 	</script>

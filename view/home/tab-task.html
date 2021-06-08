@@ -8,8 +8,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-		<link rel="stylesheet" href="../css/mui.min.css">
-		<link rel="stylesheet" href="../css/main.css">
+		<link href="../../static/css/mui.min.css" rel="stylesheet" />
+		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
 			html,body {
 				background-color: #efeff4;
@@ -82,8 +82,8 @@
 			</ul>
 		</div>
 	</body>
-	<script src="../js/mui.min.js"></script>
-	<script src="../js/main.js"></script>
+	<script src="../../static/js/mui.min.js"></script>
+		<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true, //启用右滑关闭功能
@@ -101,7 +101,7 @@
 			  }
 		});
 		
-		mui.plusReady(function() {
+		// mui.plusReady(function() {
 			var self = plus.webview.currentWebview();  
 			var is_back = self.is_back;  
 			if(is_back === true){
@@ -140,7 +140,7 @@
 					console.log(type);
 				}
 			});
-		});
+		// });
 		
 		mui("#demo1").progressbar({progress:20}).show();
 		mui("#demo2").progressbar({progress:100}).show();

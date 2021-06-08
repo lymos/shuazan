@@ -5,8 +5,8 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
 		<title></title>
-		<link href="css/mui.min.css" rel="stylesheet" />
-		<link href="css/main.css" rel="stylesheet" />
+		<link href="../../static/css/mui.min.css" rel="stylesheet" />
+		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
 			.area {
 				margin: 20px auto 0px auto;
@@ -119,14 +119,14 @@
 			</div>
 			
 		</div>
-		<script src="js/mui.min.js"></script>
-		<script src="js/main.js"></script>
+		<script src="../../static/js/mui.min.js"></script>
+		<script src="./../static/js/main.js"></script>
 		<script>
 			(function($, doc) {
 				$.init({ 
 					statusBarBackground: '#f7f7f7'
 				});
-				$.plusReady(function() {
+				// $.plusReady(function() {
 					
 					var loginButton = doc.getElementById('login');
 					var mobile = doc.getElementById('mobile');
@@ -234,7 +234,7 @@
 						});
 					});
 					
-				});
+			//	});
 				
 			}(mui, document));
 		</script>
