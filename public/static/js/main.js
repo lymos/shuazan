@@ -3,11 +3,11 @@ var config = {
 };
 var isLogin = function(path){
 	return true;
-	var token = plus.storage.getItem("token"),
-		token_expire = plus.storage.getItem("token_expire");
+	var token = localStorage.getItem("token"),
+		token_expire = localStorage.getItem("token_expire");
 	if(token == "" || ! token){
 		mui.openWindow({
-			url: path + 'login.html',
+			url: path + 'login',
 			// id: 'reg',
 			preload: true,
 			show: {
@@ -25,38 +25,84 @@ var isLogin = function(path){
 	return true;
 };
 
-var copyFun = function(copy,tips) {  
-    if(!tips){  
-        tips="已成功复制到剪贴板";  
-    }  
-   // loading();  
-    mui.plusReady(function() {  
-        //判断是安卓还是ios  
-        if (mui.os.ios) {  
-            //ios  
-            var UIPasteboard = plus.ios.importClass("UIPasteboard");  
-            var generalPasteboard = UIPasteboard.generalPasteboard();  
-            //设置/获取文本内容:  
-            generalPasteboard.plusCallMethod({  
-                setValue: copy,  
-                forPasteboardType: "public.utf8-plain-text"  
-            });  
-            generalPasteboard.plusCallMethod({  
-                valueForPasteboardType: "public.utf8-plain-text"  
-            });  
-            mui.toast(tips);  
-         //   loading_close();  
-        } else {  
-            //安卓  
-            var context = plus.android.importClass("android.content.Context");  
-            var main = plus.android.runtimeMainActivity();  
-            var clip = main.getSystemService(context.CLIPBOARD_SERVICE);  
-            plus.android.invoke(clip, "setText", copy);  
-            mui.toast(tips);  
-         //   loading_close();  
-        }  
-    });  
-}
+var copyFun = function(node) {
+    if (!node) {
+        return;
+    }
+    var result;
+    // 将复制内容添加到临时textarea元素中
+    var tempTextarea = document.createElement('textarea');
+    document.body.appendChild(tempTextarea);
+    if (typeof(node) == 'object') {
+        // 复制节点中内容
+        // 是否表单
+        if (node.value) {
+            tempTextarea.value = node.value;
+        } else {
+            tempTextarea.value = node.innerHTML;
+        }
+    } else {
+        // 直接复制文本
+        tempTextarea.value = node;
+    }
+    // 判断设备
+    var u = navigator.userAgent;
+    if (u.match(/(iPhone|iPod|iPad);?/i)) {
+        // iOS
+        // 移除已选择的元素
+        window.getSelection().removeAllRanges();
+        // 创建一个Range对象
+        var range = document.createRange();
+        // 选中
+        range.selectNode(tempTextarea);
+        // 执行选中元素
+        window.getSelection().addRange(range);
+        // 复制
+        result = document.execCommand('copy');
+        // 移除选中元素
+        window.getSelection().removeAllRanges();
+
+    } else {
+        // 选中    
+        tempTextarea.select();
+        // 复制
+        result = document.execCommand('Copy');
+    }
+    // 移除临时文本域
+    document.body.removeChild(tempTextarea);
+    if (result) {
+        alert('复制成功', {
+            removeTime: 1000
+        })
+    } else {
+        alert('复制失败', {
+            removeTime: 1000
+        })
+    }
+
+    return result;
+};
+
+var goto = function(url, id){
+	mui.openWindow({
+							url: url,
+							id: id,
+							preload: true,
+							extras: {
+								is_back:true 
+							},
+							show: {
+								aniShow: 'pop-in'
+							},
+							styles: {
+								popGesture: 'hide'
+							},
+							waiting: {
+								autoShow: false
+							}
+						});
+				
+};
 
 document.getElementById('link-task2').addEventListener('tap', function(event) {
 						if(! isLogin("")){
@@ -150,3 +196,16 @@ document.getElementById('link-task2').addEventListener('tap', function(event) {
 						});
 					}, false);
 					
+
+var getToken = function(){
+	var token = localStorage.getItem("token"),
+		token_expire = localStorage.getItem("token_expire");
+	return {
+		token: token,
+		token_expire: token_expire
+	}；
+}
+
+var gotoLogin = function(){
+	goto("index.php?s=home/login");
+}

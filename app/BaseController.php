@@ -6,6 +6,9 @@ namespace app;
 use think\App;
 use think\exception\ValidateException;
 use think\Validate;
+use think\response\Json;
+use think\facade\Db;
+use think\facade\Request;
 
 /**
  * 控制器基础类
@@ -50,6 +53,7 @@ abstract class BaseController
 
         // 控制器初始化
         $this->initialize();
+        $this->verifyToken();
     }
 	
 	public function url($uri){
@@ -116,9 +120,32 @@ abstract class BaseController
         return $v->failException(true)->check($data);
     }
 
-	public function verify_token(){
+	public function verifyToken(){
+        $ret = [
+            'code' => 2,
+            'data' => '',
+            'msg' => ''
+        ];
+        $token = trim(Request::param('token'));
+        $token_expire = trim(Request::param('token_expire'));
+        if(! $token || ! $token_expire){
+            $ret['msg'] = '无效请求';
+            return json($ret);
+        }
+        $now = time();
+        $res = Db::name('user')
+            ->field('id')
+            ->where([
+                ['token', '=', $token],
+                ['token_expire', '<', $now]
+
+            ])->find();
+
+        if(! $res){
+            $ret['msg'] = '请先登录';
+            return json($ret);
+        }
 		return true;
-		return false;
 	}
 	
 	public function curl($url, $method = 'GET', $data = [], $header = []){

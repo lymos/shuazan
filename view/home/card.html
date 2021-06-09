@@ -45,7 +45,7 @@
 		</header>
 		<div class="mui-content">
 			
-			<form id='login-form' class="mui-input-group">
+			<form id='card-form' class="mui-input-group">
 				<div class="mui-input-row">
 					<label>开户名</label>
 					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="开户名">
@@ -82,14 +82,13 @@
 					$(".mui-content-padded").on('tap','.btn-add',function(){
 						submit();
 					});
-					
+					var form = $("#card-form").searilize(),
+						token = getToken();
+					var form_data = Object.assign(form, token);
+
 					var submit = function(){
-						mui.alert(888)
 						mui.ajax(config.host + 'index.php?s=user/addCard', {
-							data:{
-								username:'username',
-								password:'password'
-							},
+							data: form_data,
 							dataType:'json',//服务器返回json格式数据
 							type:'post',//HTTP请求类型
 							timeout:10000,//超时时间设置为10秒；
@@ -100,6 +99,9 @@
 								//服务器返回响应，根据响应结果，分析是否登录成功；
 								if(data.code == 0){
 									mui.alert(data.msg);
+								}else if(data.code == 2){
+									mui.alert(data.msg);
+									gotoLogin();
 								}else{
 									var html = "";
 									for(var i in data.data){
@@ -112,8 +114,6 @@
 							},
 							error:function(xhr,type,errorThrown){
 								//异常处理；
-								mui.alert("card");
-								document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
 								console.log(type);
 							}
 						});

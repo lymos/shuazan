@@ -99,13 +99,12 @@
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										
+										goto("index.php?s=home/login");
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
 									//异常处理；
-									document.getElementById("ddddd").innerHTML = "123488";
 									console.log(type);
 								}
 						});
@@ -155,8 +154,6 @@
 								},
 								error:function(xhr,type,errorThrown){
 									//异常处理；
-									mui.alert("smscode ");
-									document.getElementById("ddddd").innerHTML = "123488";
 									console.log(type);
 								}
 						});
