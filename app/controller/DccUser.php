@@ -12,15 +12,10 @@ class DccUser extends BaseController
 {
     public function index()
     {
-        print_r(User::getList()->toArray());
-        return View::fetch('index');
+        header('HTTP/1.1 404 NOT FOUND');
+        exit;
     }
 
-    public function hello($name = 'ThinkPHP6')
-    {
-        return 'hello,' . $name;
-    }
-	
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 */
@@ -249,12 +244,11 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		$userid = trim(Request::param('userid'));
+		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
-		$userid = $this->decrypt($userid);
 		$where = [
 			'userid' => $userid,
 			'status' => 0
@@ -262,9 +256,27 @@ class DccUser extends BaseController
 		$data = Db::name('user_signin')
 			->field('signin_date, days')
 			->where($where)->select();
+
+		// 当天是否满14
+		$date = date('Y-m-d');
+		$where2 = [
+			'userid' => $userid,
+			'days' => 14,
+			'signin_date' => $date
+		];
+		$data2 = Db::name('user_signin')
+			->field('id')
+			->where($where2)->find();
+		if($data2){
+			$is14 = true;
+		}else{
+			$is14 = false;
+		}
+
 		$ret['data'] = [
 			'days' => count($data),
-			'list' => $data
+			'list' => $data,
+			'is14' => $is14 // 满14
 		];
 		return json($ret);
 	}
@@ -278,7 +290,7 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		$userid = trim(Request::param('userid'));
+		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
@@ -289,7 +301,7 @@ class DccUser extends BaseController
 		
 		Db::startTrans();
 		// 判断是否连续 不连续需把之前的废弃
-		$days = $this->_findContinue($userid, $date);
+		$days = $this->_findContinue($userid, $date, $time);
 		if(! $days){
 			Db::rollback();
 			$ret['msg'] = '发生错误';
@@ -300,6 +312,7 @@ class DccUser extends BaseController
 			'userid' => $userid,
 			'signin_date' => $date,
 			'days' => $days,
+			'added_by' => $userid,
 			'added_date' => $time
 		];
 		$res = Db::name('user_signin')->insert($data);
@@ -311,7 +324,7 @@ class DccUser extends BaseController
 		if($days == 14){
 			// 满送1个邀请用户
 			$insert_data = [
-				'mobile' => uuid_v5('name'),
+				'mobile' => uniqid(),
 				'type' => 2,
 				'added_date' => $time
 			];
@@ -331,15 +344,34 @@ class DccUser extends BaseController
 				$ret['msg'] = '发生错误 code 30001';
 				return json($ret);
 			}
+
+			// 更新状态为结算
+			$where_signin = [
+				'userid' => $userid,
+				'status' => 0
+			];
+			$update_status = Db::name('user_signin')
+				->where($where_signin)
+				->update([
+					'status' => 1,
+					'updated_by' => $userid,
+					'updated_date' => $time
+				]);
+
+			if($update_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 30002';
+				return json($ret);
+			}
 		}
 
 		Db::commit();
 		return json($ret);
 	}
 	
-	private function _findContinue($userid, $date){
+	private function _findContinue($userid, $date, $time){
 		$days = 0;
-		$perv = date('Y-m-d', strtotime(strtotime($data), '-1 day'));
+		$perv = date('Y-m-d', strtotime(strtotime($date), '-1 day'));
 		$where = [
 			['status', '=', 0],
 			['userid', '=', $userid],
@@ -352,7 +384,9 @@ class DccUser extends BaseController
 			$days = 1;
 			// 以前的设置为废弃
 			$update_data = [
-				'status' => 2
+				'status' => 2,
+				'updated_by' => $userid,
+				'updated_date' => $time
 			];
 			$update_where = [
 				'status' => 0,

@@ -46,14 +46,16 @@ abstract class BaseController
      * @access public
      * @param  App  $app  应用对象
      */
-    public function __construct(App $app)
+    public function __construct(App $app, $check_token = true)
     {
         $this->app     = $app;
         $this->request = $this->app->request;
 
         // 控制器初始化
         $this->initialize();
-        $this->verifyToken();
+        if($check_token){
+            $this->verifyToken();
+        }
     }
 	
 	public function url($uri){

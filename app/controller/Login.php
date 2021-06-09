@@ -11,6 +11,11 @@ use think\facade\Request;
 class Login extends BaseController
 {
     
+    public function __construct(App $app)
+    {
+        parent::__construct($app, false);
+    }
+
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 * 返回token API 访问携带token
@@ -21,10 +26,7 @@ class Login extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		if(! $this->verify_token()){
-			$ret['msg'] = 'token is invaild';
-			return json($ret);
-		}
+		
 		$mobile = Request::param('mobile');
 		$verify_code = Request::param('verify_code');
 		if(! trim($mobile) || ! trim($verify_code)){
@@ -83,10 +85,7 @@ class Login extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		if(! $this->verify_token()){
-			$ret['msg'] = 'token is invaild';
-			return json($ret);
-		}
+		
 		$mobile = Request::param('mobile');
 		$invite_code = Request::param('invite_code');
 		$verify_code = Request::param('verify_code');

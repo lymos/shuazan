@@ -49,11 +49,7 @@ class Task extends BaseController
 			'msg' => ''
 		];
 
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
-		}
-
-		$userid = intval(Request::param('userid'));
+		$userid = intval($this->decrypt(Request::param('userid')));
 		$date = date('Y-m-d');
 		$where = [
 			['b.userid', '=', $userid],
