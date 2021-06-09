@@ -70,12 +70,16 @@
 					swipeBack: true //启用右滑关闭功能
 				});
 				
+				if(isLogin("", false)){
+					document.getElementById("link-login").style.display = "none";
+				}
+				
 				//mui.plusReady(function() {
 					// var self = plus.webview.currentWebview();
 
 					document.getElementById('link-signin').addEventListener('tap', function(event) {
-						if(! isLogin("")){
-							//return ;
+						if(! isLogin("", true)){
+							return ;
 						}
 						mui.openWindow({
 							url: 'index.php?s=home/signin',

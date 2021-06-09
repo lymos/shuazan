@@ -9,6 +9,10 @@ use think\facade\Db;
 
 class Home extends BaseController
 {
+	public function __construct(\think\App $app){
+		parent::__construct($app, false);
+	}
+	
     public function index()
     {
         return View::fetch('index');

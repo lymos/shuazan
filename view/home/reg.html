@@ -94,12 +94,12 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										goto("index.php?s=home/login");
+										setLogin(data.data);
+										goto("index.php?s=home");
 									}
 									
 								},
@@ -111,7 +111,7 @@
 					});
 					
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
-						$.ajax(config.host + 'index.php?s=user/regSmsCode', {
+						$.ajax(config.host + 'index.php?s=login/regSmsCode', {
 								data:{
 									mobile: mobile.value,
 								},
@@ -121,7 +121,6 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
@@ -146,7 +145,8 @@
 													}, 1000);
 											}
 										}
-										mui.nativeUI.toast("短信验证码发送成功");
+										time();
+										mui.alert("短信验证码发送成功");
 									}
 								//	arr[i].classList.add("active");
 								//	arr[j].classList.remove("active");

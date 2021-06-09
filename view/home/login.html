@@ -112,7 +112,7 @@
 			</form>
 			
 			<div class="mui-content-padded">
-				<button id='login' class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
 				<div class="link-area">
 					<a id="reg">注册账号</a>
 				</div>
@@ -130,6 +130,7 @@
 					
 					var loginButton = doc.getElementById('login');
 					var mobile = doc.getElementById('mobile');
+					
 					var verify_codeBox = doc.getElementById('verify-code');
 					var regButton = doc.getElementById('reg');
 					loginButton.addEventListener('tap', function(event) {
@@ -150,17 +151,13 @@
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										var token = data.data;
-										localStorage.setItem(token, token.token);
-										localStorage.setItem(token_expire, token.token_expire);
-										localStorage.setItem(userid, token.userid);
+										setLogin(data.data);
 										goto("index.php?s=home");
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
 									//异常处理；
-									document.getElementById("ddddd").innerHTML = "123488";
 									console.log(type);
 								}
 						});
@@ -169,7 +166,7 @@
 					
 					regButton.addEventListener('tap', function(event) {
 						$.openWindow({
-							url: 'reg.html',
+							url: 'index.php?s=home/reg',
 							id: 'reg',
 							preload: true,
 							show: {
@@ -186,7 +183,7 @@
 			
 					
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
-						$.ajax(config.host + 'index.php?s=user/smsCode', {
+						$.ajax(config.host + 'index.php?s=login/smsCode', {
 								data:{
 									mobile: mobile.value,
 								},
@@ -196,7 +193,6 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
@@ -221,14 +217,13 @@
 													}, 1000);
 											}
 										}
-										mui.nativeUI.toast("短信验证码发送成功");
+										time();
+										mui.alert("短信验证码发送成功");
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
 									//异常处理；
-									mui.alert("smscode ");
-									document.getElementById("ddddd").innerHTML = "123488";
 									console.log(type);
 								}
 						});
