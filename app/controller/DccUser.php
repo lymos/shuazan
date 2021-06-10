@@ -20,16 +20,31 @@ class DccUser extends BaseController
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 */
 	public function info(){
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$userid = intval($this->decrypt(trim(Request::param('userid'))));
+		$token = trim(Request::param('token'));
+		if(! $userid || ! $token){
+			$ret['msg'] = '参数错误';
+			return json($ret);
 		}
-		$data = Db::table('dcc_user')
+		$where = [
+			'id' => $userid,
+			'token' => $token
+		];
+		$data = Db::name('user')
 			->field('invite_code, mobile, id')
-			->where('id', 1)->find();
-		$invite_data = $this->getUserInvite();
+			->where($where)->find();
+		$invite_data = $this->getUserInvite($userid);
 		$ret = [
 			'code' => 1,
-			'data' => $data,
+			'data' => [
+				'user' => $data,
+				'invite_data' => $invite_data
+			],
 			'msg' => ''
 		];
 		return json($ret);
@@ -39,10 +54,10 @@ class DccUser extends BaseController
 	 * 获取已邀请用户
 	 * 二级用户数（二级用户所邀请人数）
 	 */
-	public function getUserInvite(){
+	public function getUserInvite($userid){
 		$data = Db::table('dcc_user')
 			->field('invite_code, mobile, id')
-			->where('id', 1)->find();
+			->where('id', $userid)->find();
 		return $data;
 	}
 	

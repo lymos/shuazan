@@ -63,7 +63,7 @@
 			<div class="header-top">
 				<div class="me">
 					<span class="mui-icon mui-icon-contact me-icon"></span>
-					<div class="account">1888888888</div>
+					<div class="account" id="mobile">1888888888</div>
 				</div>
 				<div class="me-info">
 					<p>
@@ -109,34 +109,28 @@
 			swipeBack: true //启用右滑关闭功能
 		});
 		// mui.plusReady(function() { 
-			mui.ajax(config.host + 'index.php?s=user/info', {
-					data:{
-						username:'username',
-						password:'password'
-					},
+			mui.ajax(config.host + 'index.php?s=dccuser/info', {
+					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
 					timeout:10000,//超时时间设置为10秒；
 					headers:{'Content-Type':'application/json'},
 					success:function(data){
 						console.log(data)
-						alert(JSON.stringify(data));
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
 							mui.alert(data.msg);
 						}else{
-							var html = "";
-							for(var i in data.data){
-								html += '<li class="mui-table-view-cell">';
-							}
-							var tlist = document.getElementById("task-list");
-							tlist.innerHTML = html;
+							
+							var mobile = document.getElementById("mobile"),
+								code = document.getElementById("invite-code");
+							mobile.innerHTML = data.data.user.mobile;
+							code.innerHTML = data.data.user.invite_code;
 						}
 						
 					},
 					error:function(xhr,type,errorThrown){
 						//异常处理；
-						// mui.alert("我 ");
 						console.log(type);
 					}
 			});

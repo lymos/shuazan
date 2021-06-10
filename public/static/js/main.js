@@ -189,8 +189,10 @@ if (typeof $link_box != null && $link_box) {
 
 var getToken = function() {
 	var token = localStorage.getItem("token"),
+		userid = localStorage.getItem("userid"),
 		token_expire = localStorage.getItem("token_expire");
 	return {
+		userid: userid,
 		token: token,
 		token_expire: token_expire
 	};
