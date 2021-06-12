@@ -100,7 +100,7 @@
 			
 			document.getElementById('link-task').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'index.php?s=home/tab-task',
+					url: 'index.php?s=home/tabtask',
 					id: 'link-task',
 					preload: true,
 					extras: {
@@ -135,7 +135,7 @@
 				});
 			}, false);
 			
-			mui.ajax(config.host + 'index.php?s=user/getUserGain', {
+			mui.ajax(config.host + 'index.php?s=dccuser/getUserGain', {
 				data:{
 					username:'username',
 					password:'password'
@@ -146,7 +146,6 @@
 				headers:{'Content-Type':'application/json'},
 				success:function(data){
 					console.log(data)
-					alert(JSON.stringify(data));
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if(data.code == 0){
 						mui.alert(data.msg);
@@ -157,10 +156,7 @@
 					
 				},
 				error:function(xhr,type,errorThrown){
-					//异常处理；
-					// mui.alert("收益");
-					//document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
-					//console.log(type);
+					
 				}
 			});
 			

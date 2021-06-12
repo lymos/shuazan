@@ -70,8 +70,8 @@
 						我的邀请码：<span id="invite-code">8888</span>
 						<button type="button" class="btn-copy" id="btn-copy">复制</button>
 					</p>
-					<p>已邀请用户： <span>8</span></p>
-					<p>二级用户数：<span>88</span></p>
+					<p>已邀请用户： <span id="count"></span></p>
+					<p>二级用户数：<span id="sub_count"span></p>
 				</div>
 
 			</div>
@@ -123,9 +123,13 @@
 						}else{
 							
 							var mobile = document.getElementById("mobile"),
+								count = document.getElementById("count"),
+								sub_count = document.getElementById("sub_count"),
 								code = document.getElementById("invite-code");
 							mobile.innerHTML = data.data.user.mobile;
 							code.innerHTML = data.data.user.invite_code;
+							count.innerHTML = data.data.invite_data.count;
+							sub_count.innerHTML = data.data.invite_data.sub_count;
 						}
 						
 					},

@@ -38,7 +38,7 @@ class DccUser extends BaseController
 		$data = Db::name('user')
 			->field('invite_code, mobile, id')
 			->where($where)->find();
-		$invite_data = $this->getUserInvite($userid);
+		$invite_data = $this->_getInvite($userid);
 		$ret = [
 			'code' => 1,
 			'data' => [
@@ -50,15 +50,43 @@ class DccUser extends BaseController
 		return json($ret);
 	}
 	
-	/**
-	 * 获取已邀请用户
-	 * 二级用户数（二级用户所邀请人数）
-	 */
-	public function getUserInvite($userid){
-		$data = Db::table('dcc_user')
-			->field('invite_code, mobile, id')
-			->where('id', $userid)->find();
-		return $data;
+	private function _getInviteUser($userid){
+	    $where = [
+			'userid' => $userid,
+	        'status' => 1
+		];
+		$list = Db::name('user_invite')
+			->field('invite_userid')
+			->where($where)
+	        ->select();
+	    $count = count($list);
+	    return [
+	        'count' => $count,
+	        'list' => $list
+	    ];
+	}
+	
+	private function _getInvite($userid){
+		$data = [
+			'count' => 0,
+			'sub_count' => 0
+		];
+		
+	    $invite_data = $this->_getInviteUser($userid);
+	    if(! $invite_data || ! $invite_data['count']){
+	        return $data;
+	    }
+		$data['count'] = $invite_data['count'];
+	
+	    // 算二级
+	    foreach($invite_data['list'] as $rs){
+	        $temp = $this->_getInviteUser($rs['invite_userid']);
+	        if(! $temp || ! $temp['count']){
+	            continue;
+	        }
+	        $data['sub_count'] += $temp['count'];
+	    }
+	    return $data;
 	}
 	
 	/**

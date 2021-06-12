@@ -221,12 +221,28 @@ class Login extends BaseController
 		];
 		
 		$mobile = Request::param('mobile');
-		$invite_code = Request::param('invite_code');
+		$invite_code = trim(Request::param('invite_code'));
 		$verify_code = Request::param('verify_code');
 		if(! trim($mobile) || ! trim($verify_code)){
 			$ret['msg'] = '手机号或验证码不能为空';
 			return json($ret);
 		}
+		
+		if($invite_code){
+			$where_invite = [
+				'invite_code' => $invite_code
+			];
+			$invite_person = Db::name('user')
+				->field('id')
+				->where($where_invite)
+				->find();
+			if(! $invite_person || ! isset($invite_person['id'])){
+				$ret['msg'] = '邀请码错误';
+				return json($ret);
+			}
+			
+		}
+		
 		$time = time();
 		$where = [
 			['mobile', '=', $mobile],
@@ -246,20 +262,40 @@ class Login extends BaseController
 			'status' => 1,
 			'invite_code' => $new_invite_code
 		];
+		
+		Db::startTrans();
 		$update_status = Db::name('user')
 			->where(['id' => $data['id']])
 			->update($update_data);
 		
 		if($update_status === false){
+			Db::rollback();
 			$ret['msg'] = '发生错误';
 			return json($ret);
 		}
 		
+		if($invite_person['id']){
+			$invite_data = [
+				'userid' => $invite_person['id'],
+				'invite_userid' => $data['id'],
+				'status' => 1
+			];
+			$insert_status = Db::name('user_invite')
+				->insert($invite_data);
+			if($insert_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误';
+				return json($ret);
+			}
+		}
+		
 		$token_data = $this->setLoginSession($data['id']);
 		if($token_data === false){
+			Db::rollback();
 			$ret['msg'] = '登录失败';
 			return json($ret);
 		}
+		Db::commit();
 		$ret['data'] = $token_data;
 		$ret['code'] = 1;
 		return json($ret);

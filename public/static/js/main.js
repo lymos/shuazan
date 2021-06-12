@@ -34,6 +34,7 @@ var copyFun = function(node) {
 		tempTextarea.value = node;
 	}
 	// 判断设备
+	/*
 	var u = navigator.userAgent;
 	if (u.match(/(iPhone|iPod|iPad);?/i)) {
 		// iOS
@@ -56,6 +57,11 @@ var copyFun = function(node) {
 		// 复制
 		result = document.execCommand('Copy');
 	}
+	*/
+	// 选中
+	tempTextarea.select();
+	// 复制
+	result = document.execCommand('Copy');
 	// 移除临时文本域
 	document.body.removeChild(tempTextarea);
 	if (result) {
