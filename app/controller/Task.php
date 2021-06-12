@@ -35,7 +35,7 @@ class Task extends BaseController
 		];
 		$list = Db::name('user_task')
 			->alias('a')
-			->leftJoin('task b','a.taskid = b.id')
+			->leftJoin('task b', 'a.taskid = b.id')
 			->field('b.id, b.name, a.process, a.status')
 			->where($where)
 			->select();

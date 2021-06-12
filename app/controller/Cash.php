@@ -39,22 +39,25 @@ class Cash extends BaseController
 		return json($ret);
 	}
 	
+	/**
+	 * 付款
+	 */
 	public function unionpay(){
 		$merid = Config::get('app.unionpay_merid');
 		
 		$userid = intval($this->decrypt(Request::param('userid')));
 		$orderid = $this->decrypt(Request::param('orderid'));
 		// $orderid = 'dcc202105300002'; // debug
-		// 查处订单信息
-		
+		// 查出订单信息
 		$order = $this->_getOrder($userid, $orderid);
 		if(! $order || ! isset($order['total'])){
 			echo '订单不存在';
 			exit;
 		}
 		$total = $order['total'];
+		$product_name = $order['name'];
 		$time = date('YmdHis');
-		$amt = $total;
+		$amt = $total * 100; // 分
 		$params = array(
 				
 				//以下信息非特殊情况不需要改动
@@ -82,7 +85,7 @@ class Cash extends BaseController
 				// 超过超时时间调查询接口应答origRespCode不是A6或者00的就可以判断为失败。
 				'payTimeout' => date('YmdHis', strtotime('+15 minutes')), 
 		
-				'riskRateInfo' =>'{commodityName=测试商品名称}',
+				'riskRateInfo' =>'{commodityName=' . $product_name . '}',
 		
 				// 请求方保留域，
 				// 透传字段，查询、通知、对账文件中均会原样出现，如有需要请启用并修改自己希望透传的数据。
@@ -103,37 +106,54 @@ class Cash extends BaseController
 		$uri = \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->frontTransUrl;
 		$html_form = \com\unionpay\acp\sdk\AcpService::createAutoFormHtml( $params, $uri );
 		echo $html_form;
+		exit;
 		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	
 	private function _getOrder($userid, $orderid){
 		$where = [
-			'orderid' => $orderid,
-			'userid' => $userid,
-			'status' => 0
+			'a.orderid' => $orderid,
+			'a.userid' => $userid,
+			'a.status' => 0
 		];
 		$order = Db::name('order')
-			->field('total')
+			->alias('a')
+			->leftJoin('order_detail b', 'a.id = b.orderid')
+			->leftJoin('product c', 'b.productid = c.id')
+			->field('a.total, c.name')
 			->where($where)->find();
 		return $order;
 	}
 	
+	/**
+	 * 付款回调
+	 */
 	public function frontReceive(){
-		error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		$merId = Request::param('merId');
 		$orderId = Request::param('orderId');
 		$respCode = Request::param('respCode');
 		$respMsg = Request::param('respMsg');
 		
+		if(! isset ( $_POST ['signature'] )){
+			echo '非法操作 code: 40001';
+			exit;
+		}
+		$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
+		if(! $check){
+			echo '非法操作 code: 40002';
+			exit;
+		}
+		
 		if(Config::get('app.unionpay_merid') != $merId){
-			echo '非法操作';
+			echo '非法操作 code: 40003';
 			exit;
 		}
 		
 		if($respCode != '00' && $respMsg != 'success'){
-			echo '付款失败';
+			echo '非法操作 code: 40004';
 			exit;
 		}
 		
@@ -153,7 +173,9 @@ class Cash extends BaseController
 			echo '付款失败';
 			exit;
 		}
-		echo '付款成功<a href="">首页</a>';
+		$url = $this->url('/index.php?s=home');
+		header('Location: ' . $url);
+		// echo '付款成功<a href="">首页</a>';
 		exit;
 	}
 	

@@ -29,7 +29,9 @@ class Product extends BaseController
 		}
 		
 		$data = Db::name('product')->where('id', 1)->find();
+		$productid = 0;
 		if(isset($data['id'])){
+			$productid = $data['id'];
 			$data['id'] = $this->encrypt($data['id']);
 		}
 		
@@ -37,7 +39,7 @@ class Product extends BaseController
 		$where = [
 			'a.userid' => $userid,
 			'a.status' => 1,
-			'b.productid' => intval($data['id'])
+			'b.productid' => $productid
 		];
 		$isbuy = Db::name('order')->alias('a')
 			->join('order_detail b', 'a.id = b.orderid', 'left')
