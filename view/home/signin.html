@@ -11,30 +11,29 @@
 		<link href="../../static/css/mui.min.css" rel="stylesheet" />
 		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
-			html,body {
+			html,
+			body {
 				background-color: #efeff4;
 			}
-			
-			
 		</style>
 	</head>
 
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<div class="center">
+			<div class="center signin-action" id="signin-action">
 				<button id="btn-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
 			</div>
-			
+
 		</header>
 		<div class="mui-content">
 			<div class="signin-tip">
 				累计签到<span id="singin-num">2</span>天
 			</div>
-			<div class="signin-box center">
-				<span class="mui-badge mui-badge-primary">1</span>
-				<span class="mui-badge mui-badge-primary">2</span>
-				<span class="mui-badge mui-badge-primary">3</span>
+			<div id="signin-box" class="signin-box center">
+				<span class="mui-badge">1</span>
+				<span class="mui-badge">2</span>
+				<span class="mui-badge">3</span>
 				<span class="mui-badge">4</span>
 				<span class="mui-badge">5</span>
 				<span class="mui-badge">6</span>
@@ -46,7 +45,7 @@
 				<span class="mui-badge">12</span>
 				<span class="mui-badge">13</span>
 				<span class="mui-badge">14</span>
-		
+
 			</div>
 			<div class="signin-tip">
 				签到满一个周期（14天），相当于邀请一位新用户
@@ -54,69 +53,84 @@
 		</div>
 	</body>
 	<script src="../../static/js/mui.min.js"></script>
-		<script src="./../static/js/main.js"></script>
+	<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
-			swipeBack:true //启用右滑关闭功能
+			swipeBack: true //启用右滑关闭功能
 		});
-		
-		mui.plusReady(function() {
-			mui.ajax(config.host + 'index.php?s=user/signininfo', {
-					data:{
-						userid: 888
-					},
-					dataType:'json',//服务器返回json格式数据
-					type:'post',//HTTP请求类型
-					timeout:10000,//超时时间设置为10秒；
-					headers:{'Content-Type':'application/json'},
-					success:function(data){
-						console.log(data)
-						alert(JSON.stringify(data));
-						//服务器返回响应，根据响应结果，分析是否登录成功；
-						if(data.code == 0){
-							mui.alert(data.msg);
-						}else{
-							
-						}
-						
-					},
-					error:function(xhr,type,errorThrown){
-						//异常处理；
-						// mui.alert("signin ");
-						
-					}
-			});
-			
-			document.getElementById("btn-signin").addEventListener('tap', function(event) {
-				mui.ajax(config.host + 'index.php?s=user/signin', {
-						data:{
-							userid: 888
-						},
-						dataType:'json',//服务器返回json格式数据
-						type:'post',//HTTP请求类型
-						timeout:10000,//超时时间设置为10秒；
-						headers:{'Content-Type':'application/json'},
-						success:function(data){
-							console.log(data)
-							alert(JSON.stringify(data));
-							//服务器返回响应，根据响应结果，分析是否登录成功；
-							if(data.code == 0){
-								mui.alert(data.msg);
-							}else{
-								mui.nativeUI.toast("签到成功");
-								// 刷新页面？
+
+		// mui.plusReady(function() {
+			mui.ajax(config.host + 'index.php?s=dccuser/signininfo', {
+				data: getToken(),
+				dataType: 'json', //服务器返回json格式数据
+				type: 'post', //HTTP请求类型
+				timeout: 10000, //超时时间设置为10秒；
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				success: function(data) {
+					console.log(data)
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if (data.code == 0) {
+						mui.alert(data.msg);
+					} else {
+						var ret = data.data,
+							i = 1,
+							html = "",
+							num = 14;
+						document.getElementById("singin-num").innerHTML = ret.days;
+						for(i; i <= num; i++){
+							html += '<span class="mui-badge';
+							if(ret.is14 || ret.days >= i){
+								html += ' mui-badge-primary';
 							}
-							
-						},
-						error:function(xhr,type,errorThrown){
-							//异常处理；
-							mui.alert("signin ");
+							html += '">' + i + '</span>';
+						}
+						document.getElementById("signin-box").innerHTML = html;
+						
+						if(ret.istoday){
+							document.getElementById("signin-action").innerHTML = '<span class="mui-badge mui-badge-purple">已签到</span>';
+						}
+					}
+
+				},
+				error: function(xhr, type, errorThrown) {
+					//异常处理；
+
+				}
+			});
+						
+			document.getElementById("btn-signin").addEventListener('tap', function(event) {
+				mui.ajax(config.host + 'index.php?s=dccuser/signin', {
+					data: getToken(),
+					dataType: 'json', //服务器返回json格式数据
+					type: 'post', //HTTP请求类型
+					timeout: 10000, //超时时间设置为10秒；
+					headers: {
+						'Content-Type': 'application/json'
+					},
+					success: function(data) {
+						console.log(data)
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if (data.code == 0) {
+							mui.alert(data.msg);
+						} else {
+							mui.alert("签到成功", '', '', function(){
+								// 刷新页面
+								location.reload();
+							});
 							
 						}
+
+					},
+					error: function(xhr, type, errorThrown) {
+						//异常处理；
+
+					}
 				});
 			});
-			
-			
-		});
+
+
+	//	});
 	</script>
 </html>

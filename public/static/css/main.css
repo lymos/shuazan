@@ -107,3 +107,6 @@ form.mui-input-group{
 .primary{
 	color: blue;
 }
+.signin-action span{
+	margin-top: 14px;
+}

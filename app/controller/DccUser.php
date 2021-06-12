@@ -139,10 +139,18 @@ class DccUser extends BaseController
 		];
 		$data = Db::name('user_signin')
 			->field('signin_date, days')
-			->where($where)->select();
-
-		// 当天是否满14
+			->where($where)
+			->order('signin_date', 'desc')
+			->select();
+			
 		$date = date('Y-m-d');
+		// 判断当天是否已签到
+		$istoday = false;
+		if(isset($data[0]) && $data[0]['signin_date'] == $date){
+			$istoday = true;
+		}
+		
+		// 当天是否满14
 		$where2 = [
 			'userid' => $userid,
 			'days' => 14,
@@ -159,9 +167,11 @@ class DccUser extends BaseController
 
 		$ret['data'] = [
 			'days' => count($data),
+			'istoday' => $istoday,
 			'list' => $data,
 			'is14' => $is14 // 满14
 		];
+		$ret['code'] = 1;
 		return json($ret);
 	}
 	
@@ -250,16 +260,17 @@ class DccUser extends BaseController
 		}
 
 		Db::commit();
+		$ret['code'] = 1;
 		return json($ret);
 	}
 	
 	private function _findContinue($userid, $date, $time){
 		$days = 0;
-		$perv = date('Y-m-d', strtotime(strtotime($date), '-1 day'));
+		$prev = date('Y-m-d', strtotime($date . ' -1 day'));
 		$where = [
 			['status', '=', 0],
 			['userid', '=', $userid],
-			['signin_date', '=', $perv]
+			['signin_date', '=', $prev]
 		];
 		$data = Db::name('user_signin')
 			->field('id, days')
