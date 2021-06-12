@@ -6,6 +6,8 @@ use think\facade\View;
 use app\model\User;
 use think\response\Json;
 use think\facade\Db;
+use think\facade\Request;
+
  
 class Order extends BaseController
 {
@@ -20,14 +22,11 @@ class Order extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		$productid = intval(Request::param('productid'));
-		if(! $productid){
+		$productid = intval($this->decrypt(Request::param('productid')));
+		$userid = intval($this->decrypt(Request::param('userid')));
+		if(! $productid || ! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
-		}
-		
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
 		}
 		
 		// 查询产品信息
@@ -67,16 +66,19 @@ class Order extends BaseController
 			'productid' => $productid
 		];
 		$detail_status = Db::name('order_detail')->insert($detail);
-		if(detail_status === false){
+		if($detail_status === false){
 			Db::rollback();
 			$ret['msg'] = '发生错误 code 20002';
 			return json($ret);
 		}
 		Db::commit();
+		
 		$res = [
-			'orderid' => $orderid,
-			'userid' => $userid
+			'orderid' => $this->encrypt($orderid),
+			'userid' => $this->encrypt($userid)
 		];
+		
+		
 		$ret = [
 			'code' => 1,
 			'data' => $res,
@@ -90,7 +92,7 @@ class Order extends BaseController
 		$prefix = 'dcc' . date('Ymd');
 		$order = Db::name('order')
 			->field('orderid')
-			->where([['orderid', 'like' $prefix]])
+			->where([['orderid', 'like', $prefix . '%']])
 			->order('id', 'desc')
 			->limit(1)
 			->find();
@@ -98,7 +100,7 @@ class Order extends BaseController
 		if(! $order){
 			$orderid = $prefix . '0001';
 		}else{
-			$num = intval(substr($order['orderid'], 11, -4));
+			$num = intval(substr($order['orderid'], -4));			
 			$num = $num + 1;
 			$len = strlen($num);
 			switch($len){

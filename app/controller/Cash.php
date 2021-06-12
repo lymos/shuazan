@@ -14,6 +14,10 @@ use think\facade\Config;
  
 class Cash extends BaseController
 {
+	public function __construct(\think\App $app)
+	{
+		parent::__construct($app, false);
+	}
    
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
@@ -38,12 +42,13 @@ class Cash extends BaseController
 	public function unionpay(){
 		$merid = Config::get('app.unionpay_merid');
 		
-		$userid = intval(Request::param('userid'));
-		$orderid = intval(Request::param('orderid'));
-		$orderid = 'dcc202105300002'; // debug
+		$userid = intval($this->decrypt(Request::param('userid')));
+		$orderid = $this->decrypt(Request::param('orderid'));
+		// $orderid = 'dcc202105300002'; // debug
 		// 查处订单信息
+		
 		$order = $this->_getOrder($userid, $orderid);
-		if(! $order){
+		if(! $order || ! isset($order['total'])){
 			echo '订单不存在';
 			exit;
 		}
@@ -97,7 +102,7 @@ class Cash extends BaseController
 		\com\unionpay\acp\sdk\AcpService::sign ( $params );
 		$uri = \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->frontTransUrl;
 		$html_form = \com\unionpay\acp\sdk\AcpService::createAutoFormHtml( $params, $uri );
-		 echo $html_form;
+		echo $html_form;
 		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	

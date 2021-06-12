@@ -69,6 +69,9 @@ abstract class BaseController
 		if(! $key){
 			$key = $this->key;
 		}
+		if(is_numeric($data)){
+			$data = (string)$data;
+		}
 	    $data = openssl_encrypt($data, 'aes-128-ecb', base64_decode($key), OPENSSL_RAW_DATA);
 	    return base64_encode($data);
 	}
@@ -128,24 +131,25 @@ abstract class BaseController
             'data' => '',
             'msg' => ''
         ];
-        $token = trim(Request::param('token'));
-        $token_expire = trim(Request::param('token_expire'));
+        $token = Request::param('token');
+        $token_expire = Request::param('token_expire');
         if(! $token || ! $token_expire){
             $ret['msg'] = '无效请求';
-            return json($ret);
+            echo json_encode($ret);
+			exit;
         }
         $now = time();
         $res = Db::name('user')
             ->field('id')
             ->where([
                 ['token', '=', $token],
-                ['token_expire', '<', $now]
-
+                ['token_expire', '>', $now]
             ])->find();
 
         if(! $res){
             $ret['msg'] = '请先登录';
-            return json($ret);
+            echo json_encode($ret);
+            exit;
         }
 		return true;
 	}

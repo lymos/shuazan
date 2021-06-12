@@ -6,31 +6,51 @@ use think\facade\View;
 use app\model\User;
 use think\response\Json;
 use think\facade\Db;
- 
-class Index extends BaseController
-{
-    public function index()
-    {
-        print_r(User::getList()->toArray());
-        return View::fetch('index');
-    }
+use think\facade\Request;
 
-    public function hello($name = 'ThinkPHP6')
-    {
-        return 'hello,' . $name;
-    }
-	
+ 
+class Product extends BaseController
+{
+    
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 */
-	public function get_product(){
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+	public function getProductList(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		
+		$userid = intval($this->decrypt(Request::param('userid')));
+		if(! $userid ){
+			$ret['msg'] = '参数错误';
+			return json($ret);
 		}
-		$data = Db::table('dcc_product')->where('id', 1)->find();
+		
+		$data = Db::name('product')->where('id', 1)->find();
+		if(isset($data['id'])){
+			$data['id'] = $this->encrypt($data['id']);
+		}
+		
+		// 查询是否已经购买
+		$where = [
+			'a.userid' => $userid,
+			'a.status' => 1,
+			'b.productid' => intval($data['id'])
+		];
+		$isbuy = Db::name('order')->alias('a')
+			->join('order_detail b', 'a.id = b.orderid', 'left')
+			->field('a.id')
+			->where($where)
+			->find();
+		
 		$ret = [
 			'code' => 1,
-			'data' => $data,
+			'data' => [
+				'data' => $data,
+				'isbuy' => $isbuy ? true : false
+			],
 			'msg' => ''
 		];
 		return json($ret);
