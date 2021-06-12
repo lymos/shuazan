@@ -6,6 +6,8 @@ use think\facade\View;
 use app\model\User;
 use think\response\Json;
 use think\facade\Db;
+use think\facade\Request;
+
  
 class Task extends BaseController
 {
@@ -19,12 +21,13 @@ class Task extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
+		
+		$userid = intval($this->decrypt(Request::param('userid')));
+		if(! $userid ){
+			$ret['msg'] = '参数错误';
+			return json($ret);
 		}
-
-		$userid = trim(Request::param('userid'));
+		
 		$date = date('Y-m-d');
 		$where = [
 			'a.userid' => $userid,
@@ -33,7 +36,7 @@ class Task extends BaseController
 		$list = Db::name('user_task')
 			->alias('a')
 			->leftJoin('task b','a.taskid = b.id')
-			->field('b.id, b.name, b.process, b.status')
+			->field('b.id, b.name, a.process, a.status')
 			->where($where)
 			->select();
 		
@@ -50,18 +53,20 @@ class Task extends BaseController
 		];
 
 		$userid = intval($this->decrypt(Request::param('userid')));
+		if(! $userid ){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
 		$date = date('Y-m-d');
 		$where = [
-			['b.userid', '=', $userid],
-			['b.date', '=', $date],
-			['b.id', 'is', 'null']
+			['b.id', '=', null]
 		];
 		$list = Db::name('task')
 			->alias('a')
-			->leftJoin('user_task b','b.taskid = a.id')
+			->leftJoin('user_task b','b.taskid = a.id and b.userid = ' . $userid . ' and b.date ="' . $date . '"')
 			->field('a.id, a.name')
 			->where($where)
-			->select();
+			->select();		
 		
 		$ret['code'] = 1;
 		$ret['data'] = $list;
@@ -77,16 +82,29 @@ class Task extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		$taskid = trim(Request::param('taskid'));
-		$userid = trim(Request::param('userid'));
+		$taskid = intval(Request::param('id'));
+		$userid = intval($this->decrypt(Request::param('userid')));
 		if(! $taskid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
 		$date = date('Y-m-d');
 
-		if(! $this->_checkCanTake($userid, $taskid, $date)){
-			$ret['msg'] = '您不能领取此任务';
+		$can = $this->_checkCanTake($userid, $taskid, $date);
+		$info = '';
+		switch($can){
+			case 1:
+				$info = '您今日已领取该任务';
+				break;
+			case 2:
+				$info = '每天最多只能领取2个任务';
+				break;
+			case 3:
+				$info = '请先购买机器人';
+				break;
+		}
+		if($can != 4){
+			$ret['msg'] = $info;
 			return json($ret);
 		}
 		
@@ -107,17 +125,6 @@ class Task extends BaseController
 	}
 
 	private function _checkCanTake($userid, $taskid, $date){
-		$old_data = Db::name('user_task')
-			->field('id')
-			->where([
-				'taskid' => $taskid,
-				'userid' => $userid,
-				'date' => $date
-			])->find();
-		if($old_data){
-			return false;
-		}
-
 		$order = Db::name('order')
 			->field('id')
 			->where(
@@ -128,8 +135,31 @@ class Task extends BaseController
 				]
 			)->find();
 		if(! $order){
-			return false;
+			return 3;
 		}
-		return true;
+		
+		$old_data = Db::name('user_task')
+			->field('id')
+			->where([
+				'taskid' => $taskid,
+				'userid' => $userid,
+				'date' => $date
+			])->find();
+		if($old_data){
+			return 1;
+		}
+		
+		// 一天最大领取2个
+		$count_data = Db::name('user_task')
+			->field('count(*) as count')
+			->where([
+				'userid' => $userid,
+				'date' => $date
+			])->find();
+		
+		if($count_data && $count_data['count'] >= 2){
+			return 2;
+		}
+		return 4;
 	}
 }

@@ -11,11 +11,10 @@
 		<link href="../../static/css/mui.min.css" rel="stylesheet" />
 		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
-			html,body {
+			html,
+			body {
 				background-color: #efeff4;
 			}
-			
-			
 		</style>
 	</head>
 
@@ -25,9 +24,9 @@
 			<h1 class="mui-title">我的任务</h1>
 		</header>
 		<div class="mui-content" id="task-box">
-			
-			<ul id="task-list" class="mui-table-view">
-			    <li class="mui-table-view-cell c-item">
+
+			<ul id="task-me-list" class="mui-table-view">
+				<li class="mui-table-view-cell c-item">
 					<div class="t-info">
 						<span id="ddddd">任务标题1</span>
 						<div id="demo1" class="mui-progressbar">
@@ -37,51 +36,36 @@
 					<div class="r-right">
 						<span class="mui-badge mui-badge-primary">进行中</span>
 					</div>
-					
+
 				</li>
-			    <li class="mui-table-view-cell c-item">
-			    	<div class="t-info">
-			    		<span>任务标题2</span>
-						<div id="demo2" class="mui-progressbar">
-							<span></span>
-						</div>
-			    	</div>
-			    	<div class="r-right">
-			    		<span class="mui-badge mui-badge-success">已完成</span>
-			    	</div>
-			    	
-			    </li>
-			</ul>
-			
-			<div class="task-tip">任务大厅</div>
-			<ul id="task-list" class="mui-table-view">
-			    <li class="mui-table-view-cell c-item">
+				<li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span id="ddddd">任务标题1</span>
-						<div id="demo1" class="mui-progressbar">
+						<span>任务标题2</span>
+						<div id="demo2" class="mui-progressbar">
 							<span></span>
 						</div>
 					</div>
 					<div class="r-right">
+						<span class="mui-badge mui-badge-success">已完成</span>
+					</div>
+				</li>
+			</ul>
+
+			<div class="task-tip">任务大厅</div>
+			<ul id="task-list" class="mui-table-view">
+				<li class="mui-table-view-cell c-item">
+					<div class="t-info">
+						<span id="ddddd">任务标题1</span>
+					</div>
+					<div class="r-right">
 						<button id="link-task" type="button">领取</button>
 					</div>
-					
+
 				</li>
-			    <li class="mui-table-view-cell c-item">
-			    	<div class="t-info">
-			    		<span>任务标题2</span>
-						<div id="demo2" class="mui-progressbar">
-							<span></span>
-						</div>
-			    	</div>
-			    	<div class="r-right">
-			    		<button id="link-task" type="button">领取</button>
-			    	</div>
-			    	
-			    </li>
+
 			</ul>
 		</div>
-		
+
 		<div class="footer">
 			<div id="link-home" class="footer-item">首页</div>
 			<div id="link-task2" class="footer-item primary">任务</div>
@@ -90,57 +74,120 @@
 		</div>
 	</body>
 	<script src="../../static/js/mui.min.js"></script>
-		<script src="./../static/js/main.js"></script>
+	<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
-			swipeBack:true, //启用右滑关闭功能
+			swipeBack: true, //启用右滑关闭功能
 		});
-		
+
 		// mui.plusReady(function() {
-			/*
-			var self = plus.webview.currentWebview();  
-			var is_back = self.is_back;  
-			if(is_back === true){
-				document.getElementById("is-back").classList.remove("hide");
-			}
-			*/
-			
-			mui.ajax(config.host + 'index.php?s=task/get_task', {
-				data:{
-					username:'username',
-					password:'password'
-				},
-				dataType:'json',//服务器返回json格式数据
-				type:'post',//HTTP请求类型
-				timeout:10000,//超时时间设置为10秒；
-				headers:{'Content-Type':'application/json'},
-				success:function(data){
-					console.log(data)
-					alert(JSON.stringify(data));
-					//服务器返回响应，根据响应结果，分析是否登录成功；
-					if(data.code == 0){
-						mui.alert(data.msg);
-					}else{
-						var html = "";
-						for(var i in data.data){
-							html += '<li class="mui-table-view-cell">';
-						}
-						var tlist = document.getElementById("task-list");
-						tlist.innerHTML = html;
+		/*
+		var self = plus.webview.currentWebview();  
+		var is_back = self.is_back;  
+		if(is_back === true){
+			document.getElementById("is-back").classList.remove("hide");
+		}
+		*/
+
+		mui.ajax(config.host + 'index.php?s=task/getMeTask', {
+			data: getToken(),
+			dataType: 'json', //服务器返回json格式数据
+			type: 'post', //HTTP请求类型
+			timeout: 10000, //超时时间设置为10秒；
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			success: function(data) {
+				console.log(data)
+				//服务器返回响应，根据响应结果，分析是否登录成功；
+				if (data.code == 0) {
+					mui.alert(data.msg);
+				} else {
+					var html = "";
+					for (var i in data.data) {	
+						html += '<li class="mui-table-view-cell c-item">' +
+							'<div class="t-info">' +
+							'<span>' + data.data[i].name + '</span>' +
+							'<div class="mui-progressbar take-process"><span></span></div></div>' + 
+							'<div class="r-right"><span class="mui-badge mui-badge-success">已完成</span></div></li>';
+							
 					}
-					
-				},
-				error:function(xhr,type,errorThrown){
-					//异常处理；
-					// mui.alert("task");
-					document.getElementById("ddddd").innerHTML = "任务标题88";
-					console.log(type);
+					var tlist = document.getElementById("task-me-list");
+					tlist.innerHTML = html;
+					setTimeout(function(){
+						mui(".take-process").each(function(){
+							mui(this).progressbar({
+								progress: 100
+							}).show();
+						});
+					}, 20);
 				}
-			});
+
+			},
+			error: function(xhr, type, errorThrown) {
+
+			}
+		});
+
+		mui.ajax(config.host + 'index.php?s=task/getAllTask', {
+			data: getToken(),
+			dataType: 'json', //服务器返回json格式数据
+			type: 'post', //HTTP请求类型
+			timeout: 10000, //超时时间设置为10秒；
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			success: function(data) {
+				console.log(data)
+				//服务器返回响应，根据响应结果，分析是否登录成功；
+				if (data.code == 0) {
+					mui.alert(data.msg);
+				} else {
+					var html = "";
+					for (var i in data.data) {
+						html += '<li class="mui-table-view-cell c-item">' +
+							'<div class="t-info">' +
+							'<span>' + data.data[i].name + '</span>' +
+							'</div><div class="r-right"><button class="take-task" ' +
+							' onclick="takeTask(' + data.data[i].id + ')" type="button">领取</button></div></li>';
+					}
+					var tlist = document.getElementById("task-list");
+					tlist.innerHTML = html;
+					
+				}
+
+			},
+			error: function(xhr, type, errorThrown) {
+
+			}
+		});
 		// });
 		
-		mui("#demo1").progressbar({progress:20}).show();
-		mui("#demo2").progressbar({progress:100}).show();
-		
+		var takeTask = function(id) {
+			mui.ajax(config.host + 'index.php?s=task/takeTask', {
+				data: Object.assign(getToken(), {
+					id: id
+				}),
+				dataType: 'json', //服务器返回json格式数据
+				type: 'post', //HTTP请求类型
+				timeout: 10000, //超时时间设置为10秒；
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				success: function(data) {
+					console.log(data)
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if (data.code == 0) {
+						mui.alert(data.msg);
+					} else {
+						mui.alert("领取成功", '', '', function() {
+							location.reload();
+						});
+					}
+
+				},
+				error: function(xhr, type, errorThrown) {}
+			});
+		}
 	</script>
 </html>
