@@ -148,10 +148,10 @@
 						mui.alert(data.msg);
 					}else{
 						var res = data.data;
-						document.getElementById("capital").innerHTML = res.capital;
-						document.getElementById("task-gain").innerHTML = res.task_gain;
-						document.getElementById("invite-gain").innerHTML = res.invite_gain;
-						document.getElementById("total").innerHTML = res.total;
+						document.getElementById("capital").innerHTML = res.capital + "元";
+						document.getElementById("task-gain").innerHTML = res.task_gain + "元";
+						document.getElementById("invite-gain").innerHTML = res.invite_gain + "元";
+						document.getElementById("total").innerHTML = res.total + "元";
 					}
 					
 				},

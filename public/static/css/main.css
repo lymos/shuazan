@@ -110,3 +110,9 @@ form.mui-input-group{
 .signin-action span{
 	margin-top: 14px;
 }
+.dcc-box{
+	padding: 20px 20px 0 20px;
+}
+.dcc-title{
+	margin-bottom: 10px;
+}
