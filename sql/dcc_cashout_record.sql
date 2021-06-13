@@ -6,8 +6,9 @@ create table dcc_cashout_record(
 	
 	amount varchar(6) not null default "",
 	
+	added_by int(11) not null default 0,
 	added_date datetime default null,
-	type tinyint(1) not null default 0 comment "0.收益 1.本金",
+	type tinyint(1) not null default 0 comment "0.任务收益 1.邀请收益 2.本金",
 	
 	primary key(id)
 )ENGINE=INNODB default charset=utf8mb4 comment "提现记录表";

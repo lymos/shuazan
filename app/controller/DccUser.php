@@ -131,18 +131,54 @@ class DccUser extends BaseController
 	 * 获取用户收益信息
 	 */
 	public function getUserGain(){
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
-		}
-		$data = Db::table('dcc_user')
-			->field('invite_code, mobile, id')
-			->where('id', 1)->find();
-		$invite_data = $this->getUserInvite();
 		$ret = [
-			'code' => 1,
-			'data' => $data,
+			'code' => 0,
+			'data' => '',
 			'msg' => ''
 		];
+		$userid = $this->decrypt(trim(Request::param('userid')));
+		if(! $userid){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		
+		// 获取本金
+		$where_order = [
+			'userid' => $userid,
+			'status' => 1
+		];
+		$order = Db::name('order')
+			->field('total')
+			->where($where_order)
+			->find();
+		
+		$where_task = [
+			'userid' => $userid,
+			'status' => 0,
+			'type' => 0
+		];
+		$temp_task = Db::name('user_gain')
+			->field('sum(gain) as task_gain')
+			->where($where_task)
+			->find();
+			
+		$where_invite = [
+			'userid' => $userid,
+			'status' => 0,
+			'type' => 1
+		];
+		$temp_invite = Db::name('user_gain')
+			->field('sum(gain) as invite_gain')
+			->where($where_invite)
+			->find();
+			
+		$ret['data'] = [
+			'capital' => $order['total'],
+			'task_gain' => $temp_task['task_gain'] ? $temp_task['task_gain'] : 0,
+			'invite_gain' => $temp_invite['invite_gain'] ? $temp_invite['invite_gain'] : 0,
+			'total' => $order['total'] + $temp_task['task_gain'] + $temp_invite['invite_gain']
+		];
+		$ret['code'] = 1;
 		return json($ret);
 	}
 	
