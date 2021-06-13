@@ -1,35 +1,44 @@
 <?php
 /**
  * 存放自动任务
- * 执行：php think action admin/cron/settleMain(方法名)
- * 频率：每分钟执行一次
+ * 执行：php index.php cron/settleMain(方法名)
+ * 
  */
 namespace app\controller;
-use \think\Controller;
-use \think\Db;
-use \think\Request;
-use app\common\model\Email;
 
-define('RUNTIME_PATH', dirname(dirname(dirname(__DIR__))) . '/runtime/');
+use app\BaseController;
+use think\facade\View;
+use app\model\User;
+use think\response\Json;
+use think\facade\Db;
+use think\facade\Request;
 
-class Cron extends Controller{
+define('RUNTIME_PATH', BASE_PATH . '/runtime/');
 
-    public $del_status = false;
-    public $dir_flag = '';
-    public $date_filename = '';
-    public $date = '';
+class Cron extends BaseController{
+	
+	public $del_status = false;
+	public $dir_flag = '';
+	public $date_filename = '';
+	public $date = '';
+	
+	public function __construct(\think\App $app)
+	{
+	    parent::__construct($app, false);
+	}
 
     /**
-     * 每天11点执行
+     * 频率：每天11点钟执行一次
      * 结算入口
      */
     public function settleMain(){
         $this->dir_flag = 'settleMain-logs';
         $this->date_filename = date('Y-m-d');
-        $this->date = date('Y-m-d H:i:s');
+        $this->date = date('Y-m-d');
         $this->log('start');
-        $user_data = $this->userData();
-        if(! $data){
+        $user_data = $this->_userData();
+		
+        if(! $user_data){
             $this->log('no data');
             $this->log('end');
             return ;
@@ -37,6 +46,7 @@ class Cron extends Controller{
         $gain = [];
         foreach($user_data as $rs){
             $task_gain = $this->_taskGain($rs['id']);
+			
             // 任务是前提
             if(! $task_gain){
                 continue;
@@ -46,7 +56,8 @@ class Cron extends Controller{
                 'task_gain' => $task_gain,
                 'invite_gain' => $invite_gain
             ];
-        }
+			
+        }		
 
         // 更新记录表
         $status = $this->_insertGain($gain);
@@ -58,57 +69,72 @@ class Cron extends Controller{
         $this->log('end');
         exit;
     }
+	
+	private function _userData(){
+		$data = Db::name('user')
+			->field('id')
+			->where(['status' => 1])
+			->select()->toArray();
+		return $data;
+	}
 
     private function _insertGain($gain){
         $date = date('Y-m-d H:i:s');
         foreach($gain as $userid => $rs){
             $capital = Db::name('order')
 			->field('total')
-			->where(['userid' => $userid, 'status' => 1])
+			->where(['userid' => $userid, 'status' => 1, 'total' => '1800'])
             ->find();
+			
             if(! $capital){
                 // log
-
+				$this->log('no capital continue');
                 continue;
             }
             $data1 = [
                 'userid' => $userid,
-                'percent' => $rs['task_gain'],
+                'percent' => $rs['task_gain'] / 100,
                 'type' => 0,
-                'capital' => $capital['capital'],
-                'gain' => $capital['capital'] * $rs['task_gain'],
+                'capital' => $capital['total'],
+                'gain' => $capital['total'] * $rs['task_gain'] / 100,
                 'gain_date' => $this->date,
                 'added_date' => $date
             ];
+			
             Db::startTrans();
             $status1 = Db::name('user_gain')
                 ->insert($data1);
             if($status1 === false){
-                $this->log('');
+                $this->log('insert task gain error');
                 Db::rollback();
                 return false;
             }
             $data2 = [
                 'userid' => $userid,
-                'percent' => $rs['invite_gain'],
+                'percent' => $rs['invite_gain'] / 100,
                 'type' => 1,
-                'capital' => $capital['capital'],
-                'gain' => $capital['capital'] * $rs['invite_gain'],
+                'capital' => $capital['total'],
+                'gain' => $capital['total'] * $rs['invite_gain'] / 100,
                 'gain_date' => $this->date,
                 'added_date' => $date
             ];
-            Db::startTrans();
+			
             $status2 = Db::name('user_gain')
                 ->insert($data2);
             if($status2 === false){
-                $this->log('');
+                $this->log('insert invite gain error');
                 Db::rollback();
                 return false;
             }
+			Db::commit();
         }
         return true;
     }
 
+	/**
+	 * @param {Object} $userid
+	 * rate %
+	 */
     private function _taskGain($userid){
         $rate = 0;
         $where = [
@@ -120,7 +146,8 @@ class Cron extends Controller{
 		$list = Db::name('user_task')
 			->field('id')
 			->where($where)
-            ->select();
+            ->select()->toArray();
+		
         if(! $list){
             return false;
         }
@@ -133,6 +160,7 @@ class Cron extends Controller{
 
         // 算邀请
         $invite_data = $this->_getInviteUser($userid);
+		
         $count = $invite_data['count'];
         if($count >= 5 && $count < 15){
             $rate = 2; 
@@ -154,7 +182,7 @@ class Cron extends Controller{
 		$list = Db::name('user_invite')
 			->field('invite_userid')
 			->where($where)
-            ->select();
+            ->select()->toArray();
         $count = count($list);
         return [
             'count' => $count,
@@ -165,6 +193,7 @@ class Cron extends Controller{
     private function _inviteGain($userid){
         $rate = 0;
         $invite_data = $this->_getInviteUser($userid);
+		
         if(! $invite_data || ! $invite_data['count']){
             return $rate;
         }
@@ -173,11 +202,12 @@ class Cron extends Controller{
         // 算二级
         foreach($invite_data['list'] as $rs){
             $temp = $this->_getInviteUser($rs['invite_userid']);
+			
             if(! $temp || ! $temp['count']){
                 continue;
             }
             $rate += 0.25 * $temp['count'];
-        }
+        }		
         return $rate;
     }
 
@@ -188,7 +218,7 @@ class Cron extends Controller{
      */
     public function log($msg){
 
-        $dir = RUNTIME_PATH . '/cron-logs';
+        $dir = RUNTIME_PATH . 'cron-logs';
         if(! file_exists($dir)){
             mkdir($dir, 0777);
         }

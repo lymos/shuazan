@@ -12,5 +12,6 @@ create table dcc_user_gain(
 	added_date datetime default null,
 	type tinyint(1) not null default 0 comment "0.任务收益 1.邀请收益",
 	
-	primary key(id)
+	primary key(id),
+	unique key(userid, gain_date, type)
 )ENGINE=INNODB default charset=utf8mb4 comment "收益表";
