@@ -22,7 +22,7 @@
 	<body>
 		<div class="mui-content">
 			<div class="apppay">
-				付款成功，请左滑返回或者点击返回按钮。
+				付款成功，请左滑返回或者点击返回按钮。<br />
 				<button type="button" id="btn-back" class="mui-btn mui-btn-primary">返回</button>
 			</div>
 		</div>
@@ -36,6 +36,7 @@
 		
 		mui.plusReady(function() {
 			document.getElementById("btn-back").addEventListener("tap", function(){
+				plus.webview.currentWebview().opener().reload();
 				plus.webview.currentWebview().close();
 			});
 		});
