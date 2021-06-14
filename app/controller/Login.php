@@ -227,7 +227,7 @@ class Login extends BaseController
 			$ret['msg'] = '手机号或验证码不能为空';
 			return json($ret);
 		}
-		
+		$invite_person = [];
 		if($invite_code){
 			$where_invite = [
 				'invite_code' => $invite_code
@@ -274,7 +274,7 @@ class Login extends BaseController
 			return json($ret);
 		}
 		
-		if($invite_person['id']){
+		if(isset($invite_person['id']) && $invite_person['id']){
 			$invite_data = [
 				'userid' => $invite_person['id'],
 				'invite_userid' => $data['id'],

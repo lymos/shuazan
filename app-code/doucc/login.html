@@ -146,22 +146,18 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
 										var token = data.data;
-										puls.storage.setItem(token, token.token);
-										puls.storage.setItem(token_expire, token.token_expire);
-										puls.storage.setItem(userid, token.userid);
+										setLogin(token);
+										goto("index.html");
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
-									//异常处理；
-									document.getElementById("ddddd").innerHTML = "123488";
-									console.log(type);
+									
 								}
 						});
 					});
@@ -186,7 +182,7 @@
 			
 					
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
-						$.ajax(config.host + 'index.php?s=user/smsCode', {
+						$.ajax(config.host + 'index.php?s=login/smsCode', {
 								data:{
 									mobile: mobile.value,
 								},
@@ -196,7 +192,6 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
@@ -221,15 +216,13 @@
 													}, 1000);
 											}
 										}
-										mui.nativeUI.toast("短信验证码发送成功");
+										time();
+										$.toast("短信验证码发送成功");
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
-									//异常处理；
-									mui.alert("smscode ");
-									document.getElementById("ddddd").innerHTML = "123488";
-									console.log(type);
+									
 								}
 						});
 					});

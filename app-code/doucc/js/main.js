@@ -1,25 +1,14 @@
 var config = {
-		host: "http://localhost/",
+		host: "http://121.37.3.176/",
 };
-var isLogin = function(path){
+var isLogin = function(path, retect){
 	// return true;
 	var token = plus.storage.getItem("token"),
 		token_expire = plus.storage.getItem("token_expire");
 	if(token == "" || ! token){
-		mui.openWindow({
-			url: path + 'login.html',
-			// id: 'reg',
-			preload: true,
-			show: {
-				aniShow: 'pop-in'
-			},
-			styles: {
-				popGesture: 'hide'
-			},
-			waiting: {
-				autoShow: false
-			}
-		});
+		if(retect){
+			gotoLogin();
+		}
 		return false;
 	}
 	return true;
@@ -56,4 +45,53 @@ var copyFun = function(copy,tips) {
          //   loading_close();  
         }  
     });  
-}
+};
+
+var goto = function(url, id) {
+	mui.openWindow({
+		url: url,
+		id: id,
+		preload: true,
+		extras: {
+			is_back: true
+		},
+		show: {
+			aniShow: 'pop-in'
+		},
+		styles: {
+			popGesture: 'hide'
+		},
+		waiting: {
+			autoShow: false
+		}
+	});
+
+};
+
+var getToken = function() {
+	var token = plus.storage.getItem("token"),
+		userid = plus.storage.getItem("userid"),
+		token_expire = plus.storage.getItem("token_expire");
+	return {
+		userid: userid,
+		token: token,
+		token_expire: token_expire
+	};
+};
+
+var gotoLogin = function() {
+	goto("login.html");
+};
+
+var setLogin  = function(token){
+	plus.storage.setItem("token", token.token);
+	plus.storage.setItem("token_expire", token.token_expire.toString());
+	plus.storage.setItem("userid", token.userid);
+	// 设置过期时间
+	// localStorage.setItem("expire", token.expire);
+};
+
+var delToken = function(){
+	plus.storage.clear();	
+};
+

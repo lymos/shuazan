@@ -59,7 +59,7 @@
 			
 		});
 		// mui.plusReady(function() {
-			mui.ajax(config.host + 'index.php?s=product/getProductList', {
+			mui.ajax(config.host + 'index.php?s=Product/getProductList', {
 				data: getToken(),
 				dataType:'json',//服务器返回json格式数据
 				type:'post',//HTTP请求类型
@@ -93,7 +93,7 @@
 			
 			mui("#product-list").on('tap', '.btn-buy', function(){
 				var productid = this.getAttribute("data-id");
-				mui.ajax(config.host + 'index.php?s=order/createOrder', {
+				mui.ajax(config.host + 'index.php?s=Order/createOrder', {
 					data: Object.assign(getToken(), {productid: productid}),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
@@ -108,7 +108,7 @@
 							
 						}else{
 							// http://doucc.com/index.php?s=cash/unionpay
-							var url = config.host + 'index.php?s=cash/unionpay&orderid=' + data.data.orderid + "&userid=" + data.data.userid;
+							var url = config.host + 'index.php?s=Cash/unionpay&orderid=' + data.data.orderid + "&userid=" + data.data.userid;
 							location.href = url;
 						   
 						 //  plus.webview.create('http://www.baidu.com', 'baidu', {popGesture:'hide',navigationbar:{backgroundColor:'#FFFFFF',titleColor:'#000000',backButton:{color:'#007AFF',colorPressed:'#0000FF'}}}).show('pop-in');

@@ -28,7 +28,7 @@
 		</header>
 		<div class="mui-content">
 			<div class="signin-tip">
-				累计签到<span id="singin-num">2</span>天
+				累计签到<span id="singin-num"></span>天
 			</div>
 			<div id="signin-box" class="signin-box center">
 				<span class="mui-badge">1</span>
@@ -60,7 +60,7 @@
 		});
 
 		// mui.plusReady(function() {
-			mui.ajax(config.host + 'index.php?s=dccuser/signininfo', {
+			mui.ajax(config.host + 'index.php?s=DccUser/signininfo', {
 				data: getToken(),
 				dataType: 'json', //服务器返回json格式数据
 				type: 'post', //HTTP请求类型
@@ -101,7 +101,7 @@
 			});
 						
 			document.getElementById("btn-signin").addEventListener('tap', function(event) {
-				mui.ajax(config.host + 'index.php?s=dccuser/signin', {
+				mui.ajax(config.host + 'index.php?s=DccUser/signin', {
 					data: getToken(),
 					dataType: 'json', //服务器返回json格式数据
 					type: 'post', //HTTP请求类型

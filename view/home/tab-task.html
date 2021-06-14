@@ -89,7 +89,7 @@
 		}
 		*/
 
-		mui.ajax(config.host + 'index.php?s=task/getMeTask', {
+		mui.ajax(config.host + 'index.php?s=Task/getMeTask', {
 			data: getToken(),
 			dataType: 'json', //服务器返回json格式数据
 			type: 'post', //HTTP请求类型
@@ -129,7 +129,7 @@
 			}
 		});
 
-		mui.ajax(config.host + 'index.php?s=task/getAllTask', {
+		mui.ajax(config.host + 'index.php?s=Task/getAllTask', {
 			data: getToken(),
 			dataType: 'json', //服务器返回json格式数据
 			type: 'post', //HTTP请求类型
@@ -164,7 +164,7 @@
 		// });
 		
 		var takeTask = function(id) {
-			mui.ajax(config.host + 'index.php?s=task/takeTask', {
+			mui.ajax(config.host + 'index.php?s=Task/takeTask', {
 				data: Object.assign(getToken(), {
 					id: id
 				}),

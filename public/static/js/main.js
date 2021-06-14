@@ -2,6 +2,9 @@ var config = {
 	host: "http://doucc.com/",
 };
 var isLogin = function(path, retect) {
+	// 验证过期时间 过期则删除所有
+	// localStorage.getItem("expire");
+	
 	var token = localStorage.getItem("token"),
 		token_expire = localStorage.getItem("token_expire");
 	if (token == "" || !token) {
@@ -212,4 +215,6 @@ var setLogin  = function(token){
 	localStorage.setItem("token", token.token);
 	localStorage.setItem("token_expire", token.token_expire);
 	localStorage.setItem("userid", token.userid);
+	// 设置过期时间
+	// localStorage.setItem("expire", token.expire);
 };

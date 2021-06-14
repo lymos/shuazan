@@ -71,7 +71,7 @@
 						<button type="button" class="btn-copy" id="btn-copy">复制</button>
 					</p>
 					<p>已邀请用户： <span id="count"></span></p>
-					<p>二级用户数：<span id="sub_count"span></p>
+					<p>二级用户数：<span id="sub_count"></span></p>
 				</div>
 
 			</div>
@@ -109,7 +109,7 @@
 			swipeBack: true //启用右滑关闭功能
 		});
 		// mui.plusReady(function() { 
-			mui.ajax(config.host + 'index.php?s=dccuser/info', {
+			mui.ajax(config.host + 'index.php?s=DccUser/info', {
 					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
