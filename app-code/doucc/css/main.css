@@ -116,3 +116,9 @@ form.mui-input-group{
 .dcc-title{
 	margin-bottom: 10px;
 }
+.qrcode{
+	margin: 0 auto;
+	width: 80%;
+	text-align: center;
+	padding-top: 20px;
+}

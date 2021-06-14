@@ -95,3 +95,9 @@ var delToken = function(){
 	plus.storage.clear();	
 };
 
+var refresh = function(){
+	plus.webview.getLaunchWebview().reload();
+	plus.webview.getWebviewById("html/tab-task.html").reload();
+	plus.webview.getWebviewById("html/tab-gain.html").reload();
+	plus.webview.getWebviewById("html/tab-me.html").reload();
+};

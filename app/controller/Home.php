@@ -25,6 +25,8 @@ class Home extends BaseController
 
     public function reg()
     {
+		$invite_code = trim(Request::param('invite_code') ? Request::param('invite_code') : '');
+		View::assign('invite_code', $invite_code);
         return View::fetch('reg');
     }
 
@@ -32,6 +34,11 @@ class Home extends BaseController
     {
         return View::fetch('card');
     }
+	
+	public function apppay()
+	{
+	    return View::fetch('apppay');
+	}
 
     public function cashout()
     {

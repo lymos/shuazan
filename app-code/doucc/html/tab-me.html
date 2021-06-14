@@ -112,8 +112,9 @@
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
 							mui.alert(data.msg);
-						}else{
+						}else if(data.code == 2){
 							
+						}else{
 							var mobile = document.getElementById("mobile"),
 								count = document.getElementById("count"),
 								sub_count = document.getElementById("sub_count"),
@@ -122,7 +123,7 @@
 							code.innerHTML = data.data.user.invite_code;
 							count.innerHTML = data.data.invite_data.count;
 							sub_count.innerHTML = data.data.invite_data.sub_count;
-							
+							plus.storage.setItem("invite_code", data.data.user.invite_code);
 						}
 						
 					},

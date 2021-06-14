@@ -8,8 +8,8 @@
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 
-		<link rel="stylesheet" href="../css/mui.min.css">
-		<link rel="stylesheet" href="../css/main.css">
+		<link href="../../static/css/mui.min.css" rel="stylesheet" />
+		<link href="../../static/css/main.css" rel="stylesheet" />
 		<style>
 			html,body {
 				background-color: #efeff4;
@@ -22,24 +22,22 @@
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">邀请好友</h1>
+			<h1 class="mui-title">支付</h1>
 		</header>
 		<div class="mui-content">
-			<div class="qrcode" id="qrcode">
+			<div class="apppay">
+				付款成功，请左滑返回或者点击返回按钮。
 			</div>
 		</div>
 	</body>
-	<script src="../js/mui.min.js"></script>
-	<script src="../js/main.js"></script>
-	<script type="text/javascript" src="../js/jquery.js"></script>
-	<script type="text/javascript" src="../js/qrcode/jquery.qrcode.js"></script>
-	<script type="text/javascript" src="../js/qrcode/qrcode.js"></script>
+	<script src="../../static/js/mui.min.js"></script>
+		<script src="./../static/js/main.js"></script>
 	<script>
 		mui.init({
 			swipeBack:true //启用右滑关闭功能
 		});
+		
 		mui.plusReady(function() {
-			jQuery('#qrcode').qrcode(config.host + "index.php?s=home/reg&invite_code=" + plus.storage.getItem("invite_code"));
 			
 		});
 	</script>

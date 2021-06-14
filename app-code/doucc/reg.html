@@ -97,7 +97,10 @@
 										mui.alert(data.msg);
 									}else{
 										setLogin(data.data);
-										goto("index.html");
+										refresh();
+										plus.webview.currentWebview().opener().hide();
+										mui.back(); 
+										// plus.webview.getLaunchWebview().reload();
 									}
 									
 								},
