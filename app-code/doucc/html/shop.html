@@ -128,6 +128,8 @@
 							mui.back = function(event) {  
 								var unionpay = plus.webview.getWebviewById('unionpay');  
 								if(unionpay){  
+									unionpay.opener().reload();
+									
 									return unionpay.canBack( function(e){  
 										unionpay.close(); 
 										/*

@@ -20,13 +20,10 @@
 	</head>
 
 	<body>
-		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
-			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">支付</h1>
-		</header>
 		<div class="mui-content">
 			<div class="apppay">
 				付款成功，请左滑返回或者点击返回按钮。
+				<button type="button" id="btn-back" class="mui-btn mui-btn-primary">返回</button>
 			</div>
 		</div>
 	</body>
@@ -38,7 +35,9 @@
 		});
 		
 		mui.plusReady(function() {
-			
+			document.getElementById("btn-back").addEventListener("tap", function(){
+				plus.webview.currentWebview().close();
+			});
 		});
 	</script>
 </html>
