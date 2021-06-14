@@ -37,6 +37,7 @@
 		mui.plusReady(function() {
 			document.getElementById("btn-back").addEventListener("tap", function(){
 				plus.webview.currentWebview().opener().reload();
+				plus.webview.getWebviewById("html/tab-gain.html").reload();
 				plus.webview.currentWebview().close();
 			});
 		});
