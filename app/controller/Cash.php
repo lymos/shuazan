@@ -45,7 +45,7 @@ class Cash extends BaseController
 	public function unionpay(){
 		$merid = Config::get('app.unionpay_merid');
 		
-		$userid = intval($this->decrypt(Request::param('userid')));
+		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
 		$orderid = $this->decrypt($order_str);
 		// $orderid = 'dcc202105300002'; // debug
@@ -117,7 +117,7 @@ class Cash extends BaseController
 	public function unionpayApp(){
 		$merid = Config::get('app.unionpay_merid');
 		
-		$userid = intval($this->decrypt(Request::param('userid')));
+		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
 		$orderid = $this->decrypt($order_str);
 		// $orderid = 'dcc202105300002'; // debug
