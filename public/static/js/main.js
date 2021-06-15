@@ -218,3 +218,7 @@ var setLogin  = function(token){
 	// 设置过期时间
 	// localStorage.setItem("expire", token.expire);
 };
+
+var delToken = function(){
+	localStorage.clear();
+};

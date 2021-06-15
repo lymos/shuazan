@@ -27,19 +27,18 @@
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<h1 class="mui-title">抖财财</h1>
 			<button id='link-login' class=" mui-pull-right mui-btn-link">登录</button>
+			<button id='btn-logout' class="mui-pull-right mui-btn-link">退出</button>
 		</header>
-		<div class="mui-content">
+		<div class="mui-content index-box">
 			
 			<div class="mui-slider">
 			  <div class="mui-slider-group mui-slider-loop">
 			    <!--支持循环，需要重复图片节点-->
-			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="static/images/ma.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="static/images/logo.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="static/images/ma.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="static/images/logo.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="static/images/ma.png" /></a></div>
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="static/images/banner2.png" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="static/images/banner1.png" /></a></div>
+			    <div class="mui-slider-item"><a href="#"><img src="static/images/banner2.png" /></a></div>
 			    <!--支持循环，需要重复图片节点-->
-			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="static/images/logo.png" /></a></div>
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="static/images/banner1.png" /></a></div>
 			  </div>
 			</div>
 			
@@ -72,7 +71,14 @@
 				
 				if(isLogin("", false)){
 					document.getElementById("link-login").style.display = "none";
+				}else{
+					document.getElementById("btn-logout").style.display = "none";
 				}
+				
+				document.getElementById('btn-logout').addEventListener('tap', function(event) {
+					delToken();
+					location.reload();
+				}, false);
 				
 				//mui.plusReady(function() {
 					// var self = plus.webview.currentWebview();

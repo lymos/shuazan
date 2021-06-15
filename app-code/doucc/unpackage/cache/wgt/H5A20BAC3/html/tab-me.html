@@ -63,15 +63,15 @@
 			<div class="header-top">
 				<div class="me">
 					<span class="mui-icon mui-icon-contact me-icon"></span>
-					<div class="account">1888888888</div>
+					<div class="account" id="mobile"></div>
 				</div>
 				<div class="me-info">
 					<p>
-						我的邀请码：<span id="invite-code">8888</span>
+						我的邀请码：<span id="invite-code"></span>
 						<button type="button" class="btn-copy" id="btn-copy">复制</button>
 					</p>
-					<p>已邀请用户： <span>8</span></p>
-					<p>二级用户数：<span>88</span></p>
+					<p>已邀请用户： <span id="count"></span></p>
+					<p>二级用户数：<span id="sub_count"></span></p>
 				</div>
 
 			</div>
@@ -102,35 +102,32 @@
 			swipeBack: true //启用右滑关闭功能
 		});
 		mui.plusReady(function() { 
-			mui.ajax(config.host + 'index.php?s=user/info', {
-					data:{
-						username:'username',
-						password:'password'
-					},
+			mui.ajax(config.host + 'index.php?s=DccUser/info', {
+					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
 					timeout:10000,//超时时间设置为10秒；
 					headers:{'Content-Type':'application/json'},
 					success:function(data){
-						console.log(data)
-						alert(JSON.stringify(data));
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
 							mui.alert(data.msg);
+						}else if(data.code == 2){
+							
 						}else{
-							var html = "";
-							for(var i in data.data){
-								html += '<li class="mui-table-view-cell">';
-							}
-							var tlist = document.getElementById("task-list");
-							tlist.innerHTML = html;
+							var mobile = document.getElementById("mobile"),
+								count = document.getElementById("count"),
+								sub_count = document.getElementById("sub_count"),
+								code = document.getElementById("invite-code");
+							mobile.innerHTML = data.data.user.mobile;							
+							code.innerHTML = data.data.user.invite_code;
+							count.innerHTML = data.data.invite_data.count;
+							sub_count.innerHTML = data.data.invite_data.sub_count;
+							plus.storage.setItem("invite_code", data.data.user.invite_code);
 						}
 						
 					},
 					error:function(xhr,type,errorThrown){
-						//异常处理；
-						// mui.alert("我 ");
-						console.log(type);
 					}
 			});
 			

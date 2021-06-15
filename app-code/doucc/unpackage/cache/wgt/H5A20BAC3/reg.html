@@ -83,10 +83,8 @@
 							verify_code: verify_code.value,
 							invite_code: invite_code.value
 						};
-						// plus.nativeUI.toast('密码两次输入不一致');
-							
 						// 注册操作
-						mui.ajax(config.host + 'index.php?s=login/reg', {
+						$.ajax(config.host + 'index.php?s=login/reg', {
 								data: regInfo,
 								dataType:'json',//服务器返回json格式数据
 								type:'post',//HTTP请求类型
@@ -94,25 +92,25 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
 									}else{
-										
+										setLogin(data.data);
+										refresh();
+										plus.webview.currentWebview().opener().hide();
+										mui.back(); 
+										// plus.webview.getLaunchWebview().reload();
 									}
 									
 								},
 								error:function(xhr,type,errorThrown){
-									//异常处理；
-									document.getElementById("ddddd").innerHTML = "123488";
-									console.log(type);
 								}
 						});
 					});
 					
 					doc.getElementById("btn-code").addEventListener('tap', function(event) {
-						$.ajax(config.host + 'index.php?s=user/regSmsCode', {
+						$.ajax(config.host + 'index.php?s=login/regSmsCode', {
 								data:{
 									mobile: mobile.value,
 								},
@@ -122,7 +120,6 @@
 								headers:{'Content-Type':'application/json'},
 								success:function(data){
 									console.log(data)
-									alert(JSON.stringify(data));
 									//服务器返回响应，根据响应结果，分析是否登录成功；
 									if(data.code == 0){
 										mui.alert(data.msg);
@@ -147,17 +144,16 @@
 													}, 1000);
 											}
 										}
-										mui.nativeUI.toast("短信验证码发送成功");
+										time();
+										// plus.nativeUI.toast("短信验证码发送成功");
+										$.toast("短信验证码发送成功");
 									}
 								//	arr[i].classList.add("active");
 								//	arr[j].classList.remove("active");
 								// getAttribute("data-id")
 								},
 								error:function(xhr,type,errorThrown){
-									//异常处理；
-									mui.alert("smscode ");
-									document.getElementById("ddddd").innerHTML = "123488";
-									console.log(type);
+									
 								}
 						});
 					});

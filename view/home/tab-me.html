@@ -130,6 +130,7 @@
 							code.innerHTML = data.data.user.invite_code;
 							count.innerHTML = data.data.invite_data.count;
 							sub_count.innerHTML = data.data.invite_data.sub_count;
+							localStorage.setItem("invite_code", data.data.user.invite_code);
 						}
 						
 					},
@@ -181,7 +182,7 @@
 			
 			document.getElementById('link-invite').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'index.php?s=invite/invite',
+					url: 'index.php?s=home/invite',
 					id: 'link-invite',
 					preload: true,
 					show: {
