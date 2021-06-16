@@ -22,34 +22,111 @@
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<div class="center signin-action" id="signin-action">
-				<button id="btn-signin" type="button" class="mui-btn mui-btn-primary">签到</button>
-			</div>
 			
 		</header>
 		<div class="mui-content">
-			<div class="signin-tip">
-				累计签到<span id="singin-num"></span>天
+			<div class="signin-banner">
+				 <div id="btn-signin" class="btn-signin">签到</div>
 			</div>
-			<div class="signin-box center" id="signin-box">
-				<span class="mui-badge">1</span>
-				<span class="mui-badge">2</span>
-				<span class="mui-badge">3</span>
-				<span class="mui-badge">4</span>
-				<span class="mui-badge">5</span>
-				<span class="mui-badge">6</span>
-				<span class="mui-badge">7</span>
-				<span class="mui-badge">8</span>
-				<span class="mui-badge">9</span>
-				<span class="mui-badge">10</span>
-				<span class="mui-badge">11</span>
-				<span class="mui-badge">12</span>
-				<span class="mui-badge">13</span>
-				<span class="mui-badge">14</span>
-		
-			</div>
-			<div class="signin-tip">
-				签到满一个周期（14天），相当于邀请一位新用户
+			<div class="signin-info">
+				<div class="signin-tip">
+					累计签到<span id="singin-num"></span>天
+				</div>
+				<div id="signin-box" class="signin-box center">
+					<div class="signin-item">
+						<div class="signin-inner">
+							<div id="sbg1" class="sbg"></div>
+							<div class="stxt">1天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg2" class="sbg"></div>
+							<div class="stxt">2天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg3" class="sbg"></div>
+							<div class="stxt">3天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg4" class="sbg"></div>
+							<div class="stxt">4天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg5" class="sbg"></div>
+							<div class="stxt">5天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg6" class="sbg"></div>
+							<div class="stxt">6天</div>
+						</div>
+					</div>
+					<div class="signin-item">
+						<div class="signin-inner">
+							<div id="sbg7" class="sbg"></div>
+							<div class="stxt">7天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg8" class="sbg"></div>
+							<div class="stxt">8天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg9" class="sbg"></div>
+							<div class="stxt">9天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg10" class="sbg"></div>
+							<div class="stxt">10天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg11" class="sbg"></div>
+							<div class="stxt">11天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg12" class="sbg"></div>
+							<div class="stxt">12天</div>
+						</div>
+					</div>
+					<div class="signin-item">
+						<div class="signin-inner">
+							<div id="sbg3" class="sbg"></div>
+							<div class="stxt">13天</div>
+						</div>
+						<div class="signin-inner line"><div></div></div>
+						<div class="signin-inner">
+							<div id="sbg14" class="sbg"></div>
+							<div class="stxt">14天</div>
+						</div>
+					</div>
+					
+					<!--
+					<span class="mui-badge">1</span>
+					<span class="mui-badge">2</span>
+					<span class="mui-badge">3</span>
+					<span class="mui-badge">4</span>
+					<span class="mui-badge">5</span>
+					<span class="mui-badge">6</span>
+					<span class="mui-badge">7</span>
+					<span class="mui-badge">8</span>
+					<span class="mui-badge">9</span>
+					<span class="mui-badge">10</span>
+					<span class="mui-badge">11</span>
+					<span class="mui-badge">12</span>
+					<span class="mui-badge">13</span>
+					<span class="mui-badge">14</span>
+					-->
+				</div>
+				<div class="signin-tip">
+					签到满一个周期（14天），相当于邀请一位新用户
+				</div>
 			</div>
 		</div>
 	</body>
@@ -76,22 +153,27 @@
 						mui.alert(data.msg);
 					} else {
 						var ret = data.data,
-							i = 1,
-							html = "",
-							num = 14;
-						document.getElementById("singin-num").innerHTML = ret.days;
-						for(i; i <= num; i++){
-							html += '<span class="mui-badge';
-							if(ret.is14 || ret.days >= i){
-								html += ' mui-badge-primary';
+								i = 1,
+								html = "",
+								num = 14;
+							document.getElementById("singin-num").innerHTML = ret.days;
+							for (i; i <= num; i++) {
+								// html += '<span class="mui-badge';
+								if (ret.is14 || ret.days >= i) {
+									// html += ' mui-badge-primary';
+									document.getElementById("sbg" + i).classList.add("nosignin");
+									
+								}
+								// html += '">' + i + '</span>';
 							}
-							html += '">' + i + '</span>';
-						}
-						document.getElementById("signin-box").innerHTML = html;
-						
-						if(ret.istoday){
-							document.getElementById("signin-action").innerHTML = '<span class="mui-badge mui-badge-purple">已签到</span>';
-						}
+						//	document.getElementById("signin-box").innerHTML = html;
+							
+							if (ret.istoday) {
+								document.getElementById("btn-signin").innerHTML = "已签到";
+								is_signin = true;
+								// document.getElementById("signin-action").innerHTML =
+								//	'<span class="mui-badge mui-badge-purple">已签到</span>';
+							}
 					}
 			
 				},

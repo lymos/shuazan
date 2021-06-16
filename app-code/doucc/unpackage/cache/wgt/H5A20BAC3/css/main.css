@@ -18,6 +18,10 @@ form.mui-input-group{
 }
 .header-top{
 	padding: 20px;
+	background-color: #fff;
+	margin-bottom: 10px;
+	border-bottom: 1px solid #c8c7cc;
+	box-shadow: 2px 2px 2px #eee;
 }
 .me-info{
 	margin-top: 10px;
@@ -64,9 +68,6 @@ form.mui-input-group{
 }
 .center{
 	text-align: center;
-}
-.signin-tip{
-	padding: 10px;
 }
 .hide{
 	display: none;
@@ -116,9 +117,115 @@ form.mui-input-group{
 .dcc-title{
 	margin-bottom: 10px;
 }
+.signin-tip{
+	font-size: 12px;
+	color: #666;
+}
+.cashout-tip{
+	padding: 10px;
+}
 .qrcode{
 	margin: 0 auto;
 	width: 80%;
 	text-align: center;
 	padding-top: 20px;
+}
+.index-ac-box{
+	display: flex;
+	width: 80%;
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 80px;
+}
+.icon-item{
+	width: 22%;
+	height: 46px;
+	margin-right: 24px;
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.icon-item:last-child{
+	margin-right: 0;
+}
+.icon-item.item1{
+	background-image: url(../images/btn1.jpeg);
+}
+.icon-item.item2{
+	background-image: url(../images/btn2.jpeg);
+}
+.icon-item.item3{
+	background-image: url(../images/btn3.jpeg);
+}
+.icon-item.item4{
+	background-image: url(../images/btn4.jpeg);
+}
+.logo{
+	width: 40px;
+	height: 40px;
+	background-image: url(../images/logo.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	display: inline-block;
+	margin-top: 2px;
+}
+h1.logo-title{
+	text-align: left;
+	padding-left: 20PX;
+}
+.index-box{
+	background-repeat: no-repeat;
+	background-size: cover;
+	height: 100%;
+	
+}
+.signin-banner{
+	width: 100%;
+	height: 180px;
+	background-image: url(../images/signin-banner.jpeg);
+	background-size: cover;
+	background-repeat: no-repeat;
+	text-align: center;
+	font-size: 44px;
+	color: #fff;
+	padding-top: 19px;
+}
+.signin-info{
+	padding: 10px 20px 10px 20px;
+}
+.signin-item{
+	display: flex;
+}
+.signin-inner{
+	width: 9.0909%;
+	height: 60px;
+	
+}
+.signin-inner.line{
+	border: none;
+	padding-top: 14px;
+}
+.signin-inner.line div{
+	width: 100%;
+	height: 2px;
+	background-color: #666;
+}
+.sbg{
+	height: 32px;
+	background-image: url(../images/signin.png);
+	background-repeat: no-repeat;
+	background-size: contain;
+}
+.stxt{
+	font-size: 12px;
+}
+.nosignin{
+	filter: grayscale(50%) opacity(30%);
+}
+.btn-signin{
+	background-color: #c63384;
+	width: 140px;
+	height: 140px;
+	line-height: 140px;
+	margin: 0 auto;
+	border-radius: 50%;
 }

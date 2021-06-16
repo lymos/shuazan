@@ -109,7 +109,7 @@
                     "styles" : {
                         "bottom" : "0px",
                         "left" : "0",
-                        "height" : "50px",
+                        "height" : "54px",
                         "width" : "100%",
                         "backgroundColor" : "#fff"
                     },
@@ -142,7 +142,7 @@
                             },
                             "textStyles" : {
                                 "align" : "center",
-                                "size" : "10px"
+                                "size" : "12px"
                             }
                         },
                         {
@@ -151,7 +151,7 @@
                             "text" : "",
                             "position" : {
                                 "top" : "4px",
-                                "left" : "20%",
+                                "left" : "25%",
                                 "width" : "25%",
                                 "height" : "24px"
                             },
@@ -167,13 +167,13 @@
                             "text" : "任务",
                             "position" : {
                                 "top" : "23px",
-                                "left" : "20%",
+                                "left" : "25%",
                                 "width" : "25%",
                                 "height" : "24px"
                             },
                             "textStyles" : {
                                 "align" : "center",
-                                "size" : "10px"
+                                "size" : "12px"
                             }
                         },
                         {
@@ -182,7 +182,7 @@
                             "text" : "",
                             "position" : {
                                 "top" : "4px",
-                                "left" : "55%",
+                                "left" : "50%",
                                 "width" : "25%",
                                 "height" : "24px"
                             },
@@ -198,13 +198,13 @@
                             "text" : "收益",
                             "position" : {
                                 "top" : "24px",
-                                "left" : "55%",
+                                "left" : "50%",
                                 "width" : "25%",
                                 "height" : "24px"
                             },
                             "textStyles" : {
                                 "align" : "center",
-                                "size" : "10px"
+                                "size" : "12px"
                             }
                         },
                         {
@@ -235,7 +235,7 @@
                             },
                             "textStyles" : {
                                 "align" : "center",
-                                "size" : "10px"
+                                "size" : "12px"
                             }
                         },
                         {
