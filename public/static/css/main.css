@@ -210,7 +210,7 @@ form.mui-input-group{
 	height: 60px;
 	margin-right: 20px;
 	background-repeat: no-repeat;
-	background-size: cover;
+	background-size: contain;
 }
 .icon-item:last-child{
 	margin-right: 0;
