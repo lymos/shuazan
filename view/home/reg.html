@@ -64,6 +64,7 @@
 			</form>
 			<div class="mui-content-padded">
 				<button id='btn-reg' class="mui-btn mui-btn-block mui-btn-primary">完成注册并登录</button>
+				<button id='link-index' class="mui-btn mui-btn-block mui-btn-primary">首页</button>
 			</div>
 			
 		</div>
@@ -157,6 +158,10 @@
 									console.log(type);
 								}
 						});
+					});
+					
+					doc.getElementById("link-index").addEventListener('tap', function(event) {
+						goto("index.php?s=home");
 					});
 			//	});
 			}(mui, document));

@@ -10,7 +10,8 @@ form.mui-input-group{
 	display: flex;
 }
 .me-icon{
-	padding-top: 8px;
+	padding-top: 5px;
+	font-size: 28px;
 }
 .account{
 	margin-left: 8px;
@@ -20,6 +21,8 @@ form.mui-input-group{
 	padding: 20px;
 	background-color: #fff;
 	margin-bottom: 10px;
+	border-bottom: 1px solid #c8c7cc;
+	box-shadow: 2px 2px 2px #eee;
 }
 .me-info{
 	margin-top: 10px;
@@ -77,6 +80,10 @@ form.mui-input-group{
 	margin-top: 40px;
 	margin-bottom: 10px;
 	padding-left: 14px;
+	padding-top: 14px;
+	padding-bottom: 14px;
+	background-color: rgb(0, 34, 68);
+	color: #fff;
 }
 .signin-box span{
 	width: 36px;
@@ -190,4 +197,46 @@ form.mui-input-group{
 	width: 80%;
 	text-align: center;
 	padding-top: 20px;
+}
+.index-ac-box{
+	display: flex;
+	width: 90%;
+	text-align: center;
+	margin: 0 auto;
+	margin-top: 80px;
+}
+.icon-item{
+	width: 25%;
+	height: 60px;
+	margin-right: 20px;
+	background-repeat: no-repeat;
+	background-size: cover;
+}
+.icon-item:last-child{
+	margin-right: 0;
+}
+.icon-item.item1{
+	background-image: url(../images/btn1.jpeg);
+}
+.icon-item.item2{
+	background-image: url(../images/btn2.jpeg);
+}
+.icon-item.item3{
+	background-image: url(../images/btn3.jpeg);
+}
+.icon-item.item4{
+	background-image: url(../images/btn4.jpeg);
+}
+.logo{
+	width: 40px;
+	height: 40px;
+	background-image: url(../images/logo.jpg);
+	background-repeat: no-repeat;
+	background-size: cover;
+	display: inline-block;
+	margin-top: 2px;
+}
+h1.logo-title{
+	text-align: left;
+	padding-left: 20PX;
 }
