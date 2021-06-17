@@ -21,15 +21,14 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
-			<h1 class="mui-title">我的任务</h1>
+			<a id="is-back" class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">任务大厅</h1>
 		</header>
 		<div class="mui-content mui-scroll-wrapper" id="task-box">
-			
-			<ul id="task-me-list" class="mui-table-view mui-scroll">
-		
-			    
+			<ul id="task-list" class="mui-table-view">
+			  
+			   
 			</ul>
-			
 		</div>
 	</body>
 	<script src="../js/mui.min.js"></script>
@@ -53,9 +52,8 @@
 		
 		mui.plusReady(function() {
 			var self = plus.webview.currentWebview();  
-			var is_back = self.is_back;  
 			
-			mui.ajax(config.host + 'index.php?s=Task/getMeTask', {
+			mui.ajax(config.host + 'index.php?s=Task/getAllTask', {
 				data: getToken(),
 				dataType: 'json', //服务器返回json格式数据
 				type: 'post', //HTTP请求类型
@@ -70,34 +68,16 @@
 						mui.alert(data.msg);
 					} else {
 						var html = "";
-						for (var i in data.data) {	
-							var status_name = "进行中",
-								type = "warning";
-							if(data.data[i].status == 1){
-								status_name = "已完成";
-								type = "success";
-							}
+						for (var i in data.data) {
 							html += '<li class="mui-table-view-cell c-item">' +
 								'<div class="t-info">' +
 								'<span>' + data.data[i].name + '</span>' +
-								'<div class="mui-progressbar take-process" data-status="' + data.data[i].status + '"><span></span></div></div>' + 
-								'<div class="r-right"><span class="mui-badge mui-badge-' + type + '">' +
-								status_name + '</span></div></li>';
-								
+								'</div><div class="r-right"><button class="take-task" ' +
+								' onclick="takeTask(' + data.data[i].id + ')" type="button">领取</button></div></li>';
 						}
-						var tlist = document.getElementById("task-me-list");
+						var tlist = document.getElementById("task-list");
 						tlist.innerHTML = html;
-						setTimeout(function(){
-							mui(".take-process").each(function(){
-								var num = 20;
-								if(this.getAttribute("data-status") == 1){
-									num = 100;
-								}
-								mui(this).progressbar({
-									progress: num
-								}).show();
-							});
-						}, 20);
+						
 					}
 			
 				},
@@ -106,12 +86,45 @@
 				}
 			});
 			
-			
 		});
 		
 		var getTaskList = function(){
 			mui.alert("pull");
 		};
+		
+		var takeTask = function(id) {
+			mui.ajax(config.host + 'index.php?s=Task/takeTask', {
+				data: Object.assign(getToken(), {
+					id: id
+				}),
+				dataType: 'json', //服务器返回json格式数据
+				type: 'post', //HTTP请求类型
+				timeout: 10000, //超时时间设置为10秒；
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				success: function(data) {
+					console.log(data)
+					//服务器返回响应，根据响应结果，分析是否登录成功；
+					if (data.code == 0) {
+						if(data.msg == "请先购买机器人"){
+							mui.alert(data.msg, '', '', function(){
+								goto('shop.html');
+							});
+						}else{
+							mui.alert(data.msg);
+						}
+						
+					} else {
+						mui.alert("领取成功", '', '', function() {
+							location.reload();
+						});
+					}
+		
+				},
+				error: function(xhr, type, errorThrown) {}
+			});
+		}
 		
 	</script>
 </html>

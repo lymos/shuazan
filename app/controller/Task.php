@@ -112,8 +112,9 @@ class Task extends BaseController
 			'taskid' => $taskid,
 			'userid' => $userid,
 			'date' => $date,
-			'status' => 1,
-			'process' => 100
+			'status' => 0,
+			'process' => 100,
+			'added_date' => date('Y-m-d H:i:s')
 		];
 		$status = Db::name('user_task')->insert($data);
 		if(! $status){

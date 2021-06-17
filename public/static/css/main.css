@@ -204,15 +204,24 @@ form.mui-input-group{
 	margin: 0 auto;
 	margin-top: 80px;
 }
-.icon-item{
+
+.box-item{
 	width: 22%;
-	height: 46px;
 	margin-right: 24px;
+}
+.icon-item{
+	width: 100%;
+	height: 46px;
 	background-repeat: no-repeat;
 	background-size: contain;
 }
-.icon-item:last-child{
+.box-item:last-child{
 	margin-right: 0;
+}
+.item-txt{
+	padding-top: 10px;
+	text-align: left;
+	padding-left: 4px;
 }
 .icon-item.item1{
 	background-image: url(../images/btn1.jpeg);

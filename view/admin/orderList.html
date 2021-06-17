@@ -18,7 +18,7 @@
 						<i class="layui-icon layui-icon-spread-left"></i>
 					</li>
 
-					<li class="layui-nav-item layui-hide-xs"><a href="">任务列表</a></li>
+					<li class="layui-nav-item layui-hide-xs"><a href="">订单列表</a></li>
 					<!--
 					<li class="layui-nav-item layui-hide-xs"><a href="">nav 2</a></li>
 					<li class="layui-nav-item layui-hide-xs"><a href="">nav 3</a></li>
@@ -71,7 +71,7 @@
 						<li class="layui-nav-item layui-nav-itemed">
 							<a class="" href="javascript:;">订单管理</a>
 							<dl class="layui-nav-child">
-								<dd><a href="index.php?s=Admin/orderList">订单列表</a></dd>
+								<dd><a href="javascript:;">订单列表</a></dd>
 							</dl>
 						</li>
 						<!-- 
@@ -92,7 +92,20 @@
 
 			<div class="layui-body">
 				<!-- 内容主体区域 -->
-				<div style="padding: 15px;"><button id="btn-add" type="button" class="layui-btn">添加</button></div>
+				
+				<div style="padding: 15px;">
+					<form class="layui-form" action="index.php">
+						<input type="hidden" name="s" value="Admin/orderList">
+					  <div class="layui-form-item">
+					    <label class="layui-form-label" style="width: 100px; ">关键词</label>
+					    <div class="layui-input-block" style="width: 300px; display: inline-block; margin-left: 0; ">
+					      <input type="text" name="keyword" value="{$keyword}" placeholder="手机号/订单号" autocomplete="off" class="layui-input">
+					    </div>
+						<button class="layui-btn" lay-submit type="submit" lay-filter="formDemo">搜索</button>
+					  </div>
+					  
+					</form>
+				</div>
 				<table class="layui-table">
 					<colgroup>
 						<col width="150">
@@ -102,15 +115,21 @@
 					<thead>
 						<tr>
 							<th>ID</th>
-							<th>任务名称</th>
-							<th>添加时间</th>
+							<th>订单号</th>
+							<th>手机号</th>
+							<th>金额</th>
+							<th>状态</th>
+							<th>下单时间</th>
 						</tr>
 					</thead>
 					<tbody>
 						{foreach $list as $rs}
 						<tr>
 							<td>{$rs.id}</td>
-							<td>{$rs.name}</td>
+							<td>{$rs.orderid}</td>
+							<td>{$rs.mobile}</td>
+							<td>{$rs.total}</td>
+							<td>{$order_status_list[$rs.status]}</td>
 							<td>{$rs.added_date}</td>
 						</tr>
 						{/foreach}
@@ -127,7 +146,7 @@
 		<script src="static/extend/layui/layui.js"></script>
 		<script>
 				//JS 
-				layui.use(['element', 'layer', 'util', 'jquery'], function() {
+				layui.use(['element', 'layer', 'util', 'jquery', 'form'], function() {
 					var element = layui.element,
 						layer = layui.layer,
 						util = layui.util,
@@ -154,14 +173,15 @@
 						}
 					});
 					
-					$("#btn-add").on("click", function(){
-						layer.open({
-							title: "添加任务",
-							type: 2,
-							area: ["680px", "320px"],
-							content: '{$url}' //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
-						}); 
+					var form = layui.form;
+					
+					//监听提交
+					/*
+					form.on('submit(formDemo)', function(data){
+					 // layer.msg(JSON.stringify(data.field));
+					  return true;
 					});
+				*/
 
 				});
 				

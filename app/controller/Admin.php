@@ -10,6 +10,14 @@ use think\facade\Db;
 
 class Admin extends BackController
 {
+	
+	public $order_status_list = [
+		0 => '待付款',
+		1 => '已付款',
+		2 => '付款失败',
+		3 => '已退款',
+		4 => '已取消'
+	];
     /*
     public function index()
     {
@@ -106,25 +114,25 @@ class Admin extends BackController
     }
 
     public function orderList(){
-        $ret = [
-			'code' => 0,
-			'data' => '',
-			'msg' => ''
-		];
-
-		$list = Db::name('task')
-			->field('id, name, added_date')
-            ->where(1)
+		
+		$where = '';
+		$keyword = addslashes(trim(Request::param('keyword')));
+		if($keyword){
+			$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
+		}
+		$list = Db::name('order')->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
+            ->where($where)
             ->order('id', 'desc')
 			->select();
 		
 		$ret['code'] = 1;
 		$ret['data'] = $list;
 		View::assign('list', $list);
-		$url = $this->url('/index.php?s=Admin/taskEdit');
-		View::assign('url', $url);
-		return View::fetch('taskList');
-		return json($ret);
+		View::assign('keyword', $keyword);
+		View::assign('order_status_list', $this->order_status_list);
+		return View::fetch('orderList');
     }
 
     public function taskEdit(){

@@ -79,5 +79,10 @@ class Home extends BaseController
     {
         return View::fetch('tab-task');
     }
+	
+	public function taskall()
+	{
+	    return View::fetch('taskall');
+	}
    
 }
