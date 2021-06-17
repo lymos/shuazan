@@ -77,14 +77,14 @@ class Admin extends BackController
 		$ret['code'] = 1;
 		$ret['data'] = $list;
 		View::assign('list', $list);
-		$url = $this->url('/index.php?s=admin/taskEdit');
+		$url = $this->url('/index.php?s=Admin/taskEdit');
 		View::assign('url', $url);
 		return View::fetch('taskList');
 		return json($ret);
     }
 
     public function taskEdit(){
-		$url = $this->url('/index.php?s=admin/actionTaskAdd');
+		$url = $this->url('/index.php?s=Admin/actionTaskAdd');
 		View::assign('url', $url);
         return View::fetch('taskEdit');
     }

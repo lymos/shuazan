@@ -12,9 +12,9 @@ class AdminLogin extends BaseController
     
     public function index()
     {
-		$url = $this->url('/index.php?s=adminlogin/login');
+		$url = $this->url('/index.php?s=AdminLogin/login');
 		View::assign('url', $url);
-		$task_list_url = $this->url('/index.php?s=admin/taskList');
+		$task_list_url = $this->url('/index.php?s=Admin/taskList');
 		View::assign('task_list_url', $task_list_url);
         return View::fetch('login');
     }
@@ -64,7 +64,7 @@ class AdminLogin extends BaseController
 	
 	public function logout(){
 		$this->setLogout();
-		$login_url = $this->url('/index.php?s=adminlogin');
+		$login_url = $this->url('/index.php?s=AdminLogin');
 		header('Location: ' . $login_url);
 		die;
 	}
