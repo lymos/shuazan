@@ -1,14 +1,18 @@
 <?php
 namespace app\controller;
 
-use app\BaseController;
+use app\BackController;
 use think\facade\View;
 use app\model\User; 
 use think\facade\Request;
 use think\facade\Db;
 
-class AdminLogin extends BaseController
+class AdminLogin extends BackController
 {
+	public function __construct(\think\App $app){
+		$this->is_check_login = false;
+		parent::__construct($app);
+	}
     
     public function index()
     {
@@ -27,13 +31,13 @@ class AdminLogin extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		
+		/*
 		$check = $request->checkToken('__token__');
 		        
 		        if(false === $check) {
 		            throw new ValidateException('invalid token');
 		        }
-				
+		*/
         $mobile = trim(Request::param('mobile'));
         $pwd = trim(Request::param('pwd'));
 		if(! $mobile || ! $pwd){

@@ -8,6 +8,8 @@ create table dcc_user_task(
 	`date` date default null,
 	process tinyint(1) not null default 0 comment "满进度100",
 	status tinyint(1) not null default 0 comment "0.进行中 1.已完成",
+	added_date datetime default null,
+	updated_date datetime default null,
 	
 	primary key(id),
 	unique key(userid, taskid, `date`)

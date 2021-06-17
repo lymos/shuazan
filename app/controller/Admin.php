@@ -83,6 +83,50 @@ class Admin extends BackController
 		return json($ret);
     }
 
+    public function userList(){
+        $ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+
+		$list = Db::name('task')
+			->field('id, name, added_date')
+            ->where(1)
+            ->order('id', 'desc')
+			->select();
+		
+		$ret['code'] = 1;
+		$ret['data'] = $list;
+		View::assign('list', $list);
+		$url = $this->url('/index.php?s=Admin/taskEdit');
+		View::assign('url', $url);
+		return View::fetch('taskList');
+		return json($ret);
+    }
+
+    public function orderList(){
+        $ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+
+		$list = Db::name('task')
+			->field('id, name, added_date')
+            ->where(1)
+            ->order('id', 'desc')
+			->select();
+		
+		$ret['code'] = 1;
+		$ret['data'] = $list;
+		View::assign('list', $list);
+		$url = $this->url('/index.php?s=Admin/taskEdit');
+		View::assign('url', $url);
+		return View::fetch('taskList');
+		return json($ret);
+    }
+
     public function taskEdit(){
 		$url = $this->url('/index.php?s=Admin/actionTaskAdd');
 		View::assign('url', $url);

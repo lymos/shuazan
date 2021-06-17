@@ -51,7 +51,7 @@ abstract class BackController
         $this->request = $this->app->request;
 
         if($this->is_check_login && ! $this->islogin()){
-			$login_url = $this->url('/index.php?s=adminlogin');
+			$login_url = $this->url('/index.php?s=AdminLogin');
 			header('Location: ' . $login_url);
             exit;
         }
@@ -59,7 +59,7 @@ abstract class BackController
         // 控制器初始化
         $this->initialize();
 		
-		$logout_url = $this->url('/index.php?s=adminlogin/logout');
+		$logout_url = $this->url('/index.php?s=AdminLogin/Logout');
 		View::assign('logout_url', $logout_url);
 		
     }

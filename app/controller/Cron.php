@@ -28,6 +28,63 @@ class Cron extends BaseController{
 	}
 
     /**
+     * 频率：每2分钟执行一次
+     * 更新任务状态
+     */
+    public function updateTaskMain(){
+        $this->dir_flag = 'updateTaskMain-logs';
+        $this->date_filename = date('Y-m-d');
+        $this->date = date('Y-m-d');
+        $this->log('start');
+        $task_data = $this->_taskData();
+        
+        if(! $task_data){
+            $this->log('no data');
+            $this->log('end');
+            return ;
+        }
+        $gain = [];
+        foreach($task_data as $rs){
+            $task_gain = $this->_taskGain($rs['id']);
+            
+            // 任务是前提
+            if(! $task_gain){
+                continue;
+            }
+            $invite_gain = $this->_inviteGain($rs['id']);
+            $gain[$rs['id']] = [
+                'task_gain' => $task_gain,
+                'invite_gain' => $invite_gain
+            ];
+            
+        }       
+
+        // 更新记录表
+        $status = $this->_insertGain($gain);
+        if(! $status){
+            $this->log('failed');
+        }else{
+            $this->log('success');
+        }
+        $this->log('end');
+        exit;
+    }
+
+    private function _taskData(){
+        $where = [
+            'c.status' => 1,
+            'b.status' => 0
+        ];
+        $data = Db::name('task')->alias('a')
+            ->join('user_task b', 'a.id = b.task_id', 'left')
+            ->join('order c', 'c.userid = b.userid', 'left')
+			->field('a.id')
+			->where($where)
+			->select()->toArray();
+		return $data;
+    }
+
+    /**
      * 频率：每天11点钟执行一次
      * 结算入口
      */
