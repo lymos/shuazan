@@ -92,23 +92,25 @@ class Admin extends BackController
     }
 
     public function userList(){
-        $where = '';
+        $where = 'a.`status` = 1 ';
         $keyword = addslashes(trim(Request::param('keyword')));
         if($keyword){
-        	$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
+        	$where .= 'and a.mobile like "%' . $keyword . '%"';
         }
-        $list = Db::name('order')->alias('a')
-        	->join('user b', 'a.userid = b.id', 'left')
-        	->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
+		$field = 'a.id, a.mobile, a.added_date, count(distinct b.invite_userid) as count1, count(c.invite_userid) as count2';
+        $list = Db::name('user')->alias('a')
+        	->join('user_invite b', 'a.id = b.userid', 'left')
+			->join('user_invite c', 'b.invite_userid = c.userid', 'left')
+        	->field($field)
             ->where($where)
-            ->order('id', 'desc')
+            ->order('a.id', 'desc')
+			->group('a.id')
         	->select();
         
         $ret['code'] = 1;
         $ret['data'] = $list;
         View::assign('list', $list);
         View::assign('keyword', $keyword);
-        View::assign('order_status_list', $this->order_status_list);
         return View::fetch('userList');
     }
 

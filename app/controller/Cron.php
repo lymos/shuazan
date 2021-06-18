@@ -24,6 +24,9 @@ class Cron extends BaseController{
 	
 	public function __construct(\think\App $app)
 	{
+		if(php_sapi_name() !== 'cli'){
+			die();
+		}
 	    parent::__construct($app, false);
 	}
 
@@ -34,7 +37,7 @@ class Cron extends BaseController{
     public function updateTaskMain(){
         $this->dir_flag = 'updateTaskMain-logs';
         $this->date_filename = date('Y-m-d');
-        $this->date = date('Y-m-d');
+        $this->date = date('Y-m-d H:i:s');
         $this->log('start');
         $task_data = $this->_taskData();
         
@@ -45,40 +48,46 @@ class Cron extends BaseController{
         }
         $gain = [];
         foreach($task_data as $rs){
-            $task_gain = $this->_taskGain($rs['id']);
+           // 更新记录表
+           $status = $this->_updateTask($rs['id']);
+           if(! $status){
+               $this->log('failed user_task_id: ' . $rs['id']);
+           }else{
+               $this->log('success user_task_id: ' . $rs['id']);
+           }
             
-            // 任务是前提
-            if(! $task_gain){
-                continue;
-            }
-            $invite_gain = $this->_inviteGain($rs['id']);
-            $gain[$rs['id']] = [
-                'task_gain' => $task_gain,
-                'invite_gain' => $invite_gain
-            ];
-            
-        }       
-
-        // 更新记录表
-        $status = $this->_insertGain($gain);
-        if(! $status){
-            $this->log('failed');
-        }else{
-            $this->log('success');
-        }
+        }    
+       
         $this->log('end');
         exit;
     }
+	
+	private function _updateTask($id){
+		$update_data = [
+			'status' => 1,
+			'updated_date' => $this->date
+		];
+		$where = [
+			'id' => $id,
+			'status' => 0
+		];
+		return Db::name('user_task')->where($where)->update($update_data);
+		
+	}
 
     private function _taskData(){
+		$date = date('Y-m-d H:i:s', strtotime('-3 minute'));
+		$old_date = date('Y-m-d H:i:s', strtotime('-2 day'));
         $where = [
-            'c.status' => 1,
-            'b.status' => 0
+            ['c.status', '=', 1],
+            ['b.status', '=', 0],
+			['b.added_date', '<', $date],
+			['b.added_date', '>', $old_date]
         ];
         $data = Db::name('task')->alias('a')
-            ->join('user_task b', 'a.id = b.task_id', 'left')
+            ->join('user_task b', 'a.id = b.taskid', 'left')
             ->join('order c', 'c.userid = b.userid', 'left')
-			->field('a.id')
+			->field('b.id')
 			->where($where)
 			->select()->toArray();
 		return $data;

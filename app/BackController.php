@@ -65,9 +65,11 @@ abstract class BackController
     }
 
     public function isLogin(){
-        $userid = intval(cookie('userid'));
+        // $userid = intval(cookie('userid'));
+		$userid = intval(session('userid'));
 		$this->userid = $userid;
-        $token = cookie('token');
+        // $token = cookie('token');
+		$token = session('token');
         if(! $userid || ! $token){
             return false;
         }

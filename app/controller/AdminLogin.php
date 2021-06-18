@@ -70,24 +70,21 @@ class AdminLogin extends BackController
 		$this->setLogout();
 		$login_url = $this->url('/index.php?s=AdminLogin');
 		header('Location: ' . $login_url);
-		die;
 	}
 	
 	public function setLogin($userid){
 	    session('userid', $userid);
 		// error_log(print_r($userid, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r(session('userid'), true), 3, '/Volumes/mac-disk/work/www/debug.log'); die;
-		cookie('userid', $userid);
+		// cookie('userid', $userid);
 	    $token = md5('dcc' . $userid . '8923');
 	    session('token', $token);
-		cookie('token', $token);
+		// cookie('token', $token);
 	    return true;
 	}
 	
 	public function setLogout(){
-	    session(null);
-		cookie('userid', null);
-		cookie('token', null);
-	    return true;
+		// cookie('userid', null);
+		// cookie('token', null);
+		session(null);
 	}
 }
