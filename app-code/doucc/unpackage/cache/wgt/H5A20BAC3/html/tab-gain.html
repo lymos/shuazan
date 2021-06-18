@@ -39,7 +39,7 @@
 			    		<span>任务收益：</span><span id="task-gain"></span>
 			    	</div>
 			    	<div class="r-right">
-			    		<button id="link-task" type="button">接任务</button>
+			    		<button id="link-taskall" type="button">接任务</button>
 			    	</div>
 			    	
 			    </li>
@@ -91,10 +91,10 @@
 				});
 			}, false);
 			
-			document.getElementById('link-task').addEventListener('tap', function(event) {
+			document.getElementById('link-taskall').addEventListener('tap', function(event) {
 				mui.openWindow({
-					url: 'tab-task.html',
-					id: 'link-task',
+					url: 'taskall.html',
+					id: 'link-taskall',
 					preload: true,
 					extras: {
 						is_back:true 

@@ -92,25 +92,24 @@ class Admin extends BackController
     }
 
     public function userList(){
-        $ret = [
-			'code' => 0,
-			'data' => '',
-			'msg' => ''
-		];
-
-		$list = Db::name('task')
-			->field('id, name, added_date')
-            ->where(1)
+        $where = '';
+        $keyword = addslashes(trim(Request::param('keyword')));
+        if($keyword){
+        	$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
+        }
+        $list = Db::name('order')->alias('a')
+        	->join('user b', 'a.userid = b.id', 'left')
+        	->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
+            ->where($where)
             ->order('id', 'desc')
-			->select();
-		
-		$ret['code'] = 1;
-		$ret['data'] = $list;
-		View::assign('list', $list);
-		$url = $this->url('/index.php?s=Admin/taskEdit');
-		View::assign('url', $url);
-		return View::fetch('taskList');
-		return json($ret);
+        	->select();
+        
+        $ret['code'] = 1;
+        $ret['data'] = $list;
+        View::assign('list', $list);
+        View::assign('keyword', $keyword);
+        View::assign('order_status_list', $this->order_status_list);
+        return View::fetch('userList');
     }
 
     public function orderList(){

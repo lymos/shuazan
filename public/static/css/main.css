@@ -42,6 +42,8 @@ form.mui-input-group{
 .action-box{
 	text-align: center;
 	margin-top: 20px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 .index-action-box{
 	margin-top: 40px;
@@ -221,7 +223,8 @@ form.mui-input-group{
 .item-txt{
 	padding-top: 10px;
 	text-align: left;
-	padding-left: 4px;
+	padding-left: 9px;
+	font-size: 13px;
 }
 .icon-item.item1{
 	background-image: url(../images/btn1.jpeg);

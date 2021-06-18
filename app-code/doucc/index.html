@@ -11,7 +11,10 @@
 		<style>
 			html,
 			body {
-				background-color: #efeff4;
+				background-color: #fff;
+			}
+			.mui-content{
+				background-color: #fff;
 			}
 			
 			.title {
@@ -86,8 +89,8 @@
 					}, false);
 
 					document.getElementById('link-signin').addEventListener('tap', function(event) {
-						if(! isLogin("")){
-							//return ;
+						if(! isLogin("", true)){
+							return ;
 						}
 						mui.openWindow({
 							url: 'html/signin.html',

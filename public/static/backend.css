@@ -8,3 +8,6 @@
 	margin-bottom: 40px;
 	font-size: 2em;
 }
+.layui-nav .active{
+	background-color: #009688;
+}
