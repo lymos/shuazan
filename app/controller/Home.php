@@ -84,5 +84,10 @@ class Home extends BaseController
 	{
 	    return View::fetch('taskall');
 	}
+	
+	public function download()
+	{
+	    return View::fetch('download');
+	}
    
 }
