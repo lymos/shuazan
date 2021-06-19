@@ -151,6 +151,11 @@
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if (data.code == 0) {
 						mui.alert(data.msg);
+					}else if(data.code == 2){
+						mui.alert("请先登录", '', '', function(){
+							delToken();
+							goto("../login.html");
+						});
 					} else {
 						var ret = data.data,
 								i = 1,

@@ -44,7 +44,7 @@ class Cron extends BaseController{
         if(! $task_data){
             $this->log('no data');
             $this->log('end');
-            return ;
+            exit;
         }
         $gain = [];
         foreach($task_data as $rs){
@@ -107,7 +107,7 @@ class Cron extends BaseController{
         if(! $user_data){
             $this->log('no data');
             $this->log('end');
-            return ;
+            exit;
         }
         $gain = [];
         foreach($user_data as $rs){
