@@ -3,3 +3,4 @@
 *.log
 .env
 app-code/doucc/unpackage/*
+*.DS_Store
