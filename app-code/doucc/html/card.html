@@ -48,19 +48,19 @@
 			<form id='login-form' class="mui-input-group">
 				<div class="mui-input-row">
 					<label>开户名</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="开户名">
+					<input id='name' type="text" class="mui-input-clear mui-input" placeholder="开户名">
 				</div>
 				<div class="mui-input-row">
 					<label>卡号</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="卡号">
+					<input id='card' type="text" class="mui-input-clear mui-input" placeholder="卡号">
 				</div>
 				<div class="mui-input-row">
 					<label>银行名称</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="银行名称">
+					<input id='brand' type="text" class="mui-input-clear mui-input" placeholder="银行名称">
 				</div>
 				<div class="mui-input-row">
 					<label>预留手机号</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
+					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
 				</div>
 			</form>
 			
@@ -78,45 +78,43 @@
 					statusBarBackground: '#f7f7f7'
 				});
 				$.plusReady(function() {
-					$(".mui-content-padded").on('tap','.btn-add',function(){
-						submit();
-					});
-					
-					var submit = function(){
-						mui.alert(888)
-						mui.ajax(config.host + 'index.php?s=user/addCard', {
-							data:{
-								username:'username',
-								password:'password'
-							},
-							dataType:'json',//服务器返回json格式数据
-							type:'post',//HTTP请求类型
-							timeout:10000,//超时时间设置为10秒；
-							headers:{'Content-Type':'application/json'},
-							success:function(data){
-								console.log(data)
-								alert(JSON.stringify(data));
-								//服务器返回响应，根据响应结果，分析是否登录成功；
-								if(data.code == 0){
-									mui.alert(data.msg);
-								}else{
-									var html = "";
-									for(var i in data.data){
-										html += '<li class="mui-table-view-cell">';
+					doc.getElementById("btn-add").addEventListener('tap', function(event) {
+						var form_data = {
+							name: doc.getElementById("name").value,
+							card: doc.getElementById("card").value,
+							brand: doc.getElementById("brand").value,
+							mobile: doc.getElementById("mobile").value,
+						};
+							
+						// 操作
+						mui.ajax(config.host + 'index.php?s=DccUser/addCard', {
+								data: Object.assign(form_data, getToken()),
+								dataType:'json',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								headers:{'Content-Type':'application/json'},
+								success:function(data){
+									console.log(data)
+									//服务器返回响应，根据响应结果，分析是否登录成功；
+									if(data.code == 0){
+										mui.alert(data.msg);
+									}else if(data.code == 2){
+										mui.alert("请先登录", '', '', function(){
+											goto("login.html");
+										});
+									}else{
+										mui.alert("绑卡成功", '', '', function(){
+											mui.back();
+										});
 									}
-									var plist = document.getElementById("product-list");
-									plist.innerHTML = html;
+									
+								},
+								error:function(xhr,type,errorThrown){
+									//异常处理；
+									console.log(type);
 								}
-								
-							},
-							error:function(xhr,type,errorThrown){
-								//异常处理；
-								mui.alert("card");
-								document.getElementById("ddddd").innerHTML = "抖音云端机器人88";
-								console.log(type);
-							}
 						});
-					}
+					});
 				});
 			}(mui, document));
 		</script>
