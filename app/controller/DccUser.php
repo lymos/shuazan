@@ -90,25 +90,6 @@ class DccUser extends BaseController
 	}
 	
 	/**
-	 * add card
-	 */
-	public function addCard(){
-		if(! $this->verify_token()){
-			return json(['code' => 0, 'data' => '', 'msg' => 'token is invaild']);
-		}
-		$data = Db::table('dcc_user')
-			->field('invite_code, mobile, id')
-			->where('id', 1)->find();
-		$invite_data = $this->getUserInvite();
-		$ret = [
-			'code' => 1,
-			'data' => $data,
-			'msg' => ''
-		];
-		return json($ret);
-	}
-	
-	/**
 	 * 生成二维码和邀请码
 	 */
 	public function getInviteInfo(){
@@ -360,5 +341,57 @@ class DccUser extends BaseController
 			$days = $data['days'] + 1;
 		}
 		return $days;
+	}
+	
+	public function addCard(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$mobile = trim(Request::param('mobile'));
+		$card = trim(Request::param('card'));
+		$brand = trim(Request::param('brand'));
+		$name = trim(Request::param('name'));
+		$userid = $this->decrypt(trim(Request::param('userid')));
+		if(! $mobile || ! $card || ! $userid || ! $name || ! $brand){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$date = date('Y-m-d H:i:s');
+	
+		if($this->_checkCardIsExists($card, $userid)){
+			$ret['msg'] = '您已绑定银行卡';
+			return json($ret);
+		}
+		
+		$data = [
+			'userid' => $userid,
+			'card' => $card,
+			'name' => $name,
+			'brand' => $brand,
+			'added_by' => $userid,
+			'mobile' => $mobile,
+			'added_date' => $date
+		];
+		$status = Db::name('user_card')->insert($data);
+		if(! $status){
+			$ret['msg'] = '绑卡失败 code: 50001';
+			return json($ret);
+		}
+		$ret['code'] = 1;
+		return json($ret);
+	}
+	
+	private function _checkCardIsExists($card, $userid){
+		$data = Db::name('user_card')
+			->field('id')
+			->whereRaw('card = :id or userid=:userid', ['id' => $card , 'userid' => $userid])
+			->find();
+		
+		if($data){
+			return true;
+		}
+		return false;
 	}
 }

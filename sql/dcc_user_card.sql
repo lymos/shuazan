@@ -6,12 +6,13 @@ create table dcc_user_card(
 	name varchar(20) not null default "",
 	card varchar(60) not null default "",
 	brand varchar(25) not null default "",
-	mibile varchar(11) not null default "",
+	mobile varchar(11) not null default "",
 	added_by int(11) not null default 0,
 	added_date datetime default null,
 	updated_by int(11) not null default 0,
 	updated_date datetime default null,
 	
 	
-	primary key(id)
+	primary key(id),
+	unique key(card)
 )ENGINE=INNODB default charset=utf8mb4 comment "银行卡表";
