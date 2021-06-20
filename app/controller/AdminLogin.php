@@ -6,6 +6,8 @@ use think\facade\View;
 use app\model\User; 
 use think\facade\Request;
 use think\facade\Db;
+use think\Request as Requ;
+use think\exception\ValidateException;
 
 class AdminLogin extends BackController
 {
@@ -23,7 +25,7 @@ class AdminLogin extends BackController
         return View::fetch('login');
     }
 
-    public function login(Request $request){
+    public function login(Requ $request){
 		
 		$this->is_check_login = false;
         $ret = [
@@ -31,13 +33,12 @@ class AdminLogin extends BackController
 			'data' => '',
 			'msg' => ''
 		];
-		/*
+		
 		$check = $request->checkToken('__token__');
-		        
-		        if(false === $check) {
-		            throw new ValidateException('invalid token');
-		        }
-		*/
+		if(false === $check) {
+		    throw new ValidateException('invalid token');
+		}
+		
         $mobile = trim(Request::param('mobile'));
         $pwd = trim(Request::param('pwd'));
 		if(! $mobile || ! $pwd){
