@@ -193,6 +193,22 @@ class DccUser extends BaseController
 		$istoday = false;
 		if(isset($data[0]) && $data[0]['signin_date'] == $date){
 			$istoday = true;
+		}else if(isset($data[0])){
+			// 判断昨天有没签到
+			$prev_date = date('Y-m-d', strtotime('-1 day'));
+			if($data[0]['signin_date'] != $prev_date){
+				if(! $this->_cancelSignin($userid)){
+					$ret['msg'] = '系统发生错误';
+					return json($ret);
+				}else{
+					// 重新获取
+					$data = Db::name('user_signin')
+						->field('signin_date, days')
+						->where($where)
+						->order('signin_date', 'desc')
+						->select();
+				}
+			}
 		}
 		
 		// 当天是否满14
@@ -218,6 +234,25 @@ class DccUser extends BaseController
 		];
 		$ret['code'] = 1;
 		return json($ret);
+	}
+	
+	private function _cancelSignin($userid){
+		// 以前的设置为废弃
+		$update_data = [
+			'status' => 2,
+			'updated_by' => $userid,
+			'updated_date' => date('Y-m-d H:i:s')
+		];
+		$update_where = [
+			'status' => 0,
+			'userid' => $userid
+		];
+		$update_status = Db::name('user_signin')
+			->where($update_where)->update($update_data);
+		if($update_status === false){
+			return false;
+		}
+		return true;
 	}
 	
 	/**
