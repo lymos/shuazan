@@ -171,6 +171,11 @@ abstract class BaseController
 	}
 	
 	public function sendSms($mobile, $msg){
+		// 判断限制
+		if(! $this->_smsRule()){
+			return false;
+		}
+		
 		$url = 'http://211.149.137.53:8045/Port/default.ashx?method=SendSms&username=doucaicai&password=a123456789';
 		$url .= '&phonelist=' . $mobile . '&msg=' . $msg . '&SendDatetime=';
 		$ret = $this->curl($url);
@@ -180,5 +185,16 @@ abstract class BaseController
 		}else{
 			return false;
 		}	
+	}
+	
+	private function _smsRule(){
+		// 60s
+		
+		// 一手机一天只能发10条
+		
+		// 同IP一天10条
+		
+		
+		return true;
 	}
 }
