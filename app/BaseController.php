@@ -172,7 +172,7 @@ abstract class BaseController
 	
 	public function sendSms($mobile, $msg){
 		// 判断限制
-		if(! $this->_smsRule()){
+		if(! $this->_smsRule($mobile)){
 			return false;
 		}
 		
@@ -187,14 +187,61 @@ abstract class BaseController
 		}	
 	}
 	
-	private function _smsRule(){
+	private function _smsRule($mobile){
+        $user = Db::name('user')
+            ->field('sms_ip, sms_times, sms_last_date')
+            ->where(['mobile' => $mobile])
+            ->find();
+        if(! $user){
+            return true;
+        }
+        $ip = $this->getIp();
+        $date = date('Y-m-d');
+        $now = date('Y-m-d H:i:s');
+        $now_time = time();
+        $sms_time = strtotime($user['sms_last_date']);
+        $sms_date = date('Y-m-d', $sms_time);
+
 		// 60s
-		
+        if($now_time > ($sms_time + 60)){
+            return false;
+        }
+
+        $update_data = [
+            'sms_ip' => $ip,
+            'sms_times' => 0,
+            'sms_last_date' => $now
+        ];
 		// 一手机一天只能发10条
+        // 同IP一天10条
+        $status = true;
+        if($date == $sms_date){
+            if($user['sms_times'] >= 10){
+                $user['sms_times'] = 0;
+                $status = false;
+            }else{
+                $user['sms_times']++;
+            }
+            $update_data['sms_times'] = $user['sms_times'];
+        }else{
+            $update_data['sms_times'] = 0;
+        }
 		
-		// 同IP一天10条
+		$res = Db::name('user')->where(['mobile' => $mobile])->update($update_data);
+        if($res === false){
+            return false;
+        }
 		
-		
-		return true;
+		return $status;
 	}
+
+    public function getIp(){
+        $forwarded = request()->header('x-forwarded-for');
+        if($forwarded){
+            $ip = explode(',',$forwarded)[0];
+        }else{
+            $ip = request()->ip();
+        }
+        return $ip;
+    }
 }

@@ -118,13 +118,7 @@ class Login extends BaseController
 		}
 		
 		$code = $this->_genCode();
-		$msg = '【抖财财】您的注册验证码是：' . $code;
-		// $res = $this->sendSms($mobile, $msg); // debug
-		$res = true; // debug
-		if(! $res){
-			$ret['msg'] = '短信发送失败';
-			return json($ret);
-		}
+		
 		$now = time();
 		$date = date('Y-m-d H:i:s');
 		
@@ -152,6 +146,15 @@ class Login extends BaseController
 				return json($ret);
 			}
 		}
+
+		$msg = '【抖财财】您的注册验证码是：' . $code;
+		// $res = $this->sendSms($mobile, $msg); // debug
+		$res = true; // debug
+		if(! $res){
+			$ret['msg'] = '短信发送失败';
+			return json($ret);
+		}
+		
 		$ret['code'] = 1;
 		return json($ret);
 	}
