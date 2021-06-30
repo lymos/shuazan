@@ -213,7 +213,6 @@ abstract class BaseController
             'sms_last_date' => $now
         ];
 		// 一手机一天只能发10条
-        // 同IP一天10条
         $status = true;
         if($date == $sms_date){
             if($user['sms_times'] >= 10){
@@ -226,10 +225,24 @@ abstract class BaseController
         }else{
             $update_data['sms_times'] = 0;
         }
+
+        // 同IP一天10条
+        $where_ip = [
+            ['sms_ip', '=', $ip],
+            ['sms_last_date', '>', $date . ' 00:00:00'],
+            ['sms_last_date', '<=', $now]
+        ];
+        $ip_times = Db::name('user')
+            ->field('sum(sms_times) as times')
+            ->where($where_ip)
+            ->find();
+        if($ip_times && $ip_times['times'] >= 10){
+            $status = false;
+        }
 		
 		$res = Db::name('user')->where(['mobile' => $mobile])->update($update_data);
         if($res === false){
-            return false;
+            $status = false;
         }
 		
 		return $status;
