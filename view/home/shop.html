@@ -49,11 +49,24 @@
 				</li>
 			
 			</ul>
+			
+		</div>
+		<div id="popover" class="mui-popover pay-box">
+			<div class="mui-content-padded">
+				<button id="btn-alipay" class="mui-btn mui-btn-block mui-btn-primary">支付宝</button>
+			</div>
+			<div class="mui-content-padded">
+				<button id="btn-wxpay" class="mui-btn mui-btn-block mui-btn-primary">微信</button>
+			</div>
+			<div class="mui-content-padded">
+				<button id="btn-unionpay" class="mui-btn mui-btn-block mui-btn-primary">银联</button>
+			</div>
 		</div>
 	</body>
 	<script src="../../static/js/mui.min.js"></script>
 		<script src="./../static/js/main.js"></script>
 	<script>
+		var $pobj = {};
 		mui.init({
 			swipeBack:true ,//启用右滑关闭功能
 			
@@ -90,8 +103,62 @@
 				}
 			});
 			
+			document.getElementById("btn-alipay").addEventListener('tap', function(event) {
+				pay("alipay");
+			});
+			
+			document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
+				pay("wxpay");
+			});
+			
+			document.getElementById("btn-unionpay").addEventListener('tap', function(event) {
+				pay("unionpay");
+			});
+			
+			function pay(type){
+				var productid = $pobj.getAttribute("data-id");
+				mui.ajax(config.host + 'index.php?s=Order/createOrder', {
+					data: Object.assign(getToken(), {productid: productid}),
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else if(data.code == 2){
+							
+						}else{
+							var uri = "alipay";
+							switch(type){
+								case "wxpay":
+									uri = "wxpay";
+									break;
+								case "unionpay":
+									uri = "unionpay";
+									break;
+							}
+							var url = config.host + 'index.php?s=Cash/' + uri + '&orderid=' + data.data.orderid + "&userid=" + data.data.userid;
+							
+							location.href = url;						   
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}
+			
 			
 			mui("#product-list").on('tap', '.btn-buy', function(){
+				$pobj = this;
+				mui('#popover').popover("toggle");
+				return ; 
+				/*
 				var productid = this.getAttribute("data-id");
 				mui.ajax(config.host + 'index.php?s=Order/createOrder', {
 					data: Object.assign(getToken(), {productid: productid}),
@@ -127,6 +194,7 @@
 						console.log(type);
 					}
 				});
+				*/
 			});
 			
 		   
