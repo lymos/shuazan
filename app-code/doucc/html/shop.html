@@ -66,6 +66,19 @@
 	<script src="../js/main.js"></script>
 	<script>
 		var $pobj = {};
+		var channel=null;  
+		// 1. 获取支付通道  
+		function plusReady(){ //uni-app中将此function里的代码放入vue页面的onLoad生命周期中  
+		    // 获取支付通道  
+		    plus.payment.getChannels(function(channels){  
+		        channel=channels[0];  
+				mui.alert(JSON.stringify(channel));
+		    },function(e){  
+		        mui.alert("获取支付通道失败："+e.message);  
+		    });  
+		}  
+		 
+		
 		mui.init({
 			swipeBack:true ,//启用右滑关闭功能
 			pullRefresh : {
@@ -82,6 +95,8 @@
 			  }
 		});
 		mui.plusReady(function() {
+			document.addEventListener('plusready',plusReady,false);//uni-app不需要此代码 
+			
 			mui.ajax(config.host + 'index.php?s=Product/getProductList', {
 				data: getToken(),
 				dataType:'json',//服务器返回json格式数据
@@ -114,7 +129,8 @@
 			});
 			
 			document.getElementById("btn-alipay").addEventListener('tap', function(event) {
-				pay("alipay");
+				// pay("alipay");
+				pay2("alipay");
 			});
 			
 			document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
@@ -125,6 +141,10 @@
 				pay("unionpay");
 			});
 			
+			/**
+			 * 网页方式
+			 * @param {Object} type
+			 */
 			function pay(type){
 				var productid = $pobj.getAttribute("data-id");
 				mui.ajax(config.host + 'index.php?s=Order/createOrder', {
@@ -223,6 +243,81 @@
 				*/
 			
 			});
+			
+			/**
+			 * app 方式
+			 * @param {Object} id
+			 */
+			function pay2(id){  
+				var statement = {
+					app_id: "2021000117690345",
+					method: "alipay.trade.wap.pay",
+					format: "JSON",
+					charset: "UTF-8",
+					sign_type: "RSA2",
+					version: "1.0",
+					return_url: "http://s",
+					notify_url: "http",
+					timestamp: "2014-07-24 03:07:50",
+					sign: "9999",
+					biz_content: {
+						subject: "2222",
+						out_trade_no: "8888",
+						total_amount: "0.01",
+						product_code: "QUICK_WAP_PAY",
+						quit_url: 'https://imgbed.cn/static/alipay-return.html'
+					}
+				};
+				//微信orderinfo格式   
+				// "{\"appid\":\"xxxxxxxx\",\"partnerid\":\"xxxxxxx\",\"prepayid\":\"xxxxxxxxxxxxxxxx\",\"timestamp\":\"1579779903\",\"noncestr\":\"xxxxxxx\",\"package\":\"Sign": "WXPay\",\"sign\":\"xxxxxxxxxxxxxxxxxxxx\"}"  
+				
+				//支付宝orderinfo格式  
+				// var str = "app_id=xxxxxxxxx&method=xxxxxxxxxx&format=JSON&charset=UTF-8&sign_type=RSA2&version=1.0&return_url=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&notify_url=xxxxx&timestamp=xxxxxx&sign=xxxxxxx&biz_content=xxxxxxxxxx";
+				
+				plus.payment.request(channel, JSON.stringify(statement),function(result){
+					mui.alert(4)
+				    plus.nativeUI.alert("支付成功！",function(){  
+				        back();  
+				    });  
+				},function(error){  
+					mui.alert(JSON.stringify(error));
+				   // plus.nativeUI.alert("支付失败：" + error.code);  
+				});  
+				return ;
+				
+			    // 从服务器请求支付订单  
+			    var PAYSERVER='';  
+			    if(id=='alipay'){  
+			        PAYSERVER=ALIPAYSERVER;  
+			    }else if(id=='wxpay'){  
+			        PAYSERVER=WXPAYSERVER;  
+			    }else{  
+			        plus.nativeUI.alert("不支持此支付通道！",null,"捐赠");  
+			        return;  
+			    }  
+			    var xhr=new plus.net.XMLHttpRequest(); //uni-app中请使用uni的request api联网  
+			    xhr.onreadystatechange=function(){  
+			        switch(xhr.readyState){  
+			            case 4:  
+			            if(xhr.status==200){  
+			                plus.payment.request(channel,xhr.responseText,function(result){  
+			                    plus.nativeUI.alert("支付成功！",function(){  
+			                        back();  
+			                    });  
+			                },function(error){  
+			                    plus.nativeUI.alert("支付失败：" + error.code);  
+			                });  
+			            }else{  
+			                alert("获取订单信息失败！");  
+			            }  
+			            break;  
+			            default:  
+			            break;  
+			        }  
+			    }  
+			    xhr.open('GET',PAYSERVER);  
+			    xhr.send();  
+			}
 			
 		});
 		var getTaskList = function(){

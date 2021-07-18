@@ -402,6 +402,40 @@ class Cash extends BaseController
 		return View::fetch('alipay');
 	}
 	
+	public function aliOrder(){
+		$alipay_path = BASE_PATH . '/extend/alipay/';
+		require_once $alipay_path . 'wappay/aop/AopClient.php';
+		require $alipay_path . 'config.php';
+		
+		$order_obj = new Order();
+		$order = $order_obj->createOrder();
+		$product_name = '';
+		$orderno = '';
+		
+		$order_info = [
+			'app_id' => $config['app_id'],
+			'method' => 'alipay.trade.wap.pay',
+			'format' => 'JSON',
+			'charset' => $config['charset'],
+			'sign_type' => $config['sign_type'],
+			'version' => "1.0",
+			'return_url' => $config['return_url'],
+			'notify_url' => $config['notify_url'],
+			'timestamp' => date('Y-m-d H:i:s'),
+			// 'sign' => $sign,
+			'biz_content' => [
+				'subject' => $product_name,
+				'out_trade_no' => $orderno,
+				'total_amount' => "0.01",
+				'product_code' =>  'QUICK_WAP_PAY',
+				// quit_url: 'https://imgbed.cn/static/alipay-return.html'
+			]
+		]
+		$aop = new AopClient();
+		$order_info['$sign']	= $aop->rsaSign($order_info, 'RSA2');
+		return json($order_info);
+	}
+	
 	/**
 	 * 付款回调
 	 */

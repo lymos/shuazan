@@ -1,5 +1,5 @@
 var config = {
-		host: "http://121.37.3.176/",
+		host: "http://doucc.com/",
 };
 var isLogin = function(path, retect){
 	// return true;
