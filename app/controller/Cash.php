@@ -315,10 +315,13 @@ class Cash extends BaseController
 	}
 	
 	public function wxpay(){
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		require $wxpay_path . 'config.php';
+		
 		// 工厂方法构造一个实例
 		$instance = \WeChatPay\Builder::factory([
 		    // 商户号
-		    'mchid' => '1000100',
+		    'mchid' => $config['mchid'],
 		    // 商户证书序列号
 		    'serial' => 'XXXXXXXXXX',
 		    // 商户API私钥 PEM格式的文本字符串或者文件resource
@@ -339,6 +342,7 @@ class Cash extends BaseController
 		error_log(print_r($instance, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		try {
+			// $instance->v3->pay->transactions->h5->post
 		    $resp = $instance->v3->pay->transactions->native->post(['json' => [
 		        'mchid' => '1900006XXX',
 		        'out_trade_no' => 'native12177525012014070332333',
@@ -403,14 +407,23 @@ class Cash extends BaseController
 	}
 	
 	public function aliOrder(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
-		require_once $alipay_path . 'wappay/aop/AopClient.php';
+		require_once $alipay_path . 'aop/AopClient.php';
 		require $alipay_path . 'config.php';
 		
-		$order_obj = new Order();
-		$order = $order_obj->createOrder();
-		$product_name = '';
-		$orderno = '';
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
+		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
 		
 		$order_info = [
 			'app_id' => $config['app_id'],
@@ -423,17 +436,71 @@ class Cash extends BaseController
 			'notify_url' => $config['notify_url'],
 			'timestamp' => date('Y-m-d H:i:s'),
 			// 'sign' => $sign,
-			'biz_content' => [
-				'subject' => $product_name,
-				'out_trade_no' => $orderno,
-				'total_amount' => "0.01",
+			'biz_content' => json_encode([
+				'subject' => $order['name'],
+				'out_trade_no' => $order['orderid'],
+				'total_amount' => $order['total'],
 				'product_code' =>  'QUICK_WAP_PAY',
 				// quit_url: 'https://imgbed.cn/static/alipay-return.html'
+			])
+		];
+		$aop = new \AopClient();
+		$aop->rsaPrivateKey = $config['merchant_private_key'];
+		$order_info['sign']	= $aop->rsaSign($order_info, 'RSA2');
+		$order_info['biz_content'] = json_decode($order_info['biz_content'], true);
+		$ret['data'] = $order_info;
+		$ret['code'] = 1;
+		return json($ret);
+	}
+	
+	public function wxOrder(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		require $wxpay_path . 'config.php';
+		
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
+		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
+		
+		
+		$order_info = [
+			'appid' => $config['app_id'],
+			/*
+			'partnerid' => '',
+			'prepayid' => '',
+			'timestamp' => time(),
+			'noncestr' => '',
+			*/
+			'mchid' => ''，
+			'description' => $order['name'],
+			'out_trade_no' => $order['orderid'],
+			'notify_url' => '',
+			'amount' => [
+				'total' => $order['total']
+			],
+			'scene_info' => [
+				'payer_client_ip' => '',
+				'h5_info' => [
+					'type' => 'IOS' // iOS, Android, Wap
+				]
 			]
-		]
-		$aop = new AopClient();
-		$order_info['$sign']	= $aop->rsaSign($order_info, 'RSA2');
-		return json($order_info);
+		];
+		$aop = new \AopClient();
+		$aop->rsaPrivateKey = $config['merchant_private_key'];
+		$order_info['sign']	= $aop->rsaSign($order_info, 'RSA2');
+		$order_info['biz_content'] = json_decode($order_info['biz_content'], true);
+		$ret['data'] = $order_info;
+		$ret['code'] = 1;
+		return json($ret);
 	}
 	
 	/**

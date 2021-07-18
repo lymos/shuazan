@@ -16,7 +16,7 @@ class Order extends BaseController
 	/**
 	 * 访问：http://doucc.com/index.php?s=index/get_product
 	 */
-	public function createOrder(){
+	public function createOrder($is_return = false){
 		$ret = [
 			'code' => 0,
 			'data' => '',
@@ -24,6 +24,8 @@ class Order extends BaseController
 		];
 		$productid = intval($this->decrypt(Request::param('productid')));
 		$userid = intval($this->decrypt(Request::param('userid')));
+		
+		$productid = $userid = 1; // debug
 		if(! $productid || ! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
@@ -31,7 +33,7 @@ class Order extends BaseController
 		
 		// 查询产品信息
 		$product = Db::name('product')
-			->field('id,price')
+			->field('id,price,name')
 			->where('id', $productid)->find();
 		if(! $product){
 			$ret['msg'] = '产品不存在';
@@ -72,6 +74,15 @@ class Order extends BaseController
 			return json($ret);
 		}
 		Db::commit();
+		
+		if($is_return){
+			return [
+				'orderid' => $orderid,
+				'userid' => $userid,
+				'total' => $product['price'],
+				'name' => $product['name']
+			];
+		}
 		
 		$res = [
 			'orderid' => $this->encrypt($orderid),

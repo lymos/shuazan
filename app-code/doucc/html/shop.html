@@ -249,6 +249,48 @@
 			 * @param {Object} id
 			 */
 			function pay2(id){  
+				var uri = "aliOrder";
+				if(id == "wxpay"){
+					uri = "wxOrder";
+				}
+				var order_url = config.host + 'index.php?s=Cash/' + uri;
+				var productid = $pobj.getAttribute("data-id");
+				mui.ajax(order_url, {
+					data: Object.assign(getToken(), {productid: productid}),
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					// headers:{'Content-Type':'application/json'},
+					success:function(data){
+						// mui.alert(JSON.stringify(data));
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else if(data.code == 2){
+							
+						}else{
+							var statement = JSON.stringify(data.data);
+							plus.payment.request(channel, statement,function(result){
+									mui.alert("pay success");
+								    plus.nativeUI.alert("支付成功！",function(){  
+								        back();  
+								});  
+							},function(error){  
+								mui.alert(JSON.stringify(error));
+								   // plus.nativeUI.alert("支付失败：" + error.code);  
+							});  			   
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						mui.alert(JSON.stringify(type));
+						
+					}
+				});
+				
+				return ;
+				
+				// alipay params
 				var statement = {
 					app_id: "2021000117690345",
 					method: "alipay.trade.wap.pay",
@@ -268,22 +310,29 @@
 						quit_url: 'https://imgbed.cn/static/alipay-return.html'
 					}
 				};
+				
+				// wxpay params
+				/*
+				var varpay = {  
+				                        retcode: 0,  
+				                        retmsg: "ok",  
+				                        appid: data.result.appid,  
+				                        noncestr: data.result.noncestr,  
+				                        package: "Sign=WXPay",  
+				                        partnerid: data.result.partnerid,  
+				                        prepayid: data.result.prepayid,  
+				                        timestamp: data.result.timestamp,  
+				                        sign: data.result.sign  
+				                    };
+									*/
+				
 				//微信orderinfo格式   
 				// "{\"appid\":\"xxxxxxxx\",\"partnerid\":\"xxxxxxx\",\"prepayid\":\"xxxxxxxxxxxxxxxx\",\"timestamp\":\"1579779903\",\"noncestr\":\"xxxxxxx\",\"package\":\"Sign": "WXPay\",\"sign\":\"xxxxxxxxxxxxxxxxxxxx\"}"  
 				
 				//支付宝orderinfo格式  
 				// var str = "app_id=xxxxxxxxx&method=xxxxxxxxxx&format=JSON&charset=UTF-8&sign_type=RSA2&version=1.0&return_url=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&notify_url=xxxxx&timestamp=xxxxxx&sign=xxxxxxx&biz_content=xxxxxxxxxx";
 				
-				plus.payment.request(channel, JSON.stringify(statement),function(result){
-					mui.alert(4)
-				    plus.nativeUI.alert("支付成功！",function(){  
-				        back();  
-				    });  
-				},function(error){  
-					mui.alert(JSON.stringify(error));
-				   // plus.nativeUI.alert("支付失败：" + error.code);  
-				});  
-				return ;
+				
 				
 			    // 从服务器请求支付订单  
 			    var PAYSERVER='';  
