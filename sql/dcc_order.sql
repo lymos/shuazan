@@ -6,6 +6,7 @@ create table dcc_order(
 	total varchar(10) not null default "",
 	userid int(11) not null default 0,
 	`status` tinyint(1) not null default 0 comment "0.待付款 1.success, 2.付款失败 3.已退款 4.已取消",
+	pay_type tinyint(1) not null default 0 comment "1.alipay 2.wxpay 3.unionpay",
 	added_by int(11) not null default 0,
 	added_date datetime default null,
 	updated_date datetime default null,
