@@ -644,7 +644,7 @@ class Cash extends BaseController
 			'timestamp' => time(),
 			'noncestr' => '',
 			*/
-			'mchid' => ''，
+			'mchid' => '',
 			'description' => $order['name'],
 			'out_trade_no' => $order['orderid'],
 			'notify_url' => '',
