@@ -559,7 +559,7 @@ class Cash extends BaseController
 		$total = $order['total'];
 		$product_name = $order['name'];
 		$time = date('YmdHis');
-		$amt = $total * 100; // 分
+		$amt = $total;
 		
 		if (!empty($orderid)&& trim($orderid)!=""){
 		    //商户订单号，商户网站订单系统中唯一订单号，必填
