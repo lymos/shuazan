@@ -193,7 +193,7 @@ abstract class BaseController
             ->field('sms_ip, sms_times, sms_last_date')
             ->where(['mobile' => $mobile])
             ->find();
-        if(! $user){
+        if(! $user || ! $user['sms_last_date']){
             return true;
         }
         $ip = $this->getIp();
