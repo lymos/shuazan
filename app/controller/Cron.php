@@ -12,6 +12,7 @@ use app\model\User;
 use think\response\Json;
 use think\facade\Db;
 use think\facade\Request;
+use think\facade\Config;
 
 define('RUNTIME_PATH', BASE_PATH . '/runtime/');
 
@@ -149,7 +150,7 @@ class Cron extends BaseController{
         foreach($gain as $userid => $rs){
             $capital = Db::name('order')
 			->field('total')
-			->where(['userid' => $userid, 'status' => 1, 'total' => '1800'])
+			->where(['userid' => $userid, 'status' => 1, 'total' => Config::get('app.p_price')])
             ->find();
 			
             if(! $capital){

@@ -4,3 +4,4 @@
 .env
 app-code/doucc/unpackage/*
 *.DS_Store
+extend/alipay/log.*

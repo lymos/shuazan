@@ -408,7 +408,6 @@ class AopClient {
      * @return 提交表单HTML文本
      */
 	protected function buildRequestForm($para_temp) {
-		
 		$sHtml = "<form id='alipaysubmit' name='alipaysubmit' action='".$this->gatewayUrl."?charset=".trim($this->postCharset)."' method='POST'>";
 		
 		foreach ($para_temp as $key => $val ) {

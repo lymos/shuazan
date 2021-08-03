@@ -46,7 +46,7 @@ if (!empty($_POST['WIDout_trade_no'])&& trim($_POST['WIDout_trade_no'])!=""){
 <!DOCTYPE html>
 <html>
 	<head>
-	<title>支付宝手机网站支付</title>
+	<title>支付宝手机网站支付接口</title>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <style>
     *{
@@ -183,6 +183,9 @@ if (!empty($_POST['WIDout_trade_no'])&& trim($_POST['WIDout_trade_no'])!=""){
 </style>
 </head>
 <body text=#000000 bgColor="#ffffff" leftMargin=0 topMargin=4>
+<header class="am-header">
+        <h1>支付宝手机网站支付接口快速通道(接口名：alipay.trade.wap.pay)</h1>
+</header>
 <div id="main">
         <form name=alipayment action='' method=post target="_blank">
             <div id="body" style="clear:left">

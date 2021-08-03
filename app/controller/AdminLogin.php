@@ -36,7 +36,7 @@ class AdminLogin extends BackController
 		
 		$check = $request->checkToken('__token__');
 		if(false === $check) {
-		    throw new ValidateException('invalid token');
+			throw new ValidateException('invalid token');
 		}
 		
         $mobile = trim(Request::param('mobile'));

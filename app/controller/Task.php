@@ -7,6 +7,7 @@ use app\model\User;
 use think\response\Json;
 use think\facade\Db;
 use think\facade\Request;
+use think\facade\Config;
 
  
 class Task extends BaseController
@@ -132,7 +133,7 @@ class Task extends BaseController
 				[
 					'userid' => $userid,
 					'status' => 1,
-					'total' => '1800'
+					'total' => Config::get('app.p_price')
 				]
 			)->find();
 		if(! $order){

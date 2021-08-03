@@ -203,6 +203,10 @@ class Cash extends BaseController
 		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
+		error_log(print_r('alipayReturn', true), 3, '/tmp/debug.log');
+		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
+		error_log(print_r($_GET, true), 3, '/tmp/debug.log');
+		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
@@ -248,6 +252,10 @@ class Cash extends BaseController
 		error_log(print_r('alipayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		
+		error_log(print_r('alipayNotify', true), 3, '/tmp/debug.log');
+		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
+		error_log(print_r($_GET, true), 3, '/tmp/debug.log');
 		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
@@ -537,21 +545,37 @@ class Cash extends BaseController
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
 		require_once $alipay_path . 'wappay/buildermodel/AlipayTradeWapPayContentBuilder.php';
 		require $alipay_path . 'config.php';
-		if (!empty($_POST['WIDout_trade_no'])&& trim($_POST['WIDout_trade_no'])!=""){
+		
+		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
+		$order_str = str_replace(' ', '+', Request::param('orderid'));
+		$orderid = $this->decrypt($order_str);
+		// $orderid = 'dcc202105300002'; // debug
+		// 查出订单信息
+		$order = $this->_getOrder($userid, $orderid);
+		if(! $order || ! isset($order['total'])){
+			echo '订单不存在';
+			exit;
+		}
+		$total = $order['total'];
+		$product_name = $order['name'];
+		$time = date('YmdHis');
+		$amt = $total * 100; // 分
+		
+		if (!empty($orderid)&& trim($orderid)!=""){
 		    //商户订单号，商户网站订单系统中唯一订单号，必填
-		    $out_trade_no = $_POST['WIDout_trade_no'];
+		    $out_trade_no = $orderid;
 		
 		    //订单名称，必填
-		    $subject = $_POST['WIDsubject'];
+		    $subject = $product_name;
 		
 		    //付款金额，必填
-		    $total_amount = $_POST['WIDtotal_amount'];
+		    $total_amount = $amt;
 		
 		    //商品描述，可空
-		    $body = $_POST['WIDbody'];
+		    $body = '';
 		
 		    //超时时间
-		    $timeout_express="1m";
+		    $timeout_express = "1m";
 		
 		    $payRequestBuilder = new \AlipayTradeWapPayContentBuilder();
 		    $payRequestBuilder->setBody($body);
@@ -561,8 +585,7 @@ class Cash extends BaseController
 		    $payRequestBuilder->setTimeExpress($timeout_express);
 		    $payResponse = new \AlipayTradeService($config);
 			
-		    $result=$payResponse->wapPay($payRequestBuilder, $config['return_url'], $config['notify_url']);
-		// error_log(print_r($result, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		    $result = $payResponse->wapPay($payRequestBuilder, $config['return_url'], $config['notify_url']);
 			return ;
 		}
 		
