@@ -249,6 +249,7 @@ class Cash extends BaseController
 	}
 	
 	public function alipayNotify(){
+
 		error_log(print_r('alipayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
@@ -261,6 +262,8 @@ class Cash extends BaseController
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
 		
+		Log::write('alipay notify in', 'info');
+
 		$arr = $_POST;
 		$alipaySevice = new AlipayTradeService($config); 
 		$alipaySevice->writeLog(var_export($_POST,true));
@@ -281,35 +284,32 @@ class Cash extends BaseController
 			
 		    //获取支付宝的通知返回参数，可参考技术文档中服务器异步通知参数列表
 			
-			$merId = Request::param('merId');
-			$orderId = Request::param('orderId');
-			$respCode = Request::param('respCode');
-			$respMsg = Request::param('respMsg');
-			
-			if(! isset ( $_POST ['signature'] )){
-				echo '非法操作 code: 40001';
-				exit;
-			}
-			$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
-			if(! $check){
-				echo '非法操作 code: 40002';
-				exit;
-			}
-			
-			if(Config::get('app.unionpay_merid') != $merId){
+			$app_id = Request::param('app_id');
+			$orderId = Request::param('out_trade_no');
+			$trade_status = Request::param('trade_status');
+			$total_amount = Request::param('total_amount');
+			Log::write('alipay notify orderid: ' . $orderId . ' in', 'info');
+
+
+			if($config['app_id'] != $app_id){
+				Log::write('alipay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'info');
 				echo '非法操作 code: 40003';
 				exit;
 			}
 			
-			if($respCode != '00' && $respMsg != 'success'){
-				echo '非法操作 code: 40004';
+			if($trade_status != 'TRADE_SUCCESS'){
+				// log
+				Log::write('alipay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
+				echo '非法操作 code: 40003';
 				exit;
 			}
-			
+			Log::write('alipay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
+
 			$date = date('Y-m-d H:i:s');
 			// 修改订单状态
 			$update_data = [
 				'status' => 1,
+				'pay_type' => 1,
 				'updated_date' => $date
 			];
 			$update_where = [
@@ -328,17 +328,12 @@ class Cash extends BaseController
 			header('Location: ' . $url);
 			// echo '付款成功<a href="">首页</a>';
 			exit;
-			//商户订单号
-		
-			$out_trade_no = $_POST['out_trade_no'];
-		
+			
 			//支付宝交易号
 			$trade_no = $_POST['trade_no'];
 		
 			//交易状态
 			$trade_status = $_POST['trade_status'];
-		
-		
 		    if($_POST['trade_status'] == 'TRADE_FINISHED') {
 		
 				//判断该笔订单是否在商户网站中已经做过处理
@@ -726,6 +721,7 @@ class Cash extends BaseController
 		// 修改订单状态
 		$update_data = [
 			'status' => 1,
+			'pay_type' => 3,
 			'updated_date' => $date
 		];
 		$update_where = [
@@ -780,6 +776,7 @@ class Cash extends BaseController
 		// 修改订单状态
 		$update_data = [
 			'status' => 1,
+			'pay_type' => 3,
 			'updated_date' => $date
 		];
 		$update_where = [
