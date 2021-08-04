@@ -102,6 +102,7 @@
 			swipeBack: true //启用右滑关闭功能
 		});
 		mui.plusReady(function() { 
+			// mui.alert(JSON.stringify(getToken()));
 			mui.ajax(config.host + 'index.php?s=DccUser/info', {
 					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
@@ -109,6 +110,7 @@
 					timeout:10000,//超时时间设置为10秒；
 					headers:{'Content-Type':'application/json'},
 					success:function(data){
+						// mui.alert(JSON.stringify(data));
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
 							mui.alert(data.msg);

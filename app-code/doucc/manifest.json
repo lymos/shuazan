@@ -334,10 +334,10 @@
                 "android" : {
                     "mdpi" : "", /*普通屏程序图标，分辨率：48x48*/
                     "ldpi" : "", /*大屏程序图标，分辨率：48x48*/
-                    "hdpi" : "/Users/lymos/Downloads/trident-emblem_1f531.png", /*高分屏程序图标，分辨率：72x72*/
-                    "xhdpi" : "/Users/lymos/Downloads/trident-emblem_1f531-160.png", /*720P高分屏程序图标，分辨率：96x96*/
-                    "xxhdpi" : "/Users/lymos/Downloads/trident-emblem_1f531-160.png",
-                    "xxxhdpi" : "/Users/lymos/Downloads/trident-emblem_1f531-160.png"
+                    "hdpi" : "/Volumes/mac-disk/images/app2.png", /*高分屏程序图标，分辨率：72x72*/
+                    "xhdpi" : "/Volumes/mac-disk/images/app2.png", /*720P高分屏程序图标，分辨率：96x96*/
+                    "xxhdpi" : "/Volumes/mac-disk/images/app2.png",
+                    "xxxhdpi" : "/Volumes/mac-disk/images/app2.png"
                 }
             },
             "splashscreen" : {
