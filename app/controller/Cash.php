@@ -587,8 +587,58 @@ class Cash extends BaseController
 		// View::assign('invite_code', $invite_code);
 		return View::fetch('alipay');
 	}
-	
+
 	public function aliOrder(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		
+		$alipay_path = BASE_PATH . '/extend/alipay/';
+		require_once $alipay_path . 'aop/AopClient.php';
+		require_once $alipay_path . 'aop/request/AlipayTradeAppPayRequest.php';
+		require $alipay_path . 'config.php';
+		
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
+		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
+
+		$aop = new \AopClient();
+  		$aop->gatewayUrl = $config['gatewayUrl'];
+		  $aop->appId = $config['app_id'];
+		  $aop->rsaPrivateKey = $config['merchant_private_key'];
+		  $aop->format = 'json';
+		  $aop->charset = $config['charset'];
+		  $aop->signType = $config['sign_type'];;
+		  $aop->alipayrsaPublicKey = $config['alipay_public_key'];
+		 //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+		  $request = new \AlipayTradeAppPayRequest();
+		 //SDK已经封装掉了公共参数，这里只需要传入业务参数
+		   
+		  $bizcontent = json_encode([
+		   'body'=>'**',
+		   'subject'=> $order['name'],
+		   'out_trade_no'=> $order['orderid'],//此订单号为商户唯一订单号
+		   'total_amount'=> $order['total'],//保留两位小数
+		   'product_code'=>'QUICK_MSECURITY_PAY'
+		  ]);
+		  $request->setNotifyUrl($config['notify_url']);
+		  $request->setBizContent($bizcontent);
+		 //这里和普通的接口调用不同，使用的是sdkExecute
+		  $response = $aop->sdkExecute($request);
+		 //htmlspecialchars是为了输出到页面时防止被浏览器将关键参数html转义，实际打印到日志以及http传输不会有这个问题
+		
+		$ret['data'] = $response;
+		$ret['code'] = 1;
+		return json($ret);
+	}
+	
+	public function aliOrder2(){
 		$ret = [
 			'code' => 0,
 			'data' => '',
@@ -609,7 +659,7 @@ class Cash extends BaseController
 		
 		$order_info = [
 			'app_id' => $config['app_id'],
-			'method' => 'alipay.trade.wap.pay',
+			'method' => 'alipay.trade.app.pay',
 			'format' => 'JSON',
 			'charset' => $config['charset'],
 			'sign_type' => $config['sign_type'],
@@ -622,7 +672,7 @@ class Cash extends BaseController
 				'subject' => $order['name'],
 				'out_trade_no' => $order['orderid'],
 				'total_amount' => $order['total'],
-				'product_code' =>  'QUICK_WAP_PAY',
+				// 'product_code' =>  'QUICK_WAP_PAY',
 				// quit_url: 'https://imgbed.cn/static/alipay-return.html'
 			])
 		];
