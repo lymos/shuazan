@@ -66,13 +66,18 @@
 	<script src="../js/main.js"></script>
 	<script>
 		var $pobj = {};
-		var channel=null;  
+		var ali_channel = null;  
 		// 1. 获取支付通道  
 		function plusReady(){ //uni-app中将此function里的代码放入vue页面的onLoad生命周期中  
 		    // 获取支付通道  
-		    plus.payment.getChannels(function(channels){  
-		        channel=channels[0];  
-				mui.alert(JSON.stringify(channel));
+		    plus.payment.getChannels(function(channels){   
+				for (var i in channels) { 
+				    if (channels[i].id == "wxpay") { 
+				       // wxChannel=channels[i];
+				    }else{ 
+				        ali_channel=channels[i];
+				    }
+				}
 		    },function(e){  
 		        mui.alert("获取支付通道失败："+e.message);  
 		    });  
@@ -269,8 +274,11 @@
 						}else if(data.code == 2){
 							
 						}else{
-							var statement = JSON.stringify(data.data);
-							plus.payment.request(channel, statement,function(result){
+							var statement = data.data;
+							// mui.alert(JSON.stringify(ali_channel));
+							// mui.alert(statement);
+							
+							plus.payment.request(ali_channel, statement, function(result){
 									mui.alert("pay success");
 								    plus.nativeUI.alert("支付成功！",function(){  
 								        back();  

@@ -284,7 +284,7 @@ class AopClient {
 		$params['format'] = $this->format; 
 		$params['sign_type'] = $this->signType;
 		$params['timestamp'] = date("Y-m-d H:i:s");
-		$params['alipay_sdk'] = $this->alipaySdkVersion;
+		// $params['alipay_sdk'] = $this->alipaySdkVersion;
 		$params['charset'] = $this->postCharset;
 
 		$version = $request->getApiVersion();
@@ -304,8 +304,8 @@ class AopClient {
 		foreach ($params as &$value) {
 			$value = $this->characet($value, $params['charset']);
 		}
-		
-		return http_build_query($params);
+		return $params;
+		// return http_build_query($params);
 	}
 
 	/*
