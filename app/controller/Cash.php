@@ -594,6 +594,75 @@ class Cash extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
+
+		/**
+		 * 证书类型AopClient功能方法使用测试
+		 * 1、execute 调用示例
+		 * 2、sdkExecute 调用示例
+		 * 3、pageExecute 调用示例
+		 */
+		
+		$alipay_path = BASE_PATH . '/extend/alipay-sdk/';
+		require_once $alipay_path . 'aop/AopClient.php';
+		require_once $alipay_path . 'aop/AopCertification.php';
+		require_once $alipay_path . 'aop/request/AlipayTradeQueryRequest.php';
+		require_once $alipay_path . 'aop/request/AlipayTradeWapPayRequest.php';
+		require_once $alipay_path . 'aop/request/AlipayTradeAppPayRequest.php';
+		require $alipay_path . 'config.php';
+		
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
+		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
+
+		$aop = new \AopClient();
+  		$aop->gatewayUrl = $config['gatewayUrl'];
+		  $aop->appId = $config['app_id'];
+		  $aop->rsaPrivateKey = $config['merchant_private_key'];
+		  $aop->format = 'json';
+		  $aop->charset = $config['charset'];
+		  $aop->postCharset = 'utf-8';
+		  $aop->apiVersion = '1.0';
+		  $aop->signType = $config['sign_type'];;
+		  $aop->alipayrsaPublicKey = $config['alipay_public_key'];
+		 //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
+		  $request = new \AlipayTradeQueryRequest();
+		 //SDK已经封装掉了公共参数，这里只需要传入业务参数
+
+		$request->setBizContent("{" .
+		    "\"out_trade_no\":\"" . $order['orderid'] . "\"," .
+		    '"subject":"' . $order['name'] . '",' . 
+		    '"total_amount":"' . $order['total'] . '"' . 
+		  /*  "\"trade_no\":\"2014112611001004680 073956707\"," .
+		    "\"org_pid\":\"2088101117952222\"," .
+		    "      \"query_options\":[" .
+		    "        \"TRADE_SETTE_INFO\"" .
+		    "      ]" .
+		    */
+		    '}');
+
+		$response = $aop->execute($request);
+		   
+		 
+		//  $request->setNotifyUrl($config['notify_url']);
+		 //这里和普通的接口调用不同，使用的是sdkExecute
+		 //  $response = $aop->sdkExecute($request);
+		 //htmlspecialchars是为了输出到页面时防止被浏览器将关键参数html转义，实际打印到日志以及http传输不会有这个问题
+		
+		$ret['data'] = $response;
+		$ret['code'] = 1;
+		return json($ret);
+	}
+
+	public function aliOrder3(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
 		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require_once $alipay_path . 'aop/AopClient.php';
