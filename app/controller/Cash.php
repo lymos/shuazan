@@ -199,9 +199,9 @@ class Cash extends BaseController
 	}
 	
 	public function alipayReturn(){
-		error_log(print_r('alipayReturn', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r('alipayReturn', true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		error_log(print_r('alipayReturn', true), 3, '/tmp/debug.log');
 		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
@@ -210,6 +210,7 @@ class Cash extends BaseController
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
+		Log::write('alipay return in', 'info');
 		
 		$arr = $_GET;
 		$alipaySevice = new \AlipayTradeService($config); 
@@ -227,6 +228,51 @@ class Cash extends BaseController
 			
 			//——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
 		    //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表
+
+		    $app_id = Request::param('app_id');
+			$orderId = Request::param('out_trade_no');
+			$trade_status = Request::param('trade_status');
+			$total_amount = Request::param('total_amount');
+			Log::write('alipay return orderid: ' . $orderId . ' in', 'info');
+
+
+			if($config['app_id'] != $app_id){
+				Log::write('alipay return orderid: ' . $orderId . ' app_id error ' . $app_id, 'info');
+				echo '非法操作 code: 40003';
+				exit;
+			}
+			
+			if($trade_status != 'TRADE_SUCCESS'){
+				// log
+				Log::write('alipay return orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
+				echo '非法操作 code: 40003';
+				exit;
+			}
+			Log::write('alipay return orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
+
+			$date = date('Y-m-d H:i:s');
+			// 修改订单状态
+			$update_data = [
+				'status' => 1,
+				'pay_type' => 1,
+				'updated_date' => $date
+			];
+			$update_where = [
+				'orderid' => $orderId
+			];
+
+			// 更新订单付款状态
+			$update_status = Db::name('order')
+				->where($update_where)
+				->update($update_data);
+			if($update_status === false){
+				echo '付款失败';
+				exit;
+			}
+			$url = $this->url('/index.php?s=home');
+			header('Location: ' . $url);
+			// echo '付款成功<a href="">首页</a>';
+			exit;
 		
 			//商户订单号
 		
@@ -250,9 +296,9 @@ class Cash extends BaseController
 	
 	public function alipayNotify(){
 
-		error_log(print_r('alipayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r('alipayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		error_log(print_r('alipayNotify', true), 3, '/tmp/debug.log');
 		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
@@ -629,7 +675,7 @@ class Cash extends BaseController
 		  $aop->signType = $config['sign_type'];;
 		  $aop->alipayrsaPublicKey = $config['alipay_public_key'];
 		 //实例化具体API对应的request类,类名称和接口名称对应,当前调用接口名称：alipay.trade.app.pay
-		  $request = new \AlipayTradeQueryRequest();
+		  $request = new \AlipayTradeAppPayRequest();
 		 //SDK已经封装掉了公共参数，这里只需要传入业务参数
 
 		$request->setBizContent("{" .
