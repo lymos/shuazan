@@ -93,6 +93,8 @@
 								//服务器返回响应，根据响应结果，分析是否登录成功；
 								if(data.code == 0){
 									mui.alert(data.msg);
+								}else if(data.code == 2){
+									
 								}else{
 									var html = "";
 									for(var i in data.data){

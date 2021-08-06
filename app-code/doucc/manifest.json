@@ -377,6 +377,11 @@
                 "payment" : {
                     "alipay" : {
                         "__platform__" : [ "ios", "android" ]
+                    },
+                    "weixin" : {
+                        "__platform__" : [ "ios", "android" ],
+                        "appid" : "88888888888",
+                        "UniversalLinks" : ""
                     }
                 }
             }

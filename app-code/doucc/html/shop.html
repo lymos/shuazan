@@ -69,13 +69,16 @@
 		var ali_channel = null;  
 		// 1. 获取支付通道  
 		function plusReady(){ //uni-app中将此function里的代码放入vue页面的onLoad生命周期中  
+			// mui.alert("进入支付");
 		    // 获取支付通道  
 		    plus.payment.getChannels(function(channels){   
-				for (var i in channels) { 
+				// mui.alert(JSON.stringify(channels));
+				for (var i in channels) {  
 				    if (channels[i].id == "wxpay") { 
 				       // wxChannel=channels[i];
-				    }else{ 
-				        ali_channel=channels[i];
+				    }else if(channels[i].id == "alipay"){ 
+						// mui.alert("alipay");
+				        ali_channel = channels[i];
 				    }
 				}
 		    },function(e){  
@@ -100,7 +103,7 @@
 			  }
 		});
 		mui.plusReady(function() {
-			document.addEventListener('plusready',plusReady,false);//uni-app不需要此代码 
+			// document.addEventListener('plusready',plusReady,false);//uni-app不需要此代码 
 			
 			mui.ajax(config.host + 'index.php?s=Product/getProductList', {
 				data: getToken(),
@@ -135,6 +138,7 @@
 			
 			document.getElementById("btn-alipay").addEventListener('tap', function(event) {
 				// pay("alipay");
+				plusReady();
 				pay2("alipay");
 			});
 			
