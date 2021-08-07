@@ -11,6 +11,7 @@ use think\response\Json;
 use think\facade\Db;
 use think\facade\Request;
 use think\facade\Config;
+use think\facade\Log;
  
 class Cash extends BaseController
 {
@@ -210,11 +211,13 @@ class Cash extends BaseController
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
-		Log::write('alipay return in', 'info');
 		
 		$arr = $_GET;
+		Log::write('alipay return in ' . $arr['out_trade_no'], 'alipay-return');
+		
 		$alipaySevice = new \AlipayTradeService($config); 
 		$result = $alipaySevice->check($arr);
+		$result = true; // debug
 		
 		/* 实际验证过程建议商户添加以下校验。
 		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
@@ -229,27 +232,25 @@ class Cash extends BaseController
 			//——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
 		    //获取支付宝的通知返回参数，可参考技术文档中页面跳转同步通知参数列表
 
-		    $app_id = Request::param('app_id');
+			$app_id = Request::param('app_id');
 			$orderId = Request::param('out_trade_no');
 			$trade_status = Request::param('trade_status');
 			$total_amount = Request::param('total_amount');
-			Log::write('alipay return orderid: ' . $orderId . ' in', 'info');
-
-
+			Log::write('alipay return orderid: ' . $orderId . ' in', 'alipay-return');
+			
+			
 			if($config['app_id'] != $app_id){
-				Log::write('alipay return orderid: ' . $orderId . ' app_id error ' . $app_id, 'info');
-				echo '非法操作 code: 40003';
-				exit;
+				Log::write('alipay return orderid: ' . $orderId . ' app_id error ' . $app_id, 'alipay-return');
+				$this->payBack();
 			}
 			
 			if($trade_status != 'TRADE_SUCCESS'){
 				// log
-				Log::write('alipay return orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
-				echo '非法操作 code: 40003';
-				exit;
+				Log::write('alipay return orderid: ' . $orderId . ' trade failed status: ' . $trade_status, 'alipay-return');
+				$this->payBack();
 			}
-			Log::write('alipay return orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
-
+			Log::write('alipay return orderid: ' . $orderId . ' trade status: ' . $trade_status, 'alipay-return');
+			
 			$date = date('Y-m-d H:i:s');
 			// 修改订单状态
 			$update_data = [
@@ -258,22 +259,23 @@ class Cash extends BaseController
 				'updated_date' => $date
 			];
 			$update_where = [
-				'orderid' => $orderId
+				'orderid' => $orderId,
+				'status' => 0,
+				'total' => $arr['total_amount']
 			];
-
+			
 			// 更新订单付款状态
 			$update_status = Db::name('order')
 				->where($update_where)
 				->update($update_data);
-			if($update_status === false){
-				echo '付款失败';
-				exit;
+			if(! $update_status){
+				Log::write('alipay return orderid: ' . $orderId . ' update sql error ' . Db::getLastSql(), 'alipay-return');
+				$this->payBack();
 			}
-			$url = $this->url('/index.php?s=home');
-			header('Location: ' . $url);
-			// echo '付款成功<a href="">首页</a>';
-			exit;
+		    
+			$this->payBack(1);
 		
+			/*
 			//商户订单号
 		
 			$out_trade_no = htmlspecialchars($arr['out_trade_no']);
@@ -283,15 +285,28 @@ class Cash extends BaseController
 			$trade_no = htmlspecialchars($arr['trade_no']);
 				
 			echo "验证成功<br />外部订单号：".$out_trade_no;
-		
+		*/
 			//——请根据您的业务逻辑来编写程序（以上代码仅作参考）——
 			
 			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
 		else {
+			Log::write('alipay return verify fail ' . $arr['out_trade_no'], 'alipay-return');
 		    //验证失败
-		    echo "验证失败";
+		    $this->payBack();
 		}
+	}
+	
+	public function payBack($status = 0){
+		$url = $this->url('/index.php?s=home');
+		// header('Location: ' . $url);
+		if($status){
+			$txt = '付款成功';
+		}else{
+			$txt = '付款失败';
+		}
+		echo $txt . ' <a href="' . $url . '">首页</a>';
+		exit;
 	}
 	
 	public function alipayNotify(){
@@ -307,14 +322,13 @@ class Cash extends BaseController
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
-		
-		Log::write('alipay notify in', 'info');
 
 		$arr = $_POST;
-		$alipaySevice = new AlipayTradeService($config); 
+		Log::write('alipay notify in ' . $arr['out_trade_no'], 'alipay-notify');
+		$alipaySevice = new \AlipayTradeService($config); 
 		$alipaySevice->writeLog(var_export($_POST,true));
 		$result = $alipaySevice->check($arr);
-		
+		// $result = true; // debug
 		/* 实际验证过程建议商户添加以下校验。
 		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
 		2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
@@ -334,22 +348,22 @@ class Cash extends BaseController
 			$orderId = Request::param('out_trade_no');
 			$trade_status = Request::param('trade_status');
 			$total_amount = Request::param('total_amount');
-			Log::write('alipay notify orderid: ' . $orderId . ' in', 'info');
+			Log::write('alipay notify orderid: ' . $orderId . ' in', 'alipay-notify');
 
 
 			if($config['app_id'] != $app_id){
-				Log::write('alipay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'info');
-				echo '非法操作 code: 40003';
+				Log::write('alipay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'alipay-notify');
+				echo 'fail';
 				exit;
 			}
 			
 			if($trade_status != 'TRADE_SUCCESS'){
 				// log
-				Log::write('alipay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
-				echo '非法操作 code: 40003';
+				Log::write('alipay notify orderid: ' . $orderId . ' trade failed status: ' . $trade_status, 'alipay-notify');
+				echo 'fail';
 				exit;
 			}
-			Log::write('alipay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'info');
+			Log::write('alipay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'alipay-notify');
 
 			$date = date('Y-m-d H:i:s');
 			// 修改订单状态
@@ -359,22 +373,24 @@ class Cash extends BaseController
 				'updated_date' => $date
 			];
 			$update_where = [
-				'orderid' => $orderId
+				'orderid' => $orderId,
+				'status' => 0,
+				'total' => $arr['total_amount']
 			];
 
 			// 更新订单付款状态
 			$update_status = Db::name('order')
 				->where($update_where)
 				->update($update_data);
-			if($update_status === false){
-				echo '付款失败';
+			if(! $update_status){
+				Log::write('alipay notify orderid: ' . $orderId . ' update sql error ' . Db::getLastSql(), 'alipay-notify');
+				echo 'fail';
 				exit;
 			}
-			$url = $this->url('/index.php?s=home');
-			header('Location: ' . $url);
-			// echo '付款成功<a href="">首页</a>';
+			echo 'success';
 			exit;
 			
+			/*
 			//支付宝交易号
 			$trade_no = $_POST['trade_no'];
 		
@@ -400,11 +416,12 @@ class Cash extends BaseController
 		    }
 			//——请根据您的业务逻辑来编写程序（以上代码仅作参考）——
 		        
-			echo "success";		//请不要修改或删除
-				
+			echo 'success';		//请不要修改或删除
+			*/
 		}else {
+			Log::write('alipay notify verify fail ' . $arr['out_trade_no'], 'alipay-notify');
 		    //验证失败
-		    echo "fail";	//请不要修改或删除
+		    echo 'fail';	//请不要修改或删除
 		
 		}
 		

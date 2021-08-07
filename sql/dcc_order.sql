@@ -12,5 +12,6 @@ create table dcc_order(
 	updated_date datetime default null,
 	
 	primary key(id),
-	unique key(orderid)
+	unique key(orderid),
+	key (total)
 )ENGINE=INNODB default charset=utf8mb4 comment "订单表";
