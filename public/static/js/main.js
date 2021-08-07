@@ -1,5 +1,6 @@
 var config = {
-	host: "http://doucc.com/",
+	host: "http://www.doucaicai66.com/"
+	// host: "http://doucc.com/",
 };
 var isLogin = function(path, retect) {
 	// 验证过期时间 过期则删除所有
@@ -221,4 +222,5 @@ var setLogin  = function(token){
 
 var delToken = function(){
 	localStorage.clear();
+	gotoLogin();
 };

@@ -94,6 +94,7 @@ var setLogin  = function(token){
 
 var delToken = function(){
 	plus.storage.clear();	
+	refresh();
 };
 
 var refresh = function(){
@@ -101,4 +102,19 @@ var refresh = function(){
 	plus.webview.getWebviewById("html/tab-task.html").reload();
 	plus.webview.getWebviewById("html/tab-gain.html").reload();
 	plus.webview.getWebviewById("html/tab-me.html").reload();
+	
+	var $shop = plus.webview.getWebviewById("link-shop");
+	if(typeof($shop) != null && JSON.stringify($shop) != "null" && $shop != ""){
+		$shop.reload();
+	}
+	var $card = plus.webview.getWebviewById("link-card");
+	if(typeof($card) != null && JSON.stringify($card) != "null" && $card != ""){
+		$card.reload();
+	}
+	
+	var $taskall = plus.webview.getWebviewById("link-taskall");
+	if(typeof($taskall) != null && JSON.stringify($taskall) != "null" && $taskall != ""){
+		$taskall.reload();
+	}
+	
 };

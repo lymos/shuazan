@@ -45,6 +45,7 @@ class Cash extends BaseController
 	 */
 	public function unionpay(){
 		$merid = Config::get('app.unionpay_merid');
+		$host = Config::get('app.host');
 		
 		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
@@ -68,8 +69,8 @@ class Cash extends BaseController
 				'txnType' => '01',				      //交易类型
 				'txnSubType' => '01',				  //交易子类
 				'bizType' => '000201',				  //业务类型
-				'frontUrl' =>  \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->frontUrl,  //前台通知地址
-				'backUrl' => \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->backUrl,	  //后台通知地址
+				'frontUrl' =>  $host . 'index.php?s=Cash/frontReceive',  //前台通知地址
+				'backUrl' => $host . 'index.php?s=cash/backReceive',	   //后台通知地址
 				'signMethod' => \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->signMethod,	              //签名方法
 				'channelType' => '08',	              //渠道类型，07-PC，08-手机
 				'accessType' => '0',		          //接入类型
@@ -109,7 +110,6 @@ class Cash extends BaseController
 		$html_form = \com\unionpay\acp\sdk\AcpService::createAutoFormHtml( $params, $uri );
 		echo $html_form;
 		exit;
-		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	
 	/**
@@ -117,11 +117,10 @@ class Cash extends BaseController
 	 */
 	public function unionpayApp(){
 		$merid = Config::get('app.unionpay_merid');
-		
+		$host = Config::get('app.host');
 		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
 		$orderid = $this->decrypt($order_str);
-		// $orderid = 'dcc202105300002'; // debug
 		// 查出订单信息
 		$order = $this->_getOrder($userid, $orderid);
 		if(! $order || ! isset($order['total'])){
@@ -140,8 +139,8 @@ class Cash extends BaseController
 				'txnType' => '01',				      //交易类型
 				'txnSubType' => '01',				  //交易子类
 				'bizType' => '000201',				  //业务类型
-				'frontUrl' =>  'http://121.37.3.176/index.php?s=Cash/frontReceiveApp',  //前台通知地址
-				'backUrl' => \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->backUrl,	  //后台通知地址
+				'frontUrl' =>  $host . 'index.php?s=Cash/frontReceiveApp',  //前台通知地址
+				'backUrl' => $host . 'index.php?s=cash/backReceive',	  //后台通知地址
 				'signMethod' => \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->signMethod,	              //签名方法
 				'channelType' => '08',	              //渠道类型，07-PC，08-手机
 				'accessType' => '0',		          //接入类型
@@ -181,7 +180,6 @@ class Cash extends BaseController
 		$html_form = \com\unionpay\acp\sdk\AcpService::createAutoFormHtml( $params, $uri );
 		echo $html_form;
 		exit;
-		// error_log(print_r($html_form, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 	}
 	
 	private function _getOrder($userid, $orderid){
@@ -217,7 +215,6 @@ class Cash extends BaseController
 		
 		$alipaySevice = new \AlipayTradeService($config); 
 		$result = $alipaySevice->check($arr);
-		// $result = true; // debug
 		
 		/* 实际验证过程建议商户添加以下校验。
 		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
@@ -310,10 +307,6 @@ class Cash extends BaseController
 	}
 	
 	public function alipayNotify(){
-
-		// error_log(print_r('alipayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		error_log(print_r('alipayNotify', true), 3, '/tmp/debug.log');
 		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
@@ -607,7 +600,6 @@ class Cash extends BaseController
 		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
 		$orderid = $this->decrypt($order_str);
-		// $orderid = 'dcc202105300002'; // debug
 		// 查出订单信息
 		$order = $this->_getOrder($userid, $orderid);
 		if(! $order || ! isset($order['total'])){
@@ -853,30 +845,32 @@ class Cash extends BaseController
 	 * 付款回调
 	 */
 	public function frontReceive(){
-		// error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+
 		$merId = Request::param('merId');
 		$orderId = Request::param('orderId');
 		$respCode = Request::param('respCode');
 		$respMsg = Request::param('respMsg');
-		
+		Log::write('unionpay receive orderid: ' . $orderId . ' in', 'unionpay-web');
 		if(! isset ( $_POST ['signature'] )){
+			Log::write('unionpay receive check error orderid: ' . $orderId, 'unionpay-web');
 			echo '非法操作 code: 40001';
 			exit;
 		}
 		$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
 		if(! $check){
+			Log::write('unionpay receive check error orderid: ' . $orderId, 'unionpay-web');
 			echo '非法操作 code: 40002';
 			exit;
 		}
 		
 		if(Config::get('app.unionpay_merid') != $merId){
+			Log::write('unionpay receive merid error orderid: ' . $orderId . ' merid: ' . $merId, 'unionpay-web'); 
 			echo '非法操作 code: 40003';
 			exit;
 		}
 		
-		if($respCode != '00' && $respMsg != 'success'){
+		if($respCode != '00' || $respMsg != 'success'){
+			Log::write('unionpay receive msg_code error orderid: ' . $orderId . ' msg code: ' . $respCode . ' ' . $respMsg, 'unionpay-web');
 			echo '非法操作 code: 40004';
 			exit;
 		}
@@ -889,18 +883,19 @@ class Cash extends BaseController
 			'updated_date' => $date
 		];
 		$update_where = [
-			'orderid' => $orderId
+			'orderid' => $orderId,
+			'status' => 0
 		];
 		$update_status = Db::name('order')
 			->where($update_where)
 			->update($update_data);
 		if($update_status === false){
+			Log::write('unionpay receive update sql error orderid: ' . $orderId . ' sql: ' . Db::getLastSql(), 'unionpay-web');
 			echo '付款失败';
 			exit;
 		}
 		$url = $this->url('/index.php?s=home');
 		header('Location: ' . $url);
-		// echo '付款成功<a href="">首页</a>';
 		exit;
 	}
 	
@@ -908,30 +903,32 @@ class Cash extends BaseController
 	 * 付款回调
 	 */
 	public function frontReceiveApp(){
-		// error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+
 		$merId = Request::param('merId');
 		$orderId = Request::param('orderId');
 		$respCode = Request::param('respCode');
 		$respMsg = Request::param('respMsg');
-		
+		Log::write('unionpay receive orderid: ' . $orderId . ' in', 'unionpay-app');
 		if(! isset ( $_POST ['signature'] )){
+			Log::write('unionpay receive signature error orderid: ' . $orderId, 'unionpay-app'); 
 			echo '非法操作 code: 40001';
 			exit;
 		}
 		$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
 		if(! $check){
+			Log::write('unionpay receive check error orderid: ' . $orderId, 'unionpay-app'); 
 			echo '非法操作 code: 40002';
 			exit;
 		}
 		
 		if(Config::get('app.unionpay_merid') != $merId){
+			Log::write('unionpay receive merid error orderid: ' . $orderId . ' merid: ' . $merId, 'unionpay-app'); 
 			echo '非法操作 code: 40003';
 			exit;
 		}
 		
-		if($respCode != '00' && $respMsg != 'success'){
+		if($respCode != '00' || $respMsg != 'success'){
+			Log::write('unionpay receive msg_code error orderid: ' . $orderId . ' msg code: ' . $respCode . ' ' . $respMsg, 'unionpay-app');
 			echo '非法操作 code: 40004';
 			exit;
 		}
@@ -944,25 +941,26 @@ class Cash extends BaseController
 			'updated_date' => $date
 		];
 		$update_where = [
-			'orderid' => $orderId
+			'orderid' => $orderId,
+			'status' => 0
 		];
 		$update_status = Db::name('order')
 			->where($update_where)
 			->update($update_data);
 		if($update_status === false){
+			Log::write('unionpay receive update sql error orderid: ' . $orderId . ' sql: ' . Db::getLastSql(), 'unionpay-app');
 			echo '付款失败';
 			exit;
 		}
 		$url = $this->url('/index.php?s=home/apppay');
 		header('Location: ' . $url);
-		// echo '付款成功<a href="">首页</a>';
 		exit;
 	}
 	
 	public function backReceive(){
-		error_log(print_r('frontReceive', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r('backReceive', true) . "\r\n", 3, '/tmp/debug.log');
+		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/debug.log');
+		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/debug.log');
 		
 	}
 }

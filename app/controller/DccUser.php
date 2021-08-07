@@ -38,6 +38,10 @@ class DccUser extends BaseController
 		$data = Db::name('user')
 			->field('invite_code, mobile, id')
 			->where($where)->find();
+		if(! $data){
+			$ret['code'] = 2;
+			return json($ret);
+		}
 		$invite_data = $this->_getInvite($userid);
 		$ret = [
 			'code' => 1,

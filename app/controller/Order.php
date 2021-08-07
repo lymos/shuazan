@@ -24,8 +24,7 @@ class Order extends BaseController
 		];
 		$productid = intval($this->decrypt(Request::param('productid')));
 		$userid = intval($this->decrypt(Request::param('userid')));
-		
-		$productid = $userid = 1; // debug
+
 		if(! $productid || ! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);

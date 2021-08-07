@@ -166,6 +166,9 @@
 				
 				
 				mui("#product-list").on('tap', '.btn-buy', function(){
+					if(! isLogin("", true)){
+						return ;
+					}
 					$pobj = this;
 					mui('#popover').popover("toggle");
 					return ; 
@@ -282,12 +285,12 @@
 					timeout:10000,//超时时间设置为10秒；
 					headers:{'Content-Type':'application/json'},
 					success:function(data){
-						//mui.alert(JSON.stringify(data))
+						console.log(JSON.stringify(data));
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
-							mui.alert(data.msg);
+							// mui.alert(data.msg);
 						}else if(data.code == 2){
-							location.href = config.host + 'index.php?s=home/login'	
+								
 						}else{
 							var p = data.data.data;
 							document.getElementById("pname").innerHTML = p.name;

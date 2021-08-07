@@ -205,7 +205,10 @@
 						if(data.code == 0){
 							// mui.alert(data.msg);
 						}else if(data.code == 2){
-							
+							mui.alert("请先登录", '', '', function(){
+								delToken();
+								goto("../login.html");
+							});
 						}else{
 							var mobile = document.getElementById("mobile"),
 								count = document.getElementById("count"),

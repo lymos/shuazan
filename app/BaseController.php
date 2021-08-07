@@ -77,6 +77,9 @@ abstract class BaseController
 	}
 	
 	public function decrypt($data, $key = '') {
+		if(! $data){
+			return '';
+		}
 		if(! $key){
 			$key = $this->key;
 		}
@@ -126,7 +129,7 @@ abstract class BaseController
     }
 
 	public function verifyToken(){
-		return true; // debug
+		// return true; // debug
         $ret = [
             'code' => 2,
             'data' => '',

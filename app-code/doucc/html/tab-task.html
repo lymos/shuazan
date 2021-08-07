@@ -21,7 +21,7 @@
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<h1 class="mui-title">我的任务</h1>
 		</header>
-		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div id="pullrefresh-metask" class="mui-content mui-scroll-wrapper">
 			<div class="mui-scroll">
 				<ul id="task-me-list" class="mui-table-view mui-table-view-chevron">
 					
@@ -34,7 +34,7 @@
 			mui.init({
 				swipeBack: false,
 				pullRefresh: {
-					container: '#pullrefresh',
+					container: '#pullrefresh-metask',
 					down: {
 						style:'circle',
 						callback: pulldownRefresh
@@ -63,10 +63,11 @@
 						'Content-Type': 'application/json'
 					},
 					success: function(data) {
-						console.log(data)
+						console.log(JSON.stringify(data));
+						
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if (data.code == 0) {
-							mui.alert(data.msg);
+							// mui.alert(data.msg);
 						}else if(data.code == 2){
 							
 						} else {
@@ -100,12 +101,11 @@
 								});
 							}, 20);
 							
-							if(typeof is_refresh !== "undefined"){
-								mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
-								mui.toast('下拉刷新成功');
-							}
 						}
-				
+						if(typeof is_refresh !== "undefined"){
+							mui('#pullrefresh-metask').pullRefresh().endPulldownToRefresh(); //refresh completed
+							mui.toast('下拉刷新成功');
+						}
 					},
 					error: function(xhr, type, errorThrown) {
 				

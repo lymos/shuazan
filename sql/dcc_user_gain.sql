@@ -6,7 +6,7 @@ create table dcc_user_gain(
 	
 	percent varchar(6) not null default "",
 	capital varchar(10) not null default 0 comment "本金",
-	gain varchar(6) not null default "",
+	gain varchar(8) not null default "",
 	
 	gain_date date DEFAULT null,
 	added_date datetime default null,

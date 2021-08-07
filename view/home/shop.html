@@ -55,9 +55,11 @@
 			<div class="mui-content-padded">
 				<button id="btn-alipay" class="mui-btn mui-btn-block mui-btn-primary">支付宝</button>
 			</div>
+			<!--
 			<div class="mui-content-padded">
 				<button id="btn-wxpay" class="mui-btn mui-btn-block mui-btn-primary">微信</button>
 			</div>
+			-->
 			<div class="mui-content-padded">
 				<button id="btn-unionpay" class="mui-btn mui-btn-block mui-btn-primary">银联</button>
 			</div>
@@ -82,7 +84,8 @@
 					console.log(data)
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if(data.code == 0){
-						mui.alert(data.msg);
+						// mui.alert(data.msg);
+						
 					}else if(data.code == 2){
 						location.href = config.host + 'index.php?s=home/login'	
 					}else{
@@ -106,10 +109,11 @@
 			document.getElementById("btn-alipay").addEventListener('tap', function(event) {
 				pay("alipay");
 			});
-			
+			/*
 			document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
 				pay("wxpay");
 			});
+			*/
 			
 			document.getElementById("btn-unionpay").addEventListener('tap', function(event) {
 				pay("unionpay");
@@ -155,6 +159,10 @@
 			
 			
 			mui("#product-list").on('tap', '.btn-buy', function(){
+				if(! isLogin()){
+					gotoLogin();
+					return ;
+				}
 				$pobj = this;
 				mui('#popover').popover("toggle");
 				return ; 
@@ -200,7 +208,7 @@
 		   
 			// 访问外部网址返回处理
 			/*
-			plus.webview.create('http://www.baidu.com', 'baidu', {popGesture:'hide',navigationbar:{backgroundColor:'#FFFFFF',titleColor:'#000000',backButton:{color:'#007AFF',colorPressed:'#0000FF'}}}).show('pop-in'); // debug
+			plus.webview.create('http://www.baidu.com', 'baidu', {popGesture:'hide',navigationbar:{backgroundColor:'#FFFFFF',titleColor:'#000000',backButton:{color:'#007AFF',colorPressed:'#0000FF'}}}).show('pop-in');
 			mui.oldBack = mui.back;  
 			mui.back = function(event) {  
 			    var baidu = plus.webview.getWebviewById('baidu');  
