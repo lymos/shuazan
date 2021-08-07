@@ -22,7 +22,7 @@
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">商城</h1>
 		</header>
-		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
+		<div id="pullrefresh-product" class="mui-content mui-scroll-wrapper">
 			
 			<ul id="product-list" class="mui-scroll mui-table-view mui-table-view-striped mui-table-view-condensed">
 				<li class="mui-table-view-cell">
@@ -52,9 +52,11 @@
 			<div class="mui-content-padded">
 				<button id="btn-alipay" class="mui-btn mui-btn-block mui-btn-primary">支付宝</button>
 			</div>
+			<!--
 			<div class="mui-content-padded">
 				<button id="btn-wxpay" class="mui-btn mui-btn-block mui-btn-primary">微信</button>
 			</div>
+			-->
 			<div class="mui-content-padded">
 				<button id="btn-unionpay" class="mui-btn mui-btn-block mui-btn-primary">银联</button>
 			</div>
@@ -86,10 +88,10 @@
 			mui.init({
 				swipeBack: false,
 				pullRefresh: {
-					container: '#pullrefresh',
+					container: '#pullrefresh-product',
 					down: {
 						style:'circle',
-						callback: pulldownRefresh
+						callback: pulldownRefreshProduct
 					},
 					
 				}
@@ -99,10 +101,10 @@
 				var self = plus.webview.currentWebview();  
 				
 				setInterval(function(){
-					getList();
+					getListProduct();
 				}, 100000);
 				
-				getList();	
+				getListProduct();	
 					
 				document.getElementById("btn-alipay").addEventListener('tap', function(event) {
 					// pay("alipay");
@@ -110,9 +112,11 @@
 					pay2("alipay");
 				});
 				
+				/*
 				document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
 					pay("wxpay");
 				});
+				*/
 				
 				document.getElementById("btn-unionpay").addEventListener('tap', function(event) {
 					pay("unionpay");
@@ -249,15 +253,15 @@
 								var statement = data.data;
 								// mui.alert(JSON.stringify(ali_channel));
 								// mui.alert(statement);
-								
 								plus.payment.request(ali_channel, statement, function(result){
-										mui.alert("pay success");
 									    plus.nativeUI.alert("支付成功！",function(){  
-									        back();  
+											self.reload();
 									});  
 								},function(error){  
-									mui.alert(JSON.stringify(error));
-									   // plus.nativeUI.alert("支付失败：" + error.code);  
+									// mui.alert(JSON.stringify(error));
+									plus.nativeUI.alert("支付失败：" + JSON.stringify(error), function(){
+										back();
+									});  
 								});  			   
 							}
 							
@@ -267,89 +271,10 @@
 							
 						}
 					});
-					
-					return ;
-					
-					// alipay params
-					var statement = {
-						app_id: "2021000117690345",
-						method: "alipay.trade.wap.pay",
-						format: "JSON",
-						charset: "UTF-8",
-						sign_type: "RSA2",
-						version: "1.0",
-						return_url: "http://s",
-						notify_url: "http",
-						timestamp: "2014-07-24 03:07:50",
-						sign: "9999",
-						biz_content: {
-							subject: "2222",
-							out_trade_no: "8888",
-							total_amount: "0.01",
-							product_code: "QUICK_WAP_PAY",
-							quit_url: 'https://imgbed.cn/static/alipay-return.html'
-						}
-					};
-					
-					// wxpay params
-					/*
-					var varpay = {  
-					                        retcode: 0,  
-					                        retmsg: "ok",  
-					                        appid: data.result.appid,  
-					                        noncestr: data.result.noncestr,  
-					                        package: "Sign=WXPay",  
-					                        partnerid: data.result.partnerid,  
-					                        prepayid: data.result.prepayid,  
-					                        timestamp: data.result.timestamp,  
-					                        sign: data.result.sign  
-					                    };
-										*/
-					
-					//微信orderinfo格式   
-					// "{\"appid\":\"xxxxxxxx\",\"partnerid\":\"xxxxxxx\",\"prepayid\":\"xxxxxxxxxxxxxxxx\",\"timestamp\":\"1579779903\",\"noncestr\":\"xxxxxxx\",\"package\":\"Sign": "WXPay\",\"sign\":\"xxxxxxxxxxxxxxxxxxxx\"}"  
-					
-					//支付宝orderinfo格式  
-					// var str = "app_id=xxxxxxxxx&method=xxxxxxxxxx&format=JSON&charset=UTF-8&sign_type=RSA2&version=1.0&return_url=xxxxxxxxxxxxxxxxxxxxxxxxxxxxx&notify_url=xxxxx&timestamp=xxxxxx&sign=xxxxxxx&biz_content=xxxxxxxxxx";
-					
-					
-					
-				    // 从服务器请求支付订单  
-				    var PAYSERVER='';  
-				    if(id=='alipay'){  
-				        PAYSERVER=ALIPAYSERVER;  
-				    }else if(id=='wxpay'){  
-				        PAYSERVER=WXPAYSERVER;  
-				    }else{  
-				        plus.nativeUI.alert("不支持此支付通道！",null,"捐赠");  
-				        return;  
-				    }  
-				    var xhr=new plus.net.XMLHttpRequest(); //uni-app中请使用uni的request api联网  
-				    xhr.onreadystatechange=function(){  
-				        switch(xhr.readyState){  
-				            case 4:  
-				            if(xhr.status==200){  
-				                plus.payment.request(channel,xhr.responseText,function(result){  
-				                    plus.nativeUI.alert("支付成功！",function(){  
-				                        back();  
-				                    });  
-				                },function(error){  
-				                    plus.nativeUI.alert("支付失败：" + error.code);  
-				                });  
-				            }else{  
-				                alert("获取订单信息失败！");  
-				            }  
-				            break;  
-				            default:  
-				            break;  
-				        }  
-				    }  
-				    xhr.open('GET',PAYSERVER);  
-				    xhr.send();  
 				}
 			});
 			
-			function getList(is_refresh){
+			function getListProduct(is_refresh){
 				mui.ajax(config.host + 'index.php?s=Product/getProductList', {
 					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
@@ -375,7 +300,7 @@
 							
 						}
 						if(typeof is_refresh !== "undefined"){
-							mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+							mui('#pullrefresh-product').pullRefresh().endPulldownToRefresh(); //refresh completed
 							mui.toast('下拉刷新成功');
 						}
 					},
@@ -388,8 +313,8 @@
 			/**
 			 * 下拉刷新具体业务实现
 			 */
-			function pulldownRefresh() {
-				getList(true);
+			function pulldownRefreshProduct() {
+				getListProduct(true);
 			}
 			
 		</script>
