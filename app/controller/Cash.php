@@ -217,7 +217,7 @@ class Cash extends BaseController
 		
 		$alipaySevice = new \AlipayTradeService($config); 
 		$result = $alipaySevice->check($arr);
-		$result = true; // debug
+		// $result = true; // debug
 		
 		/* 实际验证过程建议商户添加以下校验。
 		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，

@@ -3,7 +3,7 @@
 
 	<head>
 		<meta charset="utf-8">
-		<title>Hello MUI</title>
+		<title>收益</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -23,9 +23,9 @@
 		<header class="mui-bar mui-bar-nav" style="padding-right: 15px;">
 			<h1 class="mui-title">我的收益</h1>
 		</header>
-		<div class="mui-content">
+		<div id="pullrefresh" class="mui-content mui-scroll-wrapper">
 			
-			<ul class="mui-table-view">
+			<ul class="mui-table-view mui-scroll">
 			    <li class="mui-table-view-cell c-item">
 					<div class="t-info">
 						<span>账户余额：</span><span id="capital"></span>
@@ -70,10 +70,24 @@
 	<script src="../js/main.js"></script>
 	<script>
 		mui.init({
-			swipeBack:true //启用右滑关闭功能
+			swipeBack: false,
+			pullRefresh: {
+				container: '#pullrefresh',
+				down: {
+					style:'circle',
+					callback: pulldownRefresh
+				},
+				
+			}
 		});
 		
 		mui.plusReady(function() {
+			setInterval(function(){
+				getList();
+			}, 100000);
+			
+			getList();
+			
 			document.getElementById('link-cashout').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'cashout.html',
@@ -127,7 +141,9 @@
 					}
 				});
 			}, false);
-			
+		});
+		
+		function getList(is_refresh){
 			mui.ajax(config.host + 'index.php?s=DccUser/getUserGain', {
 				data: getToken(),
 				dataType:'json',//服务器返回json格式数据
@@ -138,7 +154,7 @@
 					console.log(data)
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if(data.code == 0){
-						mui.alert(data.msg);
+						// mui.alert(data.msg);
 					}else if(data.code == 2){
 						
 					}else{
@@ -149,13 +165,20 @@
 						document.getElementById("total").innerHTML = res.total + "元";
 					}
 					
+					if(typeof is_refresh !== "undefined"){
+						mui('#pullrefresh').pullRefresh().endPulldownToRefresh(); //refresh completed
+						mui.toast('下拉刷新成功');
+					}
+					
 				},
 				error:function(xhr,type,errorThrown){
 					
 				}
 			});
-			
-			
-		});
+		}
+		
+		function pulldownRefresh() {
+			getList(true);
+		}
 	</script>
 </html>
