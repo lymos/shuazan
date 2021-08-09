@@ -961,6 +961,56 @@ class Cash extends BaseController
 		error_log(print_r('backReceive', true) . "\r\n", 3, '/tmp/debug.log');
 		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/debug.log');
 		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/debug.log');
+		$merId = Request::param('merId');
+		$orderId = Request::param('orderId');
+		$respCode = Request::param('respCode');
+		$respMsg = Request::param('respMsg');
+		Log::write('unionpay receive orderid: ' . $orderId . ' in', 'unionpay-back');
+		if(! isset ( $_POST ['signature'] )){
+			Log::write('unionpay receive signature error orderid: ' . $orderId, 'unionpay-back'); 
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
+
+		$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
+		if(! $check){
+			Log::write('unionpay receive check error orderid: ' . $orderId, 'unionpay-back'); 
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
 		
+		if(Config::get('app.unionpay_merid') != $merId){
+			Log::write('unionpay receive merid error orderid: ' . $orderId . ' merid: ' . $merId, 'unionpay-back'); 
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
+		
+		if($respCode != '00' || $respMsg != 'success'){
+			Log::write('unionpay receive msg_code error orderid: ' . $orderId . ' msg code: ' . $respCode . ' ' . $respMsg, 'unionpay-back');
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
+		
+		$date = date('Y-m-d H:i:s');
+		// 修改订单状态
+		$update_data = [
+			'status' => 1,
+			'pay_type' => 3,
+			'updated_date' => $date
+		];
+		$update_where = [
+			'orderid' => $orderId,
+			'status' => 0
+		];
+		$update_status = Db::name('order')
+			->where($update_where)
+			->update($update_data);
+		if($update_status === false){
+			Log::write('unionpay receive update sql error orderid: ' . $orderId . ' sql: ' . Db::getLastSql(), 'unionpay-back');
+			header('HTTP/1.1 404 Not Found');
+			exit;
+		}
+		echo 'ok';
+		exit;
 	}
 }
