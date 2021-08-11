@@ -163,7 +163,7 @@ class Cron extends BaseController{
                 'percent' => $rs['task_gain'] / 100,
                 'type' => 0,
                 'capital' => $capital['total'],
-                'gain' => $capital['total'] * $rs['task_gain'] / 100,
+                'gain' => round($capital['total'] * $rs['task_gain'], 4) / 100,
                 'gain_date' => $this->date,
                 'added_date' => $date
             ];
@@ -181,7 +181,7 @@ class Cron extends BaseController{
                 'percent' => $rs['invite_gain'] / 100,
                 'type' => 1,
                 'capital' => $capital['total'],
-                'gain' => $capital['total'] * $rs['invite_gain'] / 100,
+                'gain' => round($capital['total'] * $rs['invite_gain'], 4) / 100,
                 'gain_date' => $this->date,
                 'added_date' => $date
             ];
