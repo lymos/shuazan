@@ -70,24 +70,67 @@ class Admin extends BackController
 	*/
 
     public function taskList(){
-        $ret = [
-			'code' => 0,
-			'data' => '',
-			'msg' => ''
-		];
-
 		$list = Db::name('task')
 			->field('id, name, added_date')
             ->where(1)
             ->order('id', 'desc')
 			->select();
 		
-		$ret['code'] = 1;
-		$ret['data'] = $list;
 		View::assign('list', $list);
 		$url = $this->url('/index.php?s=Admin/taskEdit');
 		View::assign('url', $url);
 		return View::fetch('taskList');
+    }
+
+    public function cashoutList(){
+       
+		$list = Db::name('cashout_record')
+			->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->join('user_card c', 'a.userid = c.userid', 'left')
+			->field('a.*, b.mobile, c.wx_qrcode, c.ali_qrcode')
+            ->order('a.id', 'desc')
+			->select();
+
+		View::assign('list', $list);
+		$url = $this->url('/index.php?s=Admin/cashoutEdit');
+		View::assign('url', $url);
+		return View::fetch('cashoutList');
+    }
+
+    public function cashoutEdit(){
+		$url = $this->url('/index.php?s=Admin/actionCashoutAction');
+		View::assign('url', $url);
+        return View::fetch('cashoutEdit');
+    }
+
+    public function actionCashoutEditAction(){
+        $ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+        $id = trim(Request::param('id'));
+        $status = intval(Request::param('status'));
+		if(!$id || ! $status){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$date = date('Y-m-d H:i:s');
+		$data = [
+			'status' => $status,
+			'updated_by' => $this->userid,
+			'updated_date' => $date,
+        ];
+        $where = [
+            'id' => $id
+        ];
+		$status = Db::name('cashout_record')->where($where)->update($data);
+		if(! $status){
+			$ret['msg'] = '更新失败';
+			return json($ret);
+		}
+		$ret['code'] = 1;
 		return json($ret);
     }
 

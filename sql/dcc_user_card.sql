@@ -7,6 +7,8 @@ create table dcc_user_card(
 	card varchar(60) not null default "",
 	brand varchar(25) not null default "",
 	mobile varchar(11) not null default "",
+	wx_qrcode varchar(60) not null default "",
+	ali_qrcode varchar(60) not null default "",
 	added_by int(11) not null default 0,
 	added_date datetime default null,
 	updated_by int(11) not null default 0,

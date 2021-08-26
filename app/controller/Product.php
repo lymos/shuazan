@@ -28,7 +28,7 @@ class Product extends BaseController
 			return json($ret);
 		}
 		
-		$data = Db::name('product')->where('id', 1)->find();
+		$data = Db::name('product')->find();
 		$productid = 0;
 		if(isset($data['id'])){
 			$productid = $data['id'];

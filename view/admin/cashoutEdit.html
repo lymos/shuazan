@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link href="static/extend/layui/css/layui.css" rel="stylesheet">
+		<link href="static/backend.css" rel="stylesheet">
+	</head>
+	<body>
+		<div class="layui-container">
+			<div class="layui-row">
+				<form class="layui-form" method="POST">
+					<div class="layui-form-item">
+						<label class="layui-form-label">提现记录修改</label>
+						<div class="layui-input-block">
+							<input type="text" name="name" required lay-verify="required" placeholder="请输入任务名称"
+								autocomplete="off" class="layui-input">
+						</div>
+					</div>
+			
+					<div class="layui-form-item">
+						<div class="layui-input-block">
+							<button class="layui-btn" lay-submit lay-filter="cashout-form">保存</button>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+		<script src="static/extend/layui/layui.js"></script>
+		<script>
+			layui.use(['element', 'layer', 'util', 'jquery', "form"], function() {
+				var form = layui.form,
+					element = layui.element,
+					layer = layui.layer,
+					util = layui.util,
+					$ = layui.$;
+				//监听提交
+				form.on('submit(cashout-form)', function(data) {
+				
+					$.ajax({
+						type: "POST",
+						// async: false,
+						dataType: "json",
+						data: data.field,
+						url: "{$url}",
+						success: function(res){
+							console.log(res);
+							if(res.code == 1){
+								layer.msg("保存成功");
+								window.parent.location.reload();//刷新父页面
+								var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+								parent.layer.close(index);
+							}else{
+								layer.msg(res.msg);
+							}
+						}
+					});
+					
+					return false;
+				});
+			});
+		</script>
+	</body>
+</html>

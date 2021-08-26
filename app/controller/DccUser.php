@@ -381,6 +381,72 @@ class DccUser extends BaseController
 		}
 		return $days;
 	}
+
+
+	public function addPayQrcode(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$userid = $this->decrypt(trim(Request::param('userid')));
+		if(! $userid){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+
+		// move file
+		$wx_qrcode = '';
+		$ali_qrcode = '';
+		$dir = '';
+
+		// save data
+
+		$old_id = $this->_checkQrcodeIsExists($userid)){
+		
+		if($old_id){
+			$data = [
+				'updated_by' => $userid,
+				'updated_date' => $date
+			];
+			if($wx_qrcode){
+				$data['wx_qrcode'] = $wx_qrcode;
+			}
+			if($ali_qrcode){
+				$data['ali_qrcode'] = $ali_qrcode;
+			}
+			$status = Db::name('user_card')->where(['id' => $old_id])->update($data);
+		}else{
+			$data = [
+				'userid' => $userid,
+				'added_by' => $userid,
+				'added_date' => $date
+			];
+			
+			$status = Db::name('user_card')->insert($data);
+		}
+		
+		
+		if(! $status){
+			$ret['msg'] = '失败 code: 60001';
+			return json($ret);
+		}
+		$ret['code'] = 1;
+		return json($ret);
+
+	}
+
+	private function _checkQrcodeIsExists($userid){
+		$data = Db::name('user_card')
+			->field('id')
+			->whereRaw('userid=:userid', ['userid' => $userid])
+			->find();
+		
+		if($data){
+			return $data['id'];
+		}
+		return null;
+	}
 	
 	public function addCard(){
 		$ret = [

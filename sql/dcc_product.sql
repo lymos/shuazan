@@ -12,3 +12,12 @@ create table dcc_product(
 )ENGINE=INNODB default charset=utf8mb4 comment "产品表";
 
 insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人", "0.01", 0, "2021-05-28 12:12:12");
