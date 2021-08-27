@@ -33,7 +33,16 @@
 			.mui-btn {
 				padding: 10px;
 			}
-			
+			.hide{
+				display: none;
+			}
+			.mui-input-row button.file{
+				float: none;
+				width: auto;
+			}
+			.img{
+				height: 200px;
+			}
 		</style>
 
 	</head>
@@ -46,6 +55,7 @@
 		<div class="mui-content">
 			
 			<form id='card-form' class="mui-input-group">
+				<!--
 				<div class="mui-input-row">
 					<label>开户名</label>
 					<input id='name' type="text" class="mui-input-clear mui-input" placeholder="开户名">
@@ -61,6 +71,19 @@
 				<div class="mui-input-row">
 					<label>预留手机号</label>
 					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
+				</div>
+				-->
+				<div class="mui-input-row">
+					<label>微信收款码</label>
+					<input id='wx_qrcode' type="file" class="" onchange="fileSelected();">
+					<button id="wx_btn" type="button" class="mui-btn mui-btn-success mui-btn-outlined file hide">选择图片</button>
+				</div>
+				<div class="img">
+					<img src="../../vendor/topthink/framework/logo.png">
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝收款码</label>
+					<input id='ali_qrcode' type="file" class="hide">
 				</div>
 			</form>
 			
@@ -114,8 +137,108 @@
 								}
 						});
 					});
+					
+					doc.getElementById("wx_btn").addEventListener('tap', function(event) {
+						//$.alert(9);
+						console.log(888)
+						$.trigger(doc.getElementById("wx_qrcode"), 'click');
+					});
 				// });
+			
+				
+				function chooseImgFromAlbums() {  
+					plus.gallery.pick(function(file) {  
+						changeToLocalUrl(file);  
+					}, function(err) {  
+						console.log(JSON.stringify(err));  
+					}, {  
+						filter: 'image',  
+						multiple: false  
+					});
+				}
+				
+				function changeToLocalUrl(path) {  
+					plus.io.resolveLocalFileSystemURL(path, function(entry) {  
+						openWindow('uploadImg.html?src=' + entry.toLocalURL());  
+					});  
+				}
+				
+				function uploadImg(src) {  
+					var task = plus.uploader.createUpload(ajaxUrl, {  
+						method: 'post',   
+						blocksize:204800,  
+						timeout: 10  
+					});  
+					
+					task.addFile(src, {key: 'headImg'});  
+					
+					task.addData('type', 'uploadImg');  
+					task.addData('userId', );  
+					task.addEventListener('statechanged', stateChanged, false);  
+					task.start();  
+				
+					function stateChanged(upload, status) {  
+						if ( upload.state == 4 && status == 200 ) {  
+						  plus.uploader.clear();  //清除上传  
+						  console.log(upload.responseText);  //服务器返回存在这里  
+						}  
+					}  
+				}
 			}(mui, document));
+			
+			
+			function fileSelected() {
+			    var file = document.getElementById('wx_qrcode').files[0];
+			            if (file) {
+			              var fileSize = 0;
+			              if (file.size > 1024 * 1024)
+			                fileSize = (Math.round(file.size * 100 / (1024 * 1024)) / 100).toString() + 'MB';
+			              else
+			                fileSize = (Math.round(file.size * 100 / 1024) / 100).toString() + 'KB';
+						/*
+			              document.getElementById('fileName').innerHTML = 'Name: ' + file.name;
+			              document.getElementById('fileSize').innerHTML = 'Size: ' + fileSize;
+			              document.getElementById('fileType').innerHTML = 'Type: ' + file.type;
+						  */
+						 uploadFile();
+						 
+			            }
+			          }
+			          function uploadFile() {
+			            var fd = new FormData();
+			            fd.append("wx_qrcode", document.getElementById('wx_qrcode').files[0]);
+						var token_data = getToken();
+			            fd.append("userid", token_data.userid); 
+						fd.append("token", token_data.token);
+						fd.append("token_expire", token_data.token_expire);
+
+			            var xhr = new XMLHttpRequest();
+			           // xhr.upload.addEventListener("progress", uploadProgress, false);
+			            xhr.addEventListener("load", uploadComplete, false);
+			            xhr.addEventListener("error", uploadFailed, false);
+			            xhr.addEventListener("abort", uploadCanceled, false);
+			            xhr.open("POST", config.host + "DccUser/addPayQrcode");
+			            xhr.send(fd);
+			          }
+			          function uploadProgress(evt) {
+			            if (evt.lengthComputable) {
+			              var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+			              document.getElementById('progressNumber').innerHTML = percentComplete.toString() + '%';
+			            }
+			            else {
+			              document.getElementById('progressNumber').innerHTML = 'unable to compute';
+			            }
+			          }
+			          function uploadComplete(evt) {
+			            /* This event is raised when the server send back a response */
+			            alert(evt.target.responseText);
+			          }
+			          function uploadFailed(evt) {
+			            alert("There was an error attempting to upload the file.");
+			          }
+			          function uploadCanceled(evt) {
+			            alert("The upload has been canceled by the user or the browser dropped the connection.");
+			          }
 		</script>
 	</body> 
 

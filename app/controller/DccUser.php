@@ -389,20 +389,45 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
+		error_log(print_r($_FILES, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		error_log(print_r($_POST, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		
 		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
-
+		
 		// move file
 		$wx_qrcode = '';
 		$ali_qrcode = '';
 		$dir = '';
+		$filename = $date('YmdHis') . uniqid();
+		if(isset($_FILES['wx_qrcode']) && $_FILES['wx_qrcode']){
+			$type = end(explode('.', $_FILES['name']));
+			if(! $type){
+				$type = 'png';
+			}
+			$file_status = move_uploaded_file($_FILES['wx_qrcode']['tmp_name'], $dir . $filename . '.' . $type);
+			if($file_status){
+				$wx_qrcode = $filename;
+			}
+		}
+
+		if(isset($_FILES['ali_qrcode']) && $_FILES['ali_qrcode']){
+			$type = end(explode('.', $_FILES['name']));
+			if(! $type){
+				$type = 'png';
+			}
+			$file_status = move_uploaded_file($_FILES['ali_qrcode']['tmp_name'], $dir . $filename . '.' . $type);
+			if($file_status){
+				$ali_qrcode = $filename;
+			}
+		}
 
 		// save data
-
-		$old_id = $this->_checkQrcodeIsExists($userid)){
+		$date = date('Y-m-d H:i:s');
+		$old_id = $this->_checkQrcodeIsExists($userid);
 		
 		if($old_id){
 			$data = [
