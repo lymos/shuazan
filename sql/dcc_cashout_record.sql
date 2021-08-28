@@ -5,12 +5,13 @@ create table dcc_cashout_record(
 	userid int(11) not null default 0,
 	amount varchar(6) not null default "",
 	status tinyint(1) not null default 0 comment "0.待支付 1.已支付 2.废弃",
+	
 	added_by int(11) not null default 0,
 	added_date datetime default null,
 	updated_by int(11) not null default 0,
 	updated_date datetime default null,
 
-	type tinyint(1) not null default 0 comment "0.任务收益 1.邀请收益 2.本金",
+	type tinyint(1) not null default 0 comment "0.收益提现 1.本金提现",
 	
 	primary key(id)
 )ENGINE=INNODB default charset=utf8mb4 comment "提现记录表";

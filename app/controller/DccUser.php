@@ -167,6 +167,84 @@ class DccUser extends BaseController
 		return json($ret);
 	}
 	
+	/**
+	 * 访问：http://doucc.com/index.php?s=DccUserr/cashout
+	 * 提现
+	 */
+	public function cashout(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$userid = $this->decrypt(trim(Request::param('userid')));
+		if(! $userid){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$capital = trim(Request::param('capital'));
+		$gain = trim(Request::param('gain'));
+		if(! $capital && ! $gain){
+			$ret['msg'] = '请输入提现金额';
+			return json($ret);
+		}
+		if($capital && ! is_numeric($capital)){
+			$ret['msg'] = '请输入正确的金额';
+			return json($ret);
+		}
+		if($gain && ! is_numeric($gain)){
+			$ret['msg'] = '请输入正确的金额';
+			return json($ret);
+		}
+		
+		// 判断是否在可提现范围
+		$this->_checkCanCashout();
+		$date = date('Y-m-d H:i:s');
+		$data = [
+			'userid' => $userid,
+			'added_by' => $userid,
+			'added_date' => $date
+		];
+		
+		
+		Db::startTrans();
+		if($capital){
+			$data['type'] = 1;
+			$data['amount'] = $capital;
+			$status1 = Db::name('cashout_record')
+				->insert($data);
+			if($status1 === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70001';
+				return json($ret);
+			} 
+		}
+			
+		if($gain){
+			$data['type'] = 0;
+			$data['amount'] = $gain;
+			$status2 = Db::name('cashout_record')
+				->insert($data);
+			if($status2 === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70002';
+				return json($ret);
+			} 
+		}
+		Db::commit();
+		
+		$ret = [
+			'code' => 1,
+			'data' => '',
+			'msg' => ''
+		];
+		return json($ret);
+	}
+	
+	private function _checkCanCashout(){
+		
+	}
+	
 	public function getCard(){
 		$ret = [
 			'code' => 0,
