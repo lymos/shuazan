@@ -167,6 +167,38 @@ class DccUser extends BaseController
 		return json($ret);
 	}
 	
+	public function getCard(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		$userid = intval($this->decrypt(trim(Request::param('userid'))));
+		$token = trim(Request::param('token'));
+		if(! $userid || ! $token){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$where = [
+			'userid' => $userid
+		];
+		$data = Db::name('user_card')
+			->field('wx_qrcode, ali_qrcode')
+			->where($where)->find();
+		if($data['wx_qrcode']){
+			$data['wx_qrcode'] = $this->url($data['wx_qrcode']);
+		}
+		if($data['ali_qrcode']){
+			$data['ali_qrcode'] = $this->url($data['ali_qrcode']);
+		}
+		$ret = [
+			'code' => 1,
+			'data' => $data,
+			'msg' => ''
+		];
+		return json($ret);
+	}
+	
 	
 	/**
 	 * 获取签到数据
@@ -389,8 +421,6 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		error_log(print_r($_FILES, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){
@@ -401,27 +431,40 @@ class DccUser extends BaseController
 		// move file
 		$wx_qrcode = '';
 		$ali_qrcode = '';
-		$dir = '';
-		$filename = $date('YmdHis') . uniqid();
+		$dir = BASE_PATH . '/public/upload';
+		$uri = '/upload';
+		if(! file_exists($dir)){
+			mkdir($dir, 0777);
+		}
+		$day = date('Ymd');
+		$dir .= '/' . $day;
+		$uri .= '/' . $day;
+		if(! file_exists($dir)){
+			mkdir($dir, 0777);
+		}
+		
+		$filename = date('YmdHis') . uniqid();
 		if(isset($_FILES['wx_qrcode']) && $_FILES['wx_qrcode']){
-			$type = end(explode('.', $_FILES['name']));
+			$arr = explode('.', $_FILES['wx_qrcode']['name']);
+			$type = end($arr);
 			if(! $type){
 				$type = 'png';
 			}
-			$file_status = move_uploaded_file($_FILES['wx_qrcode']['tmp_name'], $dir . $filename . '.' . $type);
+			$file_status = move_uploaded_file($_FILES['wx_qrcode']['tmp_name'], $dir . '/' . $filename . '.' . $type);
 			if($file_status){
-				$wx_qrcode = $filename;
+				$wx_qrcode = $uri . '/' . $filename . '.' . $type;
 			}
 		}
 
 		if(isset($_FILES['ali_qrcode']) && $_FILES['ali_qrcode']){
-			$type = end(explode('.', $_FILES['name']));
+			$arr = explode('.', $_FILES['ali_qrcode']['name']);
+			$type = end($arr);
 			if(! $type){
 				$type = 'png';
 			}
-			$file_status = move_uploaded_file($_FILES['ali_qrcode']['tmp_name'], $dir . $filename . '.' . $type);
+			$file_status = move_uploaded_file($_FILES['ali_qrcode']['tmp_name'], $dir . '/' . $filename . '.' . $type);
 			if($file_status){
-				$ali_qrcode = $filename;
+				$ali_qrcode = $uri . '/' . $filename . '.' . $type;
 			}
 		}
 
@@ -447,6 +490,12 @@ class DccUser extends BaseController
 				'added_by' => $userid,
 				'added_date' => $date
 			];
+			if($wx_qrcode){
+				$data['wx_qrcode'] = $wx_qrcode;
+			}
+			if($ali_qrcode){
+				$data['ali_qrcode'] = $ali_qrcode;
+			}
 			
 			$status = Db::name('user_card')->insert($data);
 		}
