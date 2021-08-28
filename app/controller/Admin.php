@@ -18,6 +18,12 @@ class Admin extends BackController
 		3 => '已退款',
 		4 => '已取消'
 	];
+	
+	public $cashout_status_list = [
+		0 => '待支付',
+		1 => '已支付',
+		2 => '废弃'
+	];
     /*
     public function index()
     {
@@ -83,24 +89,62 @@ class Admin extends BackController
     }
 
     public function cashoutList(){
-       
+		View::assign('cashout_status_list', $this->cashout_status_list);
+		return View::fetch('cashoutList');
+    }
+	
+	public function ajaxCashoutList(){
+		
+		$where = [];
+		
+		$status = intval(Request::param('status'));
+		if(isset($_GET['status']) && $_GET['status'] !== null && $_GET['status'] !== ''){
+			$where['a.status'] = $status;
+		}
+		
+		$count = Db::name('cashout_record')
+			->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->join('user_card c', 'a.userid = c.userid', 'left')
+			->where($where)
+			->field('count(*) as count')
+			->select();
+			
 		$list = Db::name('cashout_record')
 			->alias('a')
 			->join('user b', 'a.userid = b.id', 'left')
 			->join('user_card c', 'a.userid = c.userid', 'left')
+			->where($where)
 			->field('a.*, b.mobile, c.wx_qrcode, c.ali_qrcode')
-            ->order('a.id', 'desc')
+		    ->order('a.id', 'desc')
 			->select();
-
-		View::assign('list', $list);
+		
 		$url = $this->url('/index.php?s=Admin/cashoutEdit');
-		View::assign('url', $url);
-		return View::fetch('cashoutList');
-    }
+
+		$ret = [
+			'code' => 0,
+			'count' => $count[0]['count'],
+			'data' => $list,
+			'msg' => ''
+		];
+		return json($ret);
+	}
 
     public function cashoutEdit(){
-		$url = $this->url('/index.php?s=Admin/actionCashoutAction');
+		$url = $this->url('/Admin/actionCashoutEditAction');
 		View::assign('url', $url);
+		$id = intval(Request::param('id'));
+		$where['a.id'] = $id;
+		$data = Db::name('cashout_record')
+			->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->join('user_card c', 'a.userid = c.userid', 'left')
+			->where($where)
+			->field('a.id, a.amount, b.mobile, a.status')
+			->find();
+			
+		View::assign('data', $data);
+		View::assign('cashout_status_list', $this->cashout_status_list);
         return View::fetch('cashoutEdit');
     }
 
@@ -110,9 +154,9 @@ class Admin extends BackController
 			'data' => '',
 			'msg' => ''
 		];
-        $id = trim(Request::param('id'));
+        $id = intval(Request::param('id'));
         $status = intval(Request::param('status'));
-		if(!$id || ! $status){
+		if(! $id){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
