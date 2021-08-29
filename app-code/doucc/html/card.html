@@ -33,6 +33,17 @@
 			.mui-btn {
 				padding: 10px;
 			}
+			.mui-input-row button.file {
+				float: none;
+				width: auto;
+			}
+			.img{
+				padding: 10px;
+			}
+			.img img{
+				min-height: 200px;
+				width: 60%;
+			}
 			
 		</style>
 
@@ -41,11 +52,12 @@
 	<body>
 		<header class="mui-bar mui-bar-nav">
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
-			<h1 class="mui-title">添加卡号</h1>
+			<h1 class="mui-title">绑定收款码</h1>
 		</header>
 		<div class="mui-content">
 			
 			<form id='login-form' class="mui-input-group">
+				<!-- 
 				<div class="mui-input-row">
 					<label>开户名</label>
 					<input id='name' type="text" class="mui-input-clear mui-input" placeholder="开户名">
@@ -62,13 +74,29 @@
 					<label>预留手机号</label>
 					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
 				</div>
+				-->
+				<div class="mui-input-row">
+					<label>微信收款码</label>
+					<button id="wx_btn" type="button"
+						class="mui-btn mui-btn-success mui-btn-outlined file" onclick="chooseImgFromAlbums('wx_qrcode');">选择图片</button>
+				</div>
+				<div class="img">
+					<img id="wx-qrcode-img" src="">
+				</div>
+				<div class="mui-input-row">
+					<label>支付宝收款码</label>
+					<button id="ali_btn" type="button"
+						class="mui-btn mui-btn-success mui-btn-outlined file" onclick="chooseImgFromAlbums('ali_qrcode');">选择图片</button>
+				</div>
+				<div class="img">
+					<img id="ali-qrcode-img" src="">
+				</div>
 			</form>
-			
+			<!--
 			<div class="mui-content-padded">
 				<button id='btn-add' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
-				
 			</div>
-			
+			-->
 		</div>
 		<script src="../js/mui.min.js"></script> 
 		<script src="../js/main.js"></script>
@@ -78,6 +106,7 @@
 					statusBarBackground: '#f7f7f7'
 				});
 				$.plusReady(function() {
+					/*
 					doc.getElementById("btn-add").addEventListener('tap', function(event) {
 						var form_data = {
 							name: doc.getElementById("name").value,
@@ -115,8 +144,93 @@
 								}
 						});
 					});
+					*/
+				   
+					// 获取图片
+					$.ajax(config.host + 'DccUser/getCard', {
+						data: getToken(),
+						dataType: 'json', //服务器返回json格式数据
+						type: 'post', //HTTP请求类型
+						timeout: 10000, //超时时间设置为10秒；
+						headers: {
+							'Content-Type': 'application/json'
+						},
+						success: function(data) {
+							// console.log(JSON.stringify(data))
+
+							if (data.code == 0) {
+								// mui.alert(data.msg);
+							} else if (data.code == 2) {
+								// delToken();
+							} else {
+								var img = document.getElementById("wx-qrcode-img"),
+									img2 = document.getElementById("ali-qrcode-img")
+									
+								img.src = data.data.wx_qrcode;
+								img2.src = data.data.ali_qrcode;
+							}
+					
+						},
+						error: function(xhr, type, errorThrown) {
+							//异常处理；
+							// console.log(JSON.stringify(xhr));
+						}
+					});
 				});
+				
+				
 			}(mui, document));
+			
+			function chooseImgFromAlbums(id) {
+				plus.gallery.pick(function(file) {
+					uploadImg(file, id);
+					// changeToLocalUrl(file);
+				}, function(err) {
+					// console.log(JSON.stringify(err));
+				}, {
+					filter: 'image',
+					multiple: false
+				});
+			}
+			
+			function changeToLocalUrl(path) {
+				plus.io.resolveLocalFileSystemURL(path, function(entry) {
+					openWindow('uploadImg.html?src=' + entry.toLocalURL());
+				});
+			}
+			
+			function uploadImg(src, id) {
+				var url = config.host + "DccUser/addPayQrcode";
+				var task = plus.uploader.createUpload(url, {
+					method: 'post',
+					blocksize: 204800,
+					timeout: 30
+				}, function(u, s){
+					
+				});
+			
+				task.addFile(src, {
+					key: id
+				});
+				var token_data = getToken();
+			
+				task.addData('token', token_data.token);
+				task.addData('token_expire', token_data.token_expire);
+				task.addData('userid', token_data.userid);
+				task.addEventListener('statechanged', stateChanged, false);
+				task.start();
+			
+				function stateChanged(upload, status) {
+					// console.log(JSON.stringify(upload))
+					if (upload.state == 4 && status == 200) {
+						plus.uploader.clear(); //清除上传  
+						plus.nativeUI.alert("上传成功！",function(){
+								plus.webview.currentWebview().reload();
+						});
+						
+					}
+				}
+			}
 		</script>
 	</body> 
 

@@ -499,6 +499,7 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
+		error_log(print_r($_FILES, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){
