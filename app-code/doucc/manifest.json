@@ -316,7 +316,15 @@
                         "spotlight-retina7" : "", /*iPhone4S/5/6 Spotlight搜索程序图标，分辨率：80x80*/
                         "settings-normal" : "", /*iPhone4设置页面程序图标，分辨率：29x29*/
                         "settings-retina" : "", /*iPhone4S/5/6设置页面程序图标，分辨率：58x58*/
-                        "settings-retina8" : ""
+                        "settings-retina8" : "",
+                        "app@2x" : "images/app.png",
+                        "app@3x" : "images/app.png",
+                        "spotlight@2x" : "images/app.png",
+                        "spotlight@3x" : "images/app.png",
+                        "settings@2x" : "images/app.png",
+                        "notification@2x" : "images/app.png",
+                        "settings@3x" : "images/app.png",
+                        "notification@3x" : "images/app.png"
                     },
                     "ipad" : {
                         "normal" : "", /*iPad普通屏幕程序图标，分辨率：72x72*/
@@ -328,16 +336,25 @@
                         "spotlight-normal7" : "", /*iPad iOS7 Spotlight搜索程序图标，分辨率：40x40*/
                         "spotlight-retina7" : "", /*iPad iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
                         "settings-normal" : "", /*iPad设置页面程序图标，分辨率：29x29*/
-                        "settings-retina" : ""
-                    }
+                        "settings-retina" : "",
+                        "app" : "images/app.png",
+                        "app@2x" : "images/app.png",
+                        "proapp@2x" : "images/app.png",
+                        "spotlight@2x" : "images/app.png",
+                        "settings" : "images/app.png",
+                        "settings@2x" : "images/app.png",
+                        "notification" : "images/app.png",
+                        "notification@2x" : "images/app.png"
+                    },
+                    "appstore" : "images/app.png"
                 },
                 "android" : {
                     "mdpi" : "", /*普通屏程序图标，分辨率：48x48*/
                     "ldpi" : "", /*大屏程序图标，分辨率：48x48*/
-                    "hdpi" : "/Volumes/mac-disk/images/app2.png", /*高分屏程序图标，分辨率：72x72*/
-                    "xhdpi" : "/Volumes/mac-disk/images/app2.png", /*720P高分屏程序图标，分辨率：96x96*/
-                    "xxhdpi" : "/Volumes/mac-disk/images/app2.png",
-                    "xxxhdpi" : "/Volumes/mac-disk/images/app2.png"
+                    "hdpi" : "images/app.png", /*高分屏程序图标，分辨率：72x72*/
+                    "xhdpi" : "images/app.png", /*720P高分屏程序图标，分辨率：96x96*/
+                    "xxhdpi" : "images/app.png",
+                    "xxxhdpi" : "images/app.png"
                 }
             },
             "splashscreen" : {

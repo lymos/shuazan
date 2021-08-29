@@ -44,8 +44,10 @@
 				width: auto;
 			}
 
-			.img {
+			.img img{
 				height: 200px;
+				width: 60%;
+				padding: 10px;
 			}
 		</style>
 
@@ -79,16 +81,18 @@
 				-->
 				<div class="mui-input-row">
 					<label>微信收款码</label>
-					<input id='wx_qrcode' type="file" class="" onchange="fileSelected();">
+					<input id='wx_qrcode' type="file" class="hide" onchange="fileSelected();">
 					<button id="wx_btn" type="button"
-						class="mui-btn mui-btn-success mui-btn-outlined file hide">选择图片</button>
+						class="mui-btn mui-btn-success mui-btn-outlined file">选择图片</button>
 				</div>
 				<div class="img">
 					<img id="wx-qrcode-img" src="">
 				</div>
 				<div class="mui-input-row">
 					<label>支付宝收款码</label>
-					<input id='ali_qrcode' type="file" class="" onchange="fileSelected2();">
+					<input id='ali_qrcode' type="file" class="hide" onchange="fileSelected2();">
+					<button id="ali_btn" type="button"
+						class="mui-btn mui-btn-success mui-btn-outlined file">选择图片</button>
 				</div>
 				<div class="img">
 					<img id="ali-qrcode-img" src="">
@@ -150,9 +154,11 @@
 				*/
 
 				doc.getElementById("wx_btn").addEventListener('tap', function(event) {
-					//$.alert(9);
-					console.log(888)
 					$.trigger(doc.getElementById("wx_qrcode"), 'click');
+				});
+				
+				doc.getElementById("ali_btn").addEventListener('tap', function(event) {
+					$.trigger(doc.getElementById("ali_qrcode"), 'click');
 				});
 				// });
 

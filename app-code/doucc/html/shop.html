@@ -10,9 +10,13 @@
 		<link rel="stylesheet" href="../css/mui.min.css">
 		<link rel="stylesheet" href="../css/main.css">
 		<style>
-			html,
+			html, 
 			body {
 				background-color: #efeff4;
+			}
+			.shop-img img{
+				width: 44px;
+				height: 44px;
 			}
 		</style>
 	</head>
@@ -172,60 +176,6 @@
 					$pobj = this;
 					mui('#popover').popover("toggle");
 					return ; 
-					
-					/*
-					var productid = this.getAttribute("data-id");
-					mui.ajax(config.host + 'index.php?s=Order/createOrder', {
-						data: Object.assign(getToken(), {productid: productid}),
-						dataType:'json',//服务器返回json格式数据
-						type:'post',//HTTP请求类型
-						timeout:10000,//超时时间设置为10秒；
-						headers:{'Content-Type':'application/json'},
-						success:function(data){
-							console.log(data)
-							//服务器返回响应，根据响应结果，分析是否登录成功；
-							if(data.code == 0){
-								mui.alert(data.msg);
-							}else if(data.code == 2){
-								
-							}else{
-								// http://doucc.com/index.php?s=cash/unionpay
-								var url = config.host + 'index.php?s=Cash/unionpayApp&orderid=' + data.data.orderid + "&userid=" + data.data.userid;
-								// location.href = url;
-							   
-								plus.webview.create(url, 'unionpay', {popGesture:'hide',navigationbar:{backgroundColor:'#FFFFFF',titleColor:'#000000', autoBackButton: true, backButton:{color:'#007AFF',colorPressed:'#0000FF'}}}).show('pop-in');
-								// 访问外部网址返回处理	
-								mui.oldBack = mui.back;
-								mui.back = function(event) {  
-									var unionpay = plus.webview.getWebviewById('unionpay');  
-									if(unionpay){  
-										unionpay.opener().reload();
-										
-										return unionpay.canBack( function(e){  
-											unionpay.close(); 
-											
-												if(e.canBack){  
-														unionpay.back();  
-												}else{  
-														unionpay.close();  
-												}  
-												
-										});  
-									}  
-									mui.oldBack();  
-									return false;  
-								};
-							}
-							
-						},
-						error:function(xhr,type,errorThrown){
-							//异常处理；
-							// mui.alert("商城");
-							console.log(type);
-						}
-					});
-					*/
-				
 				});
 				
 				/**
@@ -278,7 +228,7 @@
 			});
 			
 			function getListProduct(is_refresh){
-				mui.ajax(config.host + 'index.php?s=Product/getProductList', {
+				mui.ajax(config.host + 'Product/getProductList', {
 					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
@@ -291,15 +241,29 @@
 							// mui.alert(data.msg);
 						}else if(data.code == 2){
 								
-						}else{
-							var p = data.data.data;
-							document.getElementById("pname").innerHTML = p.name;
-							document.getElementById("pprice").innerHTML = p.price + "元";
-							if(data.data.isbuy){
-								document.getElementById("shop-action").innerHTML = '<span class="mui-badge mui-badge-purple">已购买</span>';
-							}else{
-								document.getElementById("btn-buy").setAttribute("data-id", p.id);
+						}else{        
+							var list = data.data;
+							var html = "";
+							for(var i in list){
+								html += '<li class="mui-table-view-cell">' +
+									'<div class="mui-slider-cell">' + 
+										'<div class="mui-table product-item">' + 
+											'<div class="mui-table-cell shop-img">' + 
+												'<img src="../images/product.png" />' +
+											'</div>' + 
+											'<div class="mui-table-cell shop-text">' + 
+												'<div class="mui-clearfix">' + 
+													'<h4 class="pname">' + list[i].name + '</h4>' + 
+													'<span class="mui-h5 pprice">' + list[i].price + '元</span>' + 
+												'</div></div><div class="mui-table-cell shop-action">';
+								if(list[i].is_buy){
+									html +=	'<span class="mui-badge mui-badge-purple">已购买</span></div></div></div></li>';
+								}else{
+									html +=	'<button data-id="' + list[i].id + '" type="button" class="mui-btn mui-btn-primary btn-buy">购买</button></div></div></div></li>';
+									
+								}		
 							}
+							document.getElementById("product-list").innerHTML = html;
 							
 						}
 						if(typeof is_refresh !== "undefined"){

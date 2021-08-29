@@ -14,6 +14,14 @@
 			html,
 			body {
 				background-color: #efeff4;
+				
+			}
+			.header-top{
+				background-image: url(/static/images/me-bg2.png);
+				color: #fff;
+			}
+			.me-info p{
+				color: #fff;
 			}
 
 			.title {
@@ -52,6 +60,33 @@
 			oa-contact-position {
 				float: left;
 			}
+			
+			.top-icon{
+				width: 100%;
+				margin-bottom: 20px;
+			}
+			.top-icon .inner{
+				width: 100%;
+				margin: 0 auto;
+				display: flex;
+			}
+			.top-icon .inner > div{
+				width: 50%;
+				padding: 10px;
+				border-radius: 10px;
+				border: 1px solid #ccc;
+			}
+			div.index-ac-box{
+				display: block;
+				margin-top: 60px;
+			}
+			
+			li.mui-table-view-cell{
+				padding: 16px 15px;
+			}
+			li.mui-table-view-cell:after{
+				background-color: unset;
+			}
 		</style>
 	</head>
 
@@ -75,7 +110,7 @@
 				</div>
 
 			</div>
-
+			
 			<ul class="mui-table-view">
 				<li class="mui-table-view-cell icon-link">
 					<a id="link-card" class="mui-navigate-right"><span
@@ -93,6 +128,36 @@
 				</li>
 
 			</ul>
+			
+			<!--
+			<div class="index-ac-box">
+				<div class="top-icon">
+					<div class="inner">
+						<div id="link-signin" class="box-item" style="background-color: #fff;">	
+							<div class="icon-item item1"></div>
+							<div class="item-txt">卡号绑定</div>
+						</div>
+						<div id="link-card" class="box-item" style="background-color: #fff;">
+							<div class="icon-item item2"></div>
+							<div class="item-txt">商城</div>
+						</div>
+					</div>
+				</div>
+				
+				<div class="top-icon">
+					<div class="inner">
+						<div id="link-task" class="box-item" style="background-color: #fff;">
+							<div class="icon-item item3"></div>
+							<div class="item-txt">邀请用户</div>
+						</div>
+						<div id="link-cashout" class="box-item" style="background-color: #fff;">
+							<div class="icon-item item4"></div>
+							<div class="item-txt">收益规则</div>
+						</div>
+					</div>
+				</div>
+			</div>	
+			-->
 		</div>
 		
 		<div class="footer">

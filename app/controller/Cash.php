@@ -119,8 +119,8 @@ class Cash extends BaseController
 				'txnType' => '01',				      //交易类型
 				'txnSubType' => '01',				  //交易子类
 				'bizType' => '000201',				  //业务类型
-				'frontUrl' =>  $host . 'index.php?s=Cash/frontReceiveApp',  //前台通知地址
-				'backUrl' => $host . 'index.php?s=cash/backReceive',	  //后台通知地址
+				'frontUrl' =>  $host . 'Cash/frontReceiveApp',  //前台通知地址
+				'backUrl' => $host . 'cash/backReceive',	  //后台通知地址
 				'signMethod' => \com\unionpay\acp\sdk\SDKConfig::getSDKConfig()->signMethod,	              //签名方法
 				'channelType' => '08',	              //渠道类型，07-PC，08-手机
 				'accessType' => '0',		          //接入类型
@@ -178,9 +178,6 @@ class Cash extends BaseController
 	}
 	
 	public function alipayReturn(){
-		// error_log(print_r('alipayReturn', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		// error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		error_log(print_r('alipayReturn', true), 3, '/tmp/debug.log');
 		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
@@ -874,7 +871,7 @@ class Cash extends BaseController
 			echo '付款失败';
 			exit;
 		}
-		$url = $this->url('/index.php?s=home');
+		$url = $this->url('/Home');
 		header('Location: ' . $url);
 		exit;
 	}
@@ -932,7 +929,7 @@ class Cash extends BaseController
 			echo '付款失败';
 			exit;
 		}
-		$url = $this->url('/index.php?s=home/apppay');
+		$url = $this->url('/Home/apppay');
 		header('Location: ' . $url);
 		exit;
 	}

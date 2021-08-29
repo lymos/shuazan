@@ -34,6 +34,10 @@ form.mui-input-group{
 }
 .c-item .t-info{
 	padding-top: 5px;
+	width: 80%;
+}
+.c-item .r-right{
+	line-height: 2.5;
 }
 .r-right{
 	float: right;

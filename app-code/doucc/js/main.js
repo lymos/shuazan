@@ -94,7 +94,7 @@ var setLogin  = function(token){
 
 var delToken = function(){
 	plus.storage.clear();	
-	refresh();
+	// refresh();
 };
 
 var refresh = function(){

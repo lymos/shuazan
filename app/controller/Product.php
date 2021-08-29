@@ -28,31 +28,35 @@ class Product extends BaseController
 			return json($ret);
 		}
 		
-		$data = Db::name('product')->find();
-		$productid = 0;
-		if(isset($data['id'])){
-			$productid = $data['id'];
-			$data['id'] = $this->encrypt($data['id']);
-		}
+		$data = Db::name('product')->field('id, name, price')->select()
+			->toArray();
+		
+		$productids = array_column($data, 'id');
 		
 		// 查询是否已经购买
 		$where = [
 			'a.userid' => $userid,
 			'a.status' => 1,
-			'b.productid' => $productid
+			'b.productid' => $productids
 		];
-		$isbuy = Db::name('order')->alias('a')
+		$buy_data = Db::name('order')->alias('a')
 			->join('order_detail b', 'a.id = b.orderid', 'left')
-			->field('a.id')
+			->field('b.productid')
 			->where($where)
-			->find();
+			->select()->toArray();
 		
+		$buy_data_ids = array_column($buy_data, 'productid');
+		foreach($data as & $rs){
+			if(in_array($rs['id'], $buy_data_ids)){
+				$rs['is_buy'] = true;
+			}else{
+				$rs['is_buy'] = false;
+			}
+			$rs['id'] = $this->encrypt($rs['id']);
+		}		
 		$ret = [
 			'code' => 1,
-			'data' => [
-				'data' => $data,
-				'isbuy' => $isbuy ? true : false
-			],
+			'data' => $data,
 			'msg' => ''
 		];
 		return json($ret);
