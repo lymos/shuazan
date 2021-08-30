@@ -14,7 +14,16 @@
 			html,body {
 				background-color: #efeff4;
 			}
+			.mui-content{
+				background-image: url(../images/invite-bg.png);
+				background-repeat: no-repeat;
+				background-size: contain;
+				height: 100vh;
+			}
 			
+			div.qrcode{
+				padding-top: 44%;
+			}
 			
 		</style>
 	</head>
@@ -39,7 +48,11 @@
 			swipeBack:true //启用右滑关闭功能
 		});
 		mui.plusReady(function() {
-			jQuery('#qrcode').qrcode(config.host + "index.php?s=home/reg&invite_code=" + plus.storage.getItem("invite_code"));
+			jQuery('#qrcode').qrcode({
+				text: config.host + "index.php?s=home/reg&invite_code=" + plus.storage.getItem("invite_code"),
+				width: 100,
+				height: 100
+			});
 			
 		});
 	</script>

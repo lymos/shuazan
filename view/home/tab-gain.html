@@ -39,9 +39,9 @@
 					
 					
 				</li>
+				<!--
 			    <li class="mui-table-view-cell c-item">
 			    	<div class="t-info">
-						<!-- 当前可提现的收益 -->
 			    		<span>任务收益：</span><span id="task-gain"></span>
 			    	</div>
 			    	<div class="r-right">
@@ -49,9 +49,10 @@
 			    	</div>
 			    	
 			    </li>
+				-->
 				<li class="mui-table-view-cell c-item">
 					<div class="t-info">
-						<span>佣金收益：</span><span id="invite-gain"></span>
+						<span>收益：</span><span id="invite-gain"></span>
 					</div>
 					<div class="r-right">
 						<button id="link-invite" type="button">邀请用户</button>
@@ -103,7 +104,7 @@
 					}
 				});
 			}, false);
-			
+			/*
 			document.getElementById('link-task').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'index.php?s=home/taskall',
@@ -123,7 +124,7 @@
 					}
 				});
 			}, false);
-			
+			*/
 			document.getElementById('link-invite').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'index.php?s=home/invite',
@@ -157,8 +158,8 @@
 					}else{
 						var res = data.data;
 						document.getElementById("capital").innerHTML = res.capital + "元";
-						document.getElementById("task-gain").innerHTML = res.task_gain + "元";
-						document.getElementById("invite-gain").innerHTML = res.invite_gain + "元";
+						// document.getElementById("task-gain").innerHTML = res.task_gain + "元";
+						document.getElementById("invite-gain").innerHTML = res.gain + "元";
 						document.getElementById("total").innerHTML = res.total + "元";
 					}
 					

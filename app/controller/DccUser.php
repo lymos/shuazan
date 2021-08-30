@@ -133,10 +133,11 @@ class DccUser extends BaseController
 			'status' => 1
 		];
 		$order = Db::name('order')
-			->field('total')
+			->field('sum(total) as total')
 			->where($where_order)
 			->find();
 		
+		/*
 		$where_task = [
 			'userid' => $userid,
 			'status' => 0,
@@ -146,22 +147,20 @@ class DccUser extends BaseController
 			->field('sum(gain) as task_gain')
 			->where($where_task)
 			->find();
-			
+		*/
 		$where_invite = [
-			'userid' => $userid,
-			'status' => 0,
-			'type' => 1
+			'userid' => $userid
 		];
 		$temp_invite = Db::name('user_gain')
-			->field('sum(gain) as invite_gain')
+			->field('gain')
 			->where($where_invite)
 			->find();
-			
+		$gain = isset($temp_invite['gain']) ? $temp_invite['gain'] : 0;	
 		$ret['data'] = [
 			'capital' => $order['total'],
-			'task_gain' => $temp_task['task_gain'] ? $temp_task['task_gain'] : 0,
-			'invite_gain' => $temp_invite['invite_gain'] ? $temp_invite['invite_gain'] : 0,
-			'total' => $order['total'] + $temp_task['task_gain'] + $temp_invite['invite_gain']
+			// 'task_gain' => $temp_task['task_gain'] ? $temp_task['task_gain'] : 0,
+			'gain' => $gain,
+			'total' => $order['total'] + $gain
 		];
 		$ret['code'] = 1;
 		return json($ret);
@@ -209,8 +208,13 @@ class DccUser extends BaseController
 		
 		Db::startTrans();
 		if($capital){
+			
+			// 验证为本金的整数倍
+			
+			$fee = $capital * 0.01; 
+			
 			$data['type'] = 1;
-			$data['amount'] = $capital;
+			$data['amount'] = $capital - $fee;
 			$status1 = Db::name('cashout_record')
 				->insert($data);
 			if($status1 === false){
@@ -218,6 +222,9 @@ class DccUser extends BaseController
 				$ret['msg'] = '发生错误 code 70001';
 				return json($ret);
 			} 
+			
+			// 订单修改为退款
+			
 		}
 			
 		if($gain){
@@ -230,6 +237,9 @@ class DccUser extends BaseController
 				$ret['msg'] = '发生错误 code 70002';
 				return json($ret);
 			} 
+			
+			// 收益表减收益
+			
 		}
 		Db::commit();
 		
@@ -261,7 +271,7 @@ class DccUser extends BaseController
             	return false;
             }
 		}
-		
+		return true;
 
 	}
 	

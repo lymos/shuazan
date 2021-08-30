@@ -5,6 +5,11 @@ create table dcc_cashout_record(
 	userid int(11) not null default 0,
 	amount varchar(6) not null default "",
 	status tinyint(1) not null default 0 comment "0.待支付 1.已支付 2.废弃",
+	fee_percent varchar(6) not null default "" comment "费率",
+	fee varchar(6) not null default "" comment "手续费",
+	
+	before_total varchar(6) not null default "" comment "提现之前总额",
+	after_total varchar(6) not null default "" comment "提现之后总额",
 	
 	added_by int(11) not null default 0,
 	added_date datetime default null,
