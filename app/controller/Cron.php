@@ -110,8 +110,13 @@ class Cron extends BaseController{
             $this->log('end');
             exit;
         }
-        $gain = [];
+        $gain = $all_gain = [];
         foreach($user_data as $rs){
+            $gain = $this->_gain($rs['id']);
+            // order times
+            $order_times = $this->getOrderTimes($rs['id']);
+            $gains = $gain * $order_times;
+            /*
             $task_gain = $this->_taskGain($rs['id']);
 			
             // 任务是前提
@@ -119,15 +124,21 @@ class Cron extends BaseController{
                 continue;
             }
             $invite_gain = $this->_inviteGain($rs['id']);
+            
             $gain[$rs['id']] = [
                 'task_gain' => $task_gain,
                 'invite_gain' => $invite_gain
+            ];
+            */
+            $all_gain[$rs['id']] = [
+                'gain' => $gains
             ];
 			
         }		
 
         // 更新记录表
-        $status = $this->_insertGain($gain);
+      //  $status = $this->_insertGain($gain);
+        $status = $this->_insertGainNew($all_gain);
         if(! $status){
             $this->log('failed');
         }else{
@@ -198,6 +209,138 @@ class Cron extends BaseController{
         return true;
     }
 
+    private function _insertGainNew($gain){
+        $date = date('Y-m-d H:i:s');
+        foreach($gain as $userid => $rs){
+            $capital = Db::name('order')
+            ->field('sum(total) as total')
+            ->where(['userid' => $userid, 'status' => 1, 'total' => Config::get('app.p_price')])
+            ->find();
+            
+            if(! $capital){
+                // log
+                $this->log('no capital continue');
+                continue;
+            }
+            $data1 = [
+                'userid' => $userid,
+                'type' => 2,
+                'capital' => $capital['total'],
+                'gain' => $rs['gain'],
+                'gain_date' => $this->date,
+                'added_date' => $date
+            ];
+            Db::startTrans();
+            $status1 = Db::name('user_gain_detail')
+                ->insert($data1);
+            if($status1 === false){
+                $this->log('insert task gain error');
+                Db::rollback();
+                return false;
+            }
+
+            $old = Db::name('user_gain') 
+                ->field('gain')
+                ->where(['userid' => $userid])
+                ->find();
+            $new_gain = $rs['gain'];
+            if($old){
+                $new_gain += $old['gain'];
+                $data2 = [
+                    'gain' => $new_gain,
+                    'updated_date' => $date
+                ];
+                $status2 = Db::name('user_gain')
+                    ->where(['userid' => $userid])
+                    ->update($data2);
+                if($status2 === false){
+                    $this->log('update gain error');
+                    Db::rollback();
+                    return false;
+                }
+            }else{
+                $data2 = [
+                    'userid' => $userid,
+                    'gain' => $new_gain,
+                    'added_date' => $date
+                ];
+                $status2 = Db::name('user_gain')
+                    ->insert($data2);
+                if($status2 === false){
+                    $this->log('insert gain error');
+                    Db::rollback();
+                    return false;
+                }
+            }
+            
+
+            Db::commit();
+        }
+        return true;
+    }
+
+    public function getOrderTimes($userid){
+        $where = [
+            'userid' => $userid,
+            'status' => 1
+        ];
+        $count = Db::name('order')
+            ->field('count(*) as count')
+            ->where($where)
+            ->find()->toArray();
+        return $count['count'];
+    }
+
+    /**
+     * @param {Object} $userid
+     * rate %
+     */
+    private function _gain($userid){
+        $rate = 0;
+        $where = [
+            'userid' => $userid,
+            'date' => $this->date,
+            'process' => 100,
+            'status' => 1
+        ];
+        $list = Db::name('user_task')
+            ->field('id')
+            ->where($where)
+            ->select()->toArray();
+        
+        if(! $list){
+            return false;
+        }
+        $count = count($list);
+        // 满2个才给
+        if($count < 2){
+            return false;
+        }
+
+        $level_data = $this->getInviteSum($userid);
+        $n = $level_data['count'];
+        $sum = 0;
+        switch($level_data['level']){
+            case 1:
+                $sum = 36 + (18 * $n);
+            break;
+            case 2:
+                $sum = 36 + ((18 + 9) * $n);
+            break;
+            case 3:
+                $sum = 36 + ((18 + 18) * $n);
+            break;
+            case 4:
+                $sum = 36 + ((18 + 18 + 9) * $n);
+            break;
+            case 5:
+                $sum = 36 + ((18 + 18 + 18) * $n);
+            break;
+        }
+        
+        return $sum;
+    }
+
 	/**
 	 * @param {Object} $userid
 	 * rate %
@@ -239,6 +382,48 @@ class Cron extends BaseController{
             $rate = 30;
         }
         return $rate;
+    }
+
+    /**
+    * 1 <= 10
+    * 2 11,50
+    * 3 51, 100
+    * 4 101, 500  2ge2 > 25
+    * 5 501   1ge3 & 2ge2
+    */
+    public function getInviteSum($userid){
+        $invite_data = $this->_getInviteUser($userid);
+        $count1 = $invite_data['count'];
+        $count2 = 0;
+        $level = 1;
+        if($invite_data['list']){
+            foreach($invite_data['list'] as $rs){
+                $temp = $this->_getInviteUser($rs['invite_userid']);
+            
+                if(! $temp || ! $temp['count']){
+                    continue;
+                }
+                $count2 += $temp['count'];
+                $list = $temp['list'];
+            }       
+        }
+        $sum = $count1 + $count2;
+        if($sum > 10 && $sum < 51){
+            $level = 2;
+        }else if($sum > 50 && $sum < 101){
+            $level = 3;
+        }else if($sum > 100 && $sum < 501){
+            $level = 4;
+            // 2ge2 > 25
+
+        }else if($sum > 500){
+            $level = 5;
+        }
+
+        return [
+            'count' => $sum,
+            'level' => $level
+        ];
     }
 
     private function _getInviteUser($userid){

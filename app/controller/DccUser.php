@@ -198,7 +198,7 @@ class DccUser extends BaseController
 		}
 		
 		// 判断是否在可提现范围
-		$this->_checkCanCashout();
+		$this->_checkCanCashout($userid, $capital, $gain);
 		$date = date('Y-m-d H:i:s');
 		$data = [
 			'userid' => $userid,
@@ -241,8 +241,28 @@ class DccUser extends BaseController
 		return json($ret);
 	}
 	
-	private function _checkCanCashout(){
+	private function _checkCanCashout($userid, $capital, $gain){
+		if($capital){
+			$capital_temp = Db::name('order')
+            ->field('sum(total) as total')
+            ->where(['userid' => $userid, 'status' => 1])
+            ->find();
+            if($capital > $capital_temp['total']){
+            	return false;
+            }
+		}
+
+		if($gain){
+			$gain_temp = Db::name('user_gain')
+            ->field('sum(gain) as tatal')
+            ->where(['userid' => $userid, 'status' => 0, 'type' => 2])
+            ->find();
+            if($gain > $gain_temp['total']){
+            	return false;
+            }
+		}
 		
+
 	}
 	
 	public function getCard(){
