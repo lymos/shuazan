@@ -35,7 +35,6 @@ class Invite extends BaseController
 		    ->labelFont(new NotoSans(20))
 		    ->labelAlignment(new LabelAlignmentCenter())
 		    ->build();
-			//error_log(print_r($result, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 			
         return View::fetch('invite');
     }

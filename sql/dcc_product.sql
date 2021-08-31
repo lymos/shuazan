@@ -11,13 +11,13 @@ create table dcc_product(
 	primary key(id)
 )ENGINE=INNODB default charset=utf8mb4 comment "产品表";
 
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人1", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人2", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人3", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人4", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人5", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人6", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人7", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人8", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人9", "0.01", 0, "2021-05-28 12:12:12");
-insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人10", "0.01", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人1", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人2", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人3", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人4", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人5", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人6", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人7", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人8", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人9", "1800", 0, "2021-05-28 12:12:12");
+insert into dcc_product (name, price, added_by, added_date) values ("抖音云端机器人10", "1800", 0, "2021-05-28 12:12:12");

@@ -75,7 +75,6 @@ class AdminLogin extends BackController
 	
 	public function setLogin($userid){
 	    session('userid', $userid);
-		// error_log(print_r($userid, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		// cookie('userid', $userid);
 	    $token = md5('dcc' . $userid . '8923');
 	    session('token', $token);

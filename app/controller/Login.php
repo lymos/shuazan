@@ -149,7 +149,6 @@ class Login extends BaseController
 
 		$msg = '【抖财财】您的注册验证码是：' . $code;
 		$res = $this->sendSms($mobile, $msg);
-		// $res = true; // debug
 		if(! $res){
 			$ret['msg'] = '短信发送失败';
 			return json($ret);
@@ -192,8 +191,7 @@ class Login extends BaseController
 		
 		$code = $this->_genCode();
 		$msg = '【抖财财】您的登录验证码是：' . $code;
-		// $res = $this->sendSms($mobile, $msg); 
-		$res = true; // debug
+		$res = $this->sendSms($mobile, $msg); 
 		if(! $res){
 			$ret['msg'] = '短信发送失败';
 			return json($ret);

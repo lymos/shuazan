@@ -22,7 +22,7 @@ class Admin extends BackController
 	public $cashout_status_list = [
 		0 => '待支付',
 		1 => '已支付',
-		2 => '废弃'
+		// 2 => '废弃'
 	];
     /*
     public function index()

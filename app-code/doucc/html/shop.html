@@ -174,7 +174,8 @@
 						return ;
 					}
 					$pobj = this;
-					mui('#popover').popover("toggle");
+					mui.trigger(document.getElementById("btn-alipay"), "tap");
+					// mui('#popover').popover("toggle");
 					return ; 
 				});
 				

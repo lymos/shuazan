@@ -111,7 +111,7 @@
 					}
 				});
 			}, false);
-			
+			/*
 			document.getElementById('link-taskall').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'taskall.html',
@@ -131,7 +131,8 @@
 					}
 				});
 			}, false);
-			
+			*/
+		   
 			document.getElementById('link-invite').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'invite.html',
@@ -166,6 +167,15 @@
 						
 					}else{
 						var res = data.data;
+						if(res.capital == "null" || ! res.capital){
+							res.capital = 0;
+						}
+						if(res.gain == "null" || ! res.gain){
+							res.gain = 0;
+						}
+						if(res.total == "null" || ! res.total){
+							res.total = 0;
+						}
 						document.getElementById("capital").innerHTML = res.capital + "元";
 						// document.getElementById("task-gain").innerHTML = res.task_gain + "元";
 						document.getElementById("invite-gain").innerHTML = res.gain + "元";

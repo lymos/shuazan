@@ -7,6 +7,7 @@ use app\model\User;
 use think\response\Json;
 use think\facade\Db;
 use think\facade\Request;
+use think\facade\Config;
  
 class DccUser extends BaseController
 {
@@ -196,10 +197,19 @@ class DccUser extends BaseController
 			return json($ret);
 		}
 		
+		$old_temp = Db::name('order')
+		->field('id')
+		->where(['userid' => $userid, 'status' => 1])
+		->find();
+		if(! $old_temp){
+			$ret['msg'] = '您不满足提现要求 code 70007';
+			return json($ret);
+		}
+		
 		// 判断是否在可提现范围
 		$old_cash = $this->_checkCanCashout($userid, $capital, $gain);
-		if(! $old_cash['status1'] || ! $old_cash['status12']){
-			$ret['msg'] = '请输入正确范围的金额';
+		if(! $old_cash['status1'] || ! $old_cash['status2']){
+			$ret['msg'] = '请输入正确范围的金额 code 70006';
 			return json($ret);
 		}
 
@@ -212,50 +222,12 @@ class DccUser extends BaseController
 		
 		
 		Db::startTrans();
-		if($capital){
-			
-			// 验证为本金的整数倍
-			if($capital % Config::get('app.p_price') != 0){
-				$ret['msg'] = '请输入正确的金额 code 70003';
-				return json($ret);
-			}
-			
-			$fee = $capital * 0.01; 
-			
-			$data['type'] = 1;
-			$data['amount'] = $capital - $fee;
-			$data['fee'] = $fee;
-			$data['fee_percent'] = 0.01;
-			$data['before_total'] = $old_cash['capital'];
-			$data['after_total'] = $old_cash['capital'] - $capital;
-			$status1 = Db::name('cashout_record')
-				->insert($data);
-			if($status1 === false){
-				Db::rollback();
-				$ret['msg'] = '发生错误 code 70001';
-				return json($ret);
-			} 
-			
-			// 订单修改为退款
-			$times = $capital / Config::get('app.p_price');
-			$update_data = [
-				'status' => 3,
-				'updated_date' => $date,
-				'updated_by' => $userid
-			];
-			$update_status = Db::name('order')
-			->where(['userid' => $userid])->update($update_data)->limit($times);
-			if($update_status === false){
-				Db::rollback();
-				$ret['msg'] = '发生错误 code 70004';
-				return json($ret);
-			} 
-		}
-			
-		if($gain){
+		
+		if($gain && $old_cash['gain']){
 			$data['type'] = 0;
 			$fee_rate = $this->_checkGainFee($userid);
-			$fee = $gain * $fee_rate / 100;
+			$fee = $gain * ($fee_rate / 100);
+			
 			$data['amount'] = $gain - $fee;
 			$data['fee'] = $fee;
 			$data['fee_percent'] = $fee_rate / 100;
@@ -285,6 +257,49 @@ class DccUser extends BaseController
 			} 
 			
 		}
+		
+		if($capital && $old_cash['capital']){
+			// 验证为本金的整数倍
+			if(strpos(($capital / Config::get('app.p_price')), '.') !== false){
+				$ret['msg'] = '请输入正确的金额 code 70003';
+				return json($ret);
+			}
+			
+			$fee = $capital * 0.01; 
+			
+			$data['type'] = 1;
+			$data['amount'] = $capital - $fee;
+			$data['fee'] = $fee;
+			$data['fee_percent'] = 0.01;
+			$data['before_total'] = $old_cash['capital'];
+			$data['after_total'] = $old_cash['capital'] - $capital;
+						
+			$status1 = Db::name('cashout_record')
+				->insert($data);
+			if($status1 === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70001';
+				return json($ret);
+			} 
+			
+			// 订单修改为退款
+			$times = $capital / Config::get('app.p_price');
+			$update_data = [
+				'status' => 3,
+				'updated_date' => $date,
+				'updated_by' => $userid
+			];
+			$update_status = Db::name('order')
+			->where(['userid' => $userid])->limit($times)
+			->update($update_data);
+			
+			if($update_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70004';
+				return json($ret);
+			} 
+		}
+		
 		Db::commit();
 		
 		$ret = [
@@ -321,7 +336,7 @@ class DccUser extends BaseController
             ->where(['userid' => $userid, 'status' => 1])
             ->order('id asc')
             ->limit(1)
-            ->find();
+            ->find();		
         $diff = time() - strtotime($temp['updated_date']);
         if($diff > 28 * 24 * 3600){
         	return true;
@@ -348,22 +363,6 @@ class DccUser extends BaseController
         $sum = $count1 + $count2;
         return $sum;
     }
-
-    private function _getInviteUser($userid){
-        $where = [
-			'userid' => $userid,
-            'status' => 1
-		];
-		$list = Db::name('user_invite')
-			->field('invite_userid')
-			->where($where)
-            ->select()->toArray();
-        $count = count($list);
-        return [
-            'count' => $count,
-            'list' => $list
-        ];
-    }
 	
 	private function _checkCanCashout($userid, $capital, $gain){
 		$status1 = $status2 = true;
@@ -387,8 +386,8 @@ class DccUser extends BaseController
             }
 		}
 		return [
-			'capital' => $capital_temp['total'],
-			'gain' => $gain_temp['gain'],
+			'capital' => isset($capital_temp['total']) ? $capital_temp['total'] : 0,
+			'gain' => isset($gain_temp['gain']) ? $gain_temp['gain'] : 0,
 			'status1' => $status1,
 			'status2' => $status2
 		];
@@ -649,7 +648,6 @@ class DccUser extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		error_log(print_r($_FILES, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		$userid = $this->decrypt(trim(Request::param('userid')));
 		if(! $userid){

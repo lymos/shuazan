@@ -112,10 +112,31 @@ class Cron extends BaseController{
         }
         $gain = $all_gain = [];
         foreach($user_data as $rs){
+			
+			// 查询是否已经计算
+			$haded = Db::name('user_gain_detail')
+				->field('id')
+				->where(['userid' => $rs['id'], 'gain_date' => $this->date, 'type' => 2])
+				->find();
+			if($haded && $haded['id']){
+				$this->log('haded continue userid: ' . $rs['id']);
+				continue;
+			}
+			
             $gain = $this->_gain($rs['id']);
+			if($gain === false){
+				$this->log('no do task continue userid: ' . $rs['id']);
+				continue;
+			}
+			
             // order times
             $order_times = $this->getOrderTimes($rs['id']);
+			if(! $order_times){
+				$this->log('no buy order continue userid: ' . $rs['id']);
+				continue;
+			}			
             $gains = $gain * $order_times;
+						
             /*
             $task_gain = $this->_taskGain($rs['id']);
 			
@@ -217,7 +238,7 @@ class Cron extends BaseController{
             ->where(['userid' => $userid, 'status' => 1, 'total' => Config::get('app.p_price')])
             ->find();
             
-            if(! $capital){
+            if(! $capital || ! $capital['total']){
                 // log
                 $this->log('no capital continue');
                 continue;
@@ -272,8 +293,6 @@ class Cron extends BaseController{
                     return false;
                 }
             }
-            
-
             Db::commit();
         }
         return true;
@@ -287,7 +306,7 @@ class Cron extends BaseController{
         $count = Db::name('order')
             ->field('count(*) as count')
             ->where($where)
-            ->find()->toArray();
+            ->find();
         return $count['count'];
     }
 
@@ -407,7 +426,7 @@ class Cron extends BaseController{
                 $list = $temp['list'];
             }       
         }
-        $sum = $count1 + $count2;
+        $sum = $count1 + $count2 + 1; // 加上自己
         if($sum > 10 && $sum < 51){
             $level = 2;
         }else if($sum > 50 && $sum < 101){
@@ -422,7 +441,7 @@ class Cron extends BaseController{
         }
 
         return [
-            'count' => $sum,
+            'count' => $sum - 1, // 减去自己才是邀请人数
             'level' => $level
         ];
     }

@@ -33,7 +33,8 @@ return [
 	'unionpay_merid'   => '777290058191186', // 测试号
 	// 'unionpay_merid'   => '777290058191186',
 	
-	'p_price' => '0.01', // 商品价格 元
+	'p_price' => '1800', // 商品价格 元
 	
-	'host' => 'http://doucc.com/'
+	// 'host' => 'http://doucc.com/',
+	'host' => 'http://www.doucaicai66.com/',
 ];

@@ -30,7 +30,6 @@ class Cash extends BaseController
 		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
 		$order_str = str_replace(' ', '+', Request::param('orderid'));
 		$orderid = $this->decrypt($order_str);
-		// $orderid = 'dcc202105300002'; // debug
 		// 查出订单信息
 		$order = $this->_getOrder($userid, $orderid);
 		if(! $order || ! isset($order['total'])){
@@ -179,10 +178,6 @@ class Cash extends BaseController
 	
 	public function alipayReturn(){
 		
-		error_log(print_r('alipayReturn', true), 3, '/tmp/debug.log');
-		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
-		error_log(print_r($_GET, true), 3, '/tmp/debug.log');
-		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
@@ -285,10 +280,6 @@ class Cash extends BaseController
 	
 	public function alipayNotify(){
 		
-		error_log(print_r('alipayNotify', true), 3, '/tmp/debug.log');
-		error_log(print_r($_POST, true), 3, '/tmp/debug.log');
-		error_log(print_r($_GET, true), 3, '/tmp/debug.log');
-		
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require $alipay_path . 'config.php';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
@@ -298,7 +289,7 @@ class Cash extends BaseController
 		$alipaySevice = new \AlipayTradeService($config); 
 		$alipaySevice->writeLog(var_export($_POST,true));
 		$result = $alipaySevice->check($arr);
-		// $result = true; // debug
+
 		/* 实际验证过程建议商户添加以下校验。
 		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
 		2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
@@ -398,9 +389,6 @@ class Cash extends BaseController
 	}
 
 	public function wxpayNotify(){
-		error_log(print_r('wxpayNotify', true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_POST, true), 3, '/Volumes/mac-disk/work/www/debug.log');
-		error_log(print_r($_GET, true), 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
 		require $wxpay_path . 'config.php';
@@ -539,7 +527,6 @@ class Cash extends BaseController
 		        'key' => '/path/to/mch/apiclient_key.pem',
 		    ],
 		]);
-		error_log(print_r($instance, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		try {
 			// $instance->v3->pay->transactions->h5->post
@@ -935,9 +922,7 @@ class Cash extends BaseController
 	}
 	
 	public function backReceive(){
-		error_log(print_r('backReceive', true) . "\r\n", 3, '/tmp/debug.log');
-		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/debug.log');
-		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/debug.log');
+
 		$merId = Request::param('merId');
 		$orderId = Request::param('orderId');
 		$respCode = Request::param('respCode');
