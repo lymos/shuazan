@@ -197,7 +197,12 @@ class DccUser extends BaseController
 		}
 		
 		// 判断是否在可提现范围
-		$this->_checkCanCashout($userid, $capital, $gain);
+		$old_cash = $this->_checkCanCashout($userid, $capital, $gain);
+		if(! $old_cash['status1'] || ! $old_cash['status12']){
+			$ret['msg'] = '请输入正确范围的金额';
+			return json($ret);
+		}
+
 		$date = date('Y-m-d H:i:s');
 		$data = [
 			'userid' => $userid,
@@ -210,11 +215,19 @@ class DccUser extends BaseController
 		if($capital){
 			
 			// 验证为本金的整数倍
+			if($capital % Config::get('app.p_price') != 0){
+				$ret['msg'] = '请输入正确的金额 code 70003';
+				return json($ret);
+			}
 			
 			$fee = $capital * 0.01; 
 			
 			$data['type'] = 1;
 			$data['amount'] = $capital - $fee;
+			$data['fee'] = $fee;
+			$data['fee_percent'] = 0.01;
+			$data['before_total'] = $old_cash['capital'];
+			$data['after_total'] = $old_cash['capital'] - $capital;
 			$status1 = Db::name('cashout_record')
 				->insert($data);
 			if($status1 === false){
@@ -224,12 +237,31 @@ class DccUser extends BaseController
 			} 
 			
 			// 订单修改为退款
-			
+			$times = $capital / Config::get('app.p_price');
+			$update_data = [
+				'status' => 3,
+				'updated_date' => $date,
+				'updated_by' => $userid
+			];
+			$update_status = Db::name('order')
+			->where(['userid' => $userid])->update($update_data)->limit($times);
+			if($update_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70004';
+				return json($ret);
+			} 
 		}
 			
 		if($gain){
 			$data['type'] = 0;
-			$data['amount'] = $gain;
+			$fee_rate = $this->_checkGainFee($userid);
+			$fee = $gain * $fee_rate / 100;
+			$data['amount'] = $gain - $fee;
+			$data['fee'] = $fee;
+			$data['fee_percent'] = $fee_rate / 100;
+			$data['before_total'] = $old_cash['gain'];
+			$data['after_total'] = $old_cash['gain'] - $gain;
+
 			$status2 = Db::name('cashout_record')
 				->insert($data);
 			if($status2 === false){
@@ -239,6 +271,18 @@ class DccUser extends BaseController
 			} 
 			
 			// 收益表减收益
+			$new_gain = [
+				'gain' => $data['after_total'],
+				'updated_by' => $userid,
+				'updated_date' => $date
+			];
+			$update_status = Db::name('user_gain')
+			->where(['userid' => $userid])->update($new_gain);
+			if($update_status === false){
+				Db::rollback();
+				$ret['msg'] = '发生错误 code 70005';
+				return json($ret);
+			} 
 			
 		}
 		Db::commit();
@@ -250,28 +294,104 @@ class DccUser extends BaseController
 		];
 		return json($ret);
 	}
+
+	/**
+	* <50 40%  28days 30%
+	* 51 < 100 25%
+	* > 101 20%
+	*/
+	private function _checkGainFee($userid){
+		$sum = $this->getInviteSum($userid);
+		$rate = 40;
+		if($sum <= 50){
+			if($this->_getFirstOrderDays($userid)){
+				$rate = 30;
+			}
+		}else if($sum > 50 && $sum <= 100){
+			$rate = 25;
+		}else{
+			$rate = 20;
+		}
+		return $rate;
+	}
+
+	private function _getFirstOrderDays($userid){
+		$temp = Db::name('order')
+            ->field('updated_date')
+            ->where(['userid' => $userid, 'status' => 1])
+            ->order('id asc')
+            ->limit(1)
+            ->find();
+        $diff = time() - strtotime($temp['updated_date']);
+        if($diff > 28 * 24 * 3600){
+        	return true;
+        }
+        return false;
+	}
+
+	public function getInviteSum($userid){
+        $invite_data = $this->_getInviteUser($userid);
+        $count1 = $invite_data['count'];
+        $count2 = 0;
+        $level = 1;
+        if($invite_data['list']){
+            foreach($invite_data['list'] as $rs){
+                $temp = $this->_getInviteUser($rs['invite_userid']);
+            
+                if(! $temp || ! $temp['count']){
+                    continue;
+                }
+                $count2 += $temp['count'];
+                $list = $temp['list'];
+            }       
+        }
+        $sum = $count1 + $count2;
+        return $sum;
+    }
+
+    private function _getInviteUser($userid){
+        $where = [
+			'userid' => $userid,
+            'status' => 1
+		];
+		$list = Db::name('user_invite')
+			->field('invite_userid')
+			->where($where)
+            ->select()->toArray();
+        $count = count($list);
+        return [
+            'count' => $count,
+            'list' => $list
+        ];
+    }
 	
 	private function _checkCanCashout($userid, $capital, $gain){
+		$status1 = $status2 = true;
 		if($capital){
 			$capital_temp = Db::name('order')
             ->field('sum(total) as total')
             ->where(['userid' => $userid, 'status' => 1])
             ->find();
             if($capital > $capital_temp['total']){
-            	return false;
+            	$status1 = false;
             }
 		}
 
 		if($gain){
 			$gain_temp = Db::name('user_gain')
-            ->field('sum(gain) as tatal')
-            ->where(['userid' => $userid, 'status' => 0, 'type' => 2])
+            ->field('gain')
+            ->where(['userid' => $userid])
             ->find();
-            if($gain > $gain_temp['total']){
-            	return false;
+            if($gain > $gain_temp['gain']){
+            	$status2 = false;
             }
 		}
-		return true;
+		return [
+			'capital' => $capital_temp['total'],
+			'gain' => $gain_temp['gain'],
+			'status1' => $status1,
+			'status2' => $status2
+		];
 
 	}
 	

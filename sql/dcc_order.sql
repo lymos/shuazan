@@ -9,6 +9,7 @@ create table dcc_order(
 	pay_type tinyint(1) not null default 0 comment "1.alipay 2.wxpay 3.unionpay",
 	added_by int(11) not null default 0,
 	added_date datetime default null,
+	updated_by int(11) not null default 0,
 	updated_date datetime default null,
 	
 	primary key(id),

@@ -95,7 +95,7 @@ class Cron extends BaseController{
     }
 
     /**
-     * 频率：每天11点钟执行一次
+     * 频率：每天23点钟执行一次
      * 结算入口
      */
     public function settleMain(){
@@ -418,6 +418,7 @@ class Cron extends BaseController{
 
         }else if($sum > 500){
             $level = 5;
+            // 1ge3 2ge2
         }
 
         return [
