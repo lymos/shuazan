@@ -14,3 +14,5 @@ create table dcc_task(
 )ENGINE=INNODB default charset=utf8mb4 comment "任务表";
 
 insert into dcc_task (name, added_by, added_date) values ("点赞+评论（10字以上），截图上传", 0, "2021-05-29 12:12:12");
+insert into dcc_task (name, added_by, added_date) values ("转发+评论（10字以上），截图上传", 0, "2021-05-29 12:12:12");
+insert into dcc_task (name, added_by, added_date) values ("分享+评论（10字以上），截图上传", 0, "2021-05-29 12:12:12");
