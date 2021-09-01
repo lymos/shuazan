@@ -8,6 +8,11 @@
 		<link href="static/backend.css" rel="stylesheet">
 	</head>
 	<body>
+		<style>
+			div.layui-table-cell{
+				height: 80px;
+			}
+		</style>
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header">
 				<div class="layui-logo layui-hide-xs layui-bg-black">抖财财系统</div>
@@ -156,7 +161,7 @@
 					    ,height: 312
 					    ,url: "/Admin/ajaxCashoutList" //数据接口
 					    ,page: true ,//开启分页
-						height: 600,
+						height: 680,
 						limit: 1000
 					    ,cols: [[ //表头
 					      {field: 'id', title: 'ID', width:60,  fixed: 'left'}

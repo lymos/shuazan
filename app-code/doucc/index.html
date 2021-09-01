@@ -60,11 +60,11 @@
 			<div class="mui-slider">
 			  <div class="mui-slider-group mui-slider-loop">
 			    <!--支持循环，需要重复图片节点-->
-			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="images/banner2.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="images/banner1.png" /></a></div>
-			    <div class="mui-slider-item"><a href="#"><img src="images/banner2.png" /></a></div>
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a onclick="gotoBanner2(); " href="#"><img src="images/banner2.png" /></a></div>
+			    <div class="mui-slider-item"><a onclick="gotoBanner1(); " href="#"><img src="images/banner1.png" /></a></div>
+			    <div class="mui-slider-item"><a onclick="gotoBanner2(); " href="#"><img src="images/banner2.png" /></a></div>
 			    <!--支持循环，需要重复图片节点-->
-			    <div class="mui-slider-item mui-slider-item-duplicate"><a href="#"><img src="images/banner1.png" /></a></div>
+			    <div class="mui-slider-item mui-slider-item-duplicate"><a onclick="gotoBanner1(); " href="#"><img src="images/banner1.png" /></a></div>
 			  </div>
 			</div>
 			<!--
@@ -123,7 +123,16 @@
 		<script src="js/util.js"></script>
 		<script src="js/main.js"></script>
 		<script type="text/javascript">
+		function gotoBanner1(){
+			goto('html/shop.html');
+		}
+		function gotoBanner2(){
+			goto('html/invite.html');
+		}
 			(function() {
+				if(! isLogin("")){
+					// return ;
+				}
 				
 				mui.init({
 					swipeBack: true //启用右滑关闭功能

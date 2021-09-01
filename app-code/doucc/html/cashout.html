@@ -33,7 +33,9 @@
 			.mui-btn {
 				padding: 10px;
 			}
-			
+			.cashout-tip{
+				font-size: 14px;
+			}
 		</style>
 
 	</head>
@@ -48,19 +50,19 @@
 			<form id='login-form' class="mui-input-group">
 				<div class="mui-input-row">
 					<label>本金提现额度</label>
-					<input id='capital' type="number" class="mui-input-clear mui-input mui-numbox-input" placeholder="">
+					<input id='capital' type="number" class="mui-input-clear mui-input mui-numbox-input" placeholder="本金整数倍">
 				</div>
 				<div class="mui-input-row">
 					<label>收益提现额度</label>
-					<input id='gain' type="tel" class="mui-input-clear mui-input" placeholder="">
+					<input id='gain' type="tel" class="mui-input-clear mui-input" placeholder="金额">
 				</div>
 			</form>
 			
 			<div class="mui-content-padded">
 				<button id='btn-add' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
 			</div>
-			<div class="signin-tip cashout-tip hide">
-				佣金收益提现手续费为<span id="fee">20%</span>，未满周期提现手续费为佣金的30%，本金提现不收取手续费。
+			<div class="signin-tip cashout-tip">
+				为确保回款成功，请务必绑定收款码
 			</div>
 		</div>
 		<script src="../js/mui.min.js"></script> 
