@@ -16,5 +16,5 @@ create table dcc_user_card(
 	
 	
 	primary key(id),
-	unique key(card)
+	unique key(userid)
 )ENGINE=INNODB default charset=utf8mb4 comment "银行卡表";

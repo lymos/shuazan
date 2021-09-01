@@ -76,7 +76,7 @@ class Login extends BaseController
 	}
 	
 	private function _checkMobile($mobile){
-		$chars = "/^((\(\d{2,3}\))|(\d{3}\-))?1(3|5|8|9)\d{9}$/";
+		$chars = "/^((\(\d{2,3}\))|(\d{3}\-))?1(3|5|7|8|9)\d{9}$/";
 		if (preg_match($chars, $mobile)){
 		    return true;
 		}else{
