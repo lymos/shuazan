@@ -230,7 +230,7 @@ class Cash extends BaseController
 			$update_where = [
 				'orderid' => $orderId,
 				'status' => 0,
-				'total' => $arr['total_amount']
+				'total' => str_replace('.00', '', $arr['total_amount'])
 			];
 			
 			// 更新订单付款状态
@@ -336,7 +336,7 @@ class Cash extends BaseController
 			$update_where = [
 				'orderid' => $orderId,
 				'status' => 0,
-				'total' => $arr['total_amount']
+				'total' => str_replace('.00', '', $arr['total_amount'])
 			];
 
 			// 更新订单付款状态

@@ -117,6 +117,10 @@
 
 			<ul class="mui-table-view">
 				<li class="mui-table-view-cell icon-link">
+					<a id="link-gain" class="mui-navigate-right"><span
+							class="mui-icon mui-icon-plusempty"></span>收益</a>
+				</li>
+				<li class="mui-table-view-cell icon-link">
 					<a id="link-card" class="mui-navigate-right"><span
 							class="mui-icon mui-icon-plusempty"></span>回款绑定</a>
 				</li>
@@ -178,7 +182,24 @@
 					}
 				});
 			}, false);
-			
+
+			document.getElementById('link-gain').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'tab-gain.html',
+					id: 'link-gain',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+
 			document.getElementById('link-card').addEventListener('tap', function(event) {
 				mui.openWindow({
 					url: 'card.html',

@@ -165,7 +165,7 @@
                         {
                             "tag" : "font",
                             "id" : "newsText",
-                            "text" : "任务",
+                            "text" : "我的任务",
                             "position" : {
                                 "top" : "23px",
                                 "left" : "25%",
