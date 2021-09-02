@@ -89,6 +89,13 @@
 		});
 		
 		mui.plusReady(function() {
+			/*
+			var self = plus.webview.currentWebview();
+			mui.alert(self.is_back); 
+			if(typeof self.is_back == "undefined"){
+				document.getElementById("is-back").style.display = "none";
+			}
+			*/
 			setInterval(function(){
 				getList();
 			}, 100000);

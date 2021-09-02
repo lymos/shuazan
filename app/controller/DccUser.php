@@ -44,6 +44,9 @@ class DccUser extends BaseController
 			return json($ret);
 		}
 		$invite_data = $this->_getInvite($userid);
+		if(isset($data['mobile']) && $data['mobile']){
+			$data['mobile'] = preg_replace('/^([\d]{3})([\d]{4})/', '$1****', $data['mobile']);
+		}
 		$ret = [
 			'code' => 1,
 			'data' => [
