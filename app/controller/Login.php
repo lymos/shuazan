@@ -148,7 +148,8 @@ class Login extends BaseController
 		}
 
 		$msg = '【抖财财】您的注册验证码是：' . $code;
-		$res = $this->sendSms($mobile, $msg);
+		// $res = $this->sendSms($mobile, $msg);
+		$res = true; // debug
 		if(! $res){
 			$ret['msg'] = '短信发送失败';
 			return json($ret);
@@ -220,7 +221,6 @@ class Login extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-		
 		$mobile = Request::param('mobile');
 		$invite_code = trim(Request::param('invite_code'));
 		$verify_code = Request::param('verify_code');
@@ -243,7 +243,6 @@ class Login extends BaseController
 			}
 			
 		}
-		
 		$time = time();
 		$where = [
 			['mobile', '=', $mobile],
@@ -297,7 +296,6 @@ class Login extends BaseController
 			return json($ret);
 		}
 		Db::commit();
-
 		if(isset($invite_person['id']) && $invite_person['id']){
 			$this->_settleGain($invite_person['id']);
 		}
@@ -308,13 +306,13 @@ class Login extends BaseController
 	}
 
 	private function _settleGain($userid1){
-		$obj = new Cron($this->app);
+		$obj = new Cron($this->app, true);
+		$obj->is_ctrl = true;
 		$obj->settleMain($userid1);
-
 		$where_invite2 = [
 			'invite_userid' => $userid1
 		];
-		$invite_person2 = Db::name('user')
+		$invite_person2 = Db::name('user_invite')
 				->field('userid')
 				->where($where_invite2)
 				->find();

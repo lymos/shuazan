@@ -22,10 +22,11 @@ class Cron extends BaseController{
 	public $dir_flag = '';
 	public $date_filename = '';
 	public $date = '';
+	public $is_ctrl = false;
 	
-	public function __construct(\think\App $app)
+	public function __construct(\think\App $app, $is_ctrl = false)
 	{
-		if(php_sapi_name() !== 'cli'){
+		if(php_sapi_name() !== 'cli' && ! $is_ctrl){
 			die();
 		}
 	    parent::__construct($app, false);
@@ -99,6 +100,7 @@ class Cron extends BaseController{
      * 结算入口
      */
     public function settleMain($userid = 0){
+		
         $this->dir_flag = 'settleMain-logs';
         $this->date_filename = date('Y-m-d');
         $this->date = date('Y-m-d');
@@ -165,7 +167,7 @@ class Cron extends BaseController{
             */
             $all_gain[$rs['id']] = [
                 'gain' => $gains,
-                'haded' => isset($haded['id']) ? $haded['id'] : 0;
+                'haded' => isset($haded['id']) ? $haded['id'] : 0
             ];
 			
         }		
@@ -179,6 +181,9 @@ class Cron extends BaseController{
             $this->log('success');
         }
         $this->log('end');
+		if($this->is_ctrl){
+			return true;
+		}
         exit;
     }
 	
@@ -268,7 +273,7 @@ class Cron extends BaseController{
 
             if($rs['haded']){
                 unset($data1['added_date']);
-                $data1['updated_date'] = $date
+                $data1['updated_date'] = $date;
                 $status1_update = Db::name('user_gain_detail')
                     ->where(['id' => intval($rs['haded'])])
                 ->update($data1);
@@ -287,7 +292,7 @@ class Cron extends BaseController{
                 }
             }
             
-
+			/*
             $old = Db::name('user_gain') 
                 ->field('gain')
                 ->where(['userid' => $userid])
@@ -321,6 +326,8 @@ class Cron extends BaseController{
                     return false;
                 }
             }
+			*/
+		   
             Db::commit();
         }
         return true;
@@ -354,7 +361,6 @@ class Cron extends BaseController{
             ->field('id')
             ->where($where)
             ->select()->toArray();
-        
         if(! $list){
             return false;
         }
@@ -533,8 +539,11 @@ class Cron extends BaseController{
 
         $msg = date('Y-m-d H:i:s') . '======' . $msg . "<br />\r\n";
         $file = $dir . '/' . $this->date_filename . '.log';
-        echo $msg;
-        @file_put_contents($file, $msg, LOCK_EX | FILE_APPEND);
+		if(! $this->is_ctrl){
+			echo $msg;
+		}
+        
+        file_put_contents($file, $msg, LOCK_EX | FILE_APPEND);
     }
 
     /**

@@ -113,7 +113,7 @@ class Task extends BaseController
 			'taskid' => $taskid,
 			'userid' => $userid,
 			'date' => $date,
-			'status' => 0,
+			'status' => 1,
 			'process' => 100,
 			'added_date' => date('Y-m-d H:i:s')
 		];
@@ -122,7 +122,8 @@ class Task extends BaseController
 			$ret['msg'] = '领取失败';
 			return json($ret);
 		}
-		$obj = new Cron($this->app);
+		$obj = new Cron($this->app, true);
+		$obj->is_ctrl = true;
 		$obj->settleMain($userid);
 
 		$ret['code'] = 1;

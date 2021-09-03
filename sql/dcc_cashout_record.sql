@@ -3,6 +3,7 @@ drop table if exists dcc_cashout_record;
 create table dcc_cashout_record(
 	id int(11) not null auto_increment,
 	userid int(11) not null default 0,
+	real_amount varchar(6) not null default "",
 	amount varchar(6) not null default "",
 	status tinyint(1) not null default 0 comment "0.待支付 1.已支付 2.废弃",
 	fee_percent varchar(6) not null default "" comment "费率",

@@ -152,6 +152,7 @@ class DccUser extends BaseController
 			->where($where_task)
 			->find();
 		*/
+	   /*
 		$where_invite = [
 			'userid' => $userid
 		];
@@ -160,6 +161,10 @@ class DccUser extends BaseController
 			->where($where_invite)
 			->find();
 		$gain = isset($temp_invite['gain']) ? $temp_invite['gain'] : 0;	
+		*/
+	    $gain = $this->_cGain($userid);
+		$gain = $gain ? $gain : 0;
+		
 		$ret['data'] = [
 			'capital' => $order['total'],
 			// 'task_gain' => $temp_task['task_gain'] ? $temp_task['task_gain'] : 0,
@@ -168,6 +173,19 @@ class DccUser extends BaseController
 		];
 		$ret['code'] = 1;
 		return json($ret);
+	}
+	
+	private function _cGain($userid){
+		$gain = Db::name('user_gain_detail')
+			->field('sum(gain) as gain')
+			->where(['userid' => $userid])
+			->find();
+			
+		$out = Db::name('cashout_record')
+			->field('sum(real_amount) as cashout')
+			->where(['userid' => $userid, 'type' => 0])
+			->find();
+		return $gain['gain'] - $out['cashout'];
 	}
 	
 	/**
@@ -231,6 +249,7 @@ class DccUser extends BaseController
 			$fee_rate = $this->_checkGainFee($userid);
 			$fee = $gain * ($fee_rate / 100);
 			
+			$data['real_amount'] = $gain;
 			$data['amount'] = $gain - $fee;
 			$data['fee'] = $fee;
 			$data['fee_percent'] = $fee_rate / 100;
@@ -245,7 +264,8 @@ class DccUser extends BaseController
 				return json($ret);
 			} 
 			
-			// 收益表减收益
+			// 收益表减收益  暂时不用此表
+			/*
 			$new_gain = [
 				'gain' => $data['after_total'],
 				'updated_by' => $userid,
@@ -258,6 +278,7 @@ class DccUser extends BaseController
 				$ret['msg'] = '发生错误 code 70005';
 				return json($ret);
 			} 
+			*/
 			
 		}
 		
@@ -271,6 +292,8 @@ class DccUser extends BaseController
 			$fee = $capital * 0.01; 
 			
 			$data['type'] = 1;
+			
+			$data['real_amount'] = $capital;
 			$data['amount'] = $capital - $fee;
 			$data['fee'] = $fee;
 			$data['fee_percent'] = 0.01;
@@ -293,7 +316,7 @@ class DccUser extends BaseController
 				'updated_by' => $userid
 			];
 			$update_status = Db::name('order')
-			->where(['userid' => $userid])->limit($times)
+			->where(['userid' => $userid, 'status' => 1])->limit($times)
 			->update($update_data);
 			
 			if($update_status === false){
@@ -380,10 +403,15 @@ class DccUser extends BaseController
 		}
 
 		if($gain){
+			/*
 			$gain_temp = Db::name('user_gain')
             ->field('gain')
             ->where(['userid' => $userid])
             ->find();
+			*/
+			$gain_temp = [
+				'gain' => $this->_cGain($userid)
+			];
             if($gain > $gain_temp['gain']){
             	$status2 = false;
             }
@@ -607,7 +635,8 @@ class DccUser extends BaseController
 		Db::commit();
 
 		if($days == 14){
-			$obj = new Cron($this->app);
+			$obj = new Cron($this->app, true);
+			$obj->is_ctrl = true;
 			$obj->settleMain($userid);
 		}
 
