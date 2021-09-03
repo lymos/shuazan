@@ -604,8 +604,13 @@ class DccUser extends BaseController
 				return json($ret);
 			}
 		}
-
 		Db::commit();
+
+		if($days == 14){
+			$obj = new Cron($this->app);
+			$obj->settleMain($userid);
+		}
+
 		$ret['code'] = 1;
 		return json($ret);
 	}

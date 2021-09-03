@@ -9,7 +9,10 @@ create table dcc_user_gain_detail(
 	gain varchar(8) not null default "",
 	
 	gain_date date DEFAULT null,
+	added_by int(11) not null default 0,
 	added_date datetime default null,
+	updated_by int(11) not null default 0,
+	updated_date datetime default null,
 	type tinyint(1) not null default 0 comment "0.任务收益 1.邀请收益, 2.总收益",
 	
 	primary key(id),

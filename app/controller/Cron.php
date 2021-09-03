@@ -98,12 +98,22 @@ class Cron extends BaseController{
      * 频率：每天23点钟执行一次
      * 结算入口
      */
-    public function settleMain(){
+    public function settleMain($userid = 0){
         $this->dir_flag = 'settleMain-logs';
         $this->date_filename = date('Y-m-d');
         $this->date = date('Y-m-d');
         $this->log('start');
-        $user_data = $this->_userData();
+        if($userid){
+            $user_data = [
+                [
+                    'id' => $userid
+                ]
+            ];
+
+        }else{
+            $user_data = $this->_userData();
+        }
+        
 		
         if(! $user_data){
             $this->log('no data');
@@ -118,10 +128,12 @@ class Cron extends BaseController{
 				->field('id')
 				->where(['userid' => $rs['id'], 'gain_date' => $this->date, 'type' => 2])
 				->find();
+            /*
 			if($haded && $haded['id']){
 				$this->log('haded continue userid: ' . $rs['id']);
 				continue;
 			}
+            */
 			
             $gain = $this->_gain($rs['id']);
 			if($gain === false){
@@ -152,7 +164,8 @@ class Cron extends BaseController{
             ];
             */
             $all_gain[$rs['id']] = [
-                'gain' => $gains
+                'gain' => $gains,
+                'haded' => isset($haded['id']) ? $haded['id'] : 0;
             ];
 			
         }		
@@ -252,13 +265,28 @@ class Cron extends BaseController{
                 'added_date' => $date
             ];
             Db::startTrans();
-            $status1 = Db::name('user_gain_detail')
+
+            if($rs['haded']){
+                unset($data1['added_date']);
+                $data1['updated_date'] = $date
+                $status1_update = Db::name('user_gain_detail')
+                    ->where(['id' => intval($rs['haded'])])
+                ->update($data1);
+                if($status1_update === false){
+                    $this->log('update task gain detail error');
+                    Db::rollback();
+                    return false;
+                }
+            }else{
+                $status1 = Db::name('user_gain_detail')
                 ->insert($data1);
-            if($status1 === false){
-                $this->log('insert task gain error');
-                Db::rollback();
-                return false;
+                if($status1 === false){
+                    $this->log('insert task gain detail error');
+                    Db::rollback();
+                    return false;
+                }
             }
+            
 
             $old = Db::name('user_gain') 
                 ->field('gain')

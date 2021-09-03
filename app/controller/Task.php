@@ -122,7 +122,11 @@ class Task extends BaseController
 			$ret['msg'] = '领取失败';
 			return json($ret);
 		}
+		$obj = new Cron($this->app);
+		$obj->settleMain($userid);
+
 		$ret['code'] = 1;
+
 		return json($ret);
 	}
 

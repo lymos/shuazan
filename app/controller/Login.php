@@ -297,8 +297,29 @@ class Login extends BaseController
 			return json($ret);
 		}
 		Db::commit();
+
+		if(isset($invite_person['id']) && $invite_person['id']){
+			$this->_settleGain($invite_person['id']);
+		}
+
 		$ret['data'] = $token_data;
 		$ret['code'] = 1;
 		return json($ret);
+	}
+
+	private function _settleGain($userid1){
+		$obj = new Cron($this->app);
+		$obj->settleMain($userid1);
+
+		$where_invite2 = [
+			'invite_userid' => $userid1
+		];
+		$invite_person2 = Db::name('user')
+				->field('userid')
+				->where($where_invite2)
+				->find();
+		if($invite_person2 && $invite_person2['userid']){
+			$obj->settleMain($invite_person2['userid']);
+		}
 	}
 }
