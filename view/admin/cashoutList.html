@@ -12,6 +12,13 @@
 			div.layui-table-cell{
 				height: 80px;
 			}
+			.qrcode-img{
+				width: 100%;
+				height: 100%;
+			}
+			.btn-img{
+				cursor: pointer;
+			}
 		</style>
 		<div class="layui-layout layui-layout-admin">
 			<div class="layui-header">
@@ -168,11 +175,11 @@
 					      ,{field: 'mobile', title: '手机号', width: 120}
 					      ,{field: 'amount', title: '金额', width: 80, }
 					      ,{field: 'wx_qrcode', title: '微信收款码', width: 200, templet: function(a){
-							  var html = '<img src="' + a.wx_qrcode + '">';
+							  var html = '<img class="btn-img" onclick="showImg(\'' + a.wx_qrcode + '\', \'' + a.mobile + '\')" src="' + a.wx_qrcode + '">';
 							  return html;
 						  }} 
 					      ,{field: 'ali_qrcode', title: '支付宝收款码', width: 200, templet: function(a){
-							  var html = '<img src="' + a.ali_qrcode + '">';
+							  var html = '<img class="btn-img" onclick="showImg(\'' + a.ali_qrcode + '\', \'' + a.mobile + '\')" src="' + a.ali_qrcode + '">';
 							  return html;
 						  }}
 					      ,{field: 'status', title: '状态', width: 100, templet: function(a){
@@ -230,7 +237,15 @@
 						content: "/Admin/cashoutEdit/?id=" + id
 					}); 
 				}
-			
+				
+				function showImg(url, mobile){
+					layer.open({
+						title: mobile + "的收款码",
+						type: 1,
+						area: ["420px", "620px"],
+						content: '<img class="qrcode-img" src="' + url + '">'
+					}); 
+				}
 		</script>
 	</body>
 </html>

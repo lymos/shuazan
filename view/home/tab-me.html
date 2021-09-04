@@ -201,7 +201,11 @@
 							code.innerHTML = data.data.user.invite_code;
 							count.innerHTML = data.data.invite_data.count;
 							sub_count.innerHTML = data.data.invite_data.sub_count;
-							localStorage.setItem("invite_code", data.data.user.invite_code);
+							if(! isLocalStorageSupported()){
+								setCookie("invite_code", data.data.user.invite_code, 5);
+							}else{
+								localStorage.setItem("invite_code", data.data.user.invite_code);
+							}
 						}
 						
 					},

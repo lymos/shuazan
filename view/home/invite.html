@@ -50,8 +50,13 @@
 			swipeBack:true //启用右滑关闭功能
 		});
 		jQuery(function(){
+			if(! isLocalStorageSupported()){
+				var code = getCookie("invite_code");
+			}else{
+				var code = localStorage.getItem("invite_code");
+			}
 			jQuery('#qrcode').qrcode({
-				text: config.host + "index.php?s=home/reg&invite_code=" + localStorage.getItem("invite_code"),
+				text: config.host + "index.php?s=home/reg&invite_code=" + code,
 				width: 100,
 				height: 100
 			});
