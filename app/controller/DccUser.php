@@ -168,7 +168,7 @@ class DccUser extends BaseController
 		$ret['data'] = [
 			'capital' => $order['total'],
 			// 'task_gain' => $temp_task['task_gain'] ? $temp_task['task_gain'] : 0,
-			'gain' => $gain,
+			'gain' => round($gain, 2),
 			'total' => $order['total'] + $gain
 		];
 		$ret['code'] = 1;
@@ -185,6 +185,7 @@ class DccUser extends BaseController
 			->field('sum(real_amount) as cashout')
 			->where(['userid' => $userid, 'type' => 0])
 			->find();
+		
 		return $gain['gain'] - $out['cashout'];
 	}
 	
@@ -217,6 +218,16 @@ class DccUser extends BaseController
 			$ret['msg'] = '请输入正确的金额';
 			return json($ret);
 		}
+		
+		if($capital && $this->getFloatLength($capital) > 2){
+			$ret['msg'] = '金额最多支持2位小数';
+			return json($ret);
+		}
+		if($gain && $this->getFloatLength($gain) > 2){
+			$ret['msg'] = '金额最多支持2位小数';
+			return json($ret);
+		}
+		
 		
 		$old_temp = Db::name('order')
 		->field('id')

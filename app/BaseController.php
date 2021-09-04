@@ -65,6 +65,18 @@ abstract class BaseController
 		return $url;
 	}
 	
+	public function getFloatLength($num) {
+		$count = 0;
+		$temp = explode ( '.', $num );
+	 
+		if (sizeof ( $temp ) > 1) {
+			$decimal = end ( $temp );
+			$count = strlen ( $decimal );
+		}
+		return $count;
+	}
+
+	
 	public function encrypt($data, $key = '') {
 		if(! $key){
 			$key = $this->key;

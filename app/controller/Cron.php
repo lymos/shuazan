@@ -391,7 +391,7 @@ class Cron extends BaseController{
             break;
         }
         
-        return $sum;
+        return round($sum, 2);
     }
 
 	/**
