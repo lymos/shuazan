@@ -9,8 +9,15 @@ use think\facade\Db;
 
 class Home extends BaseController
 {
+	public $app_android_ver = '1.01';
+	
 	public function __construct(\think\App $app){
 		parent::__construct($app, false);
+	}
+	
+	public function getAndroidAppVer(){
+		echo $this->$app_android_ver;
+		exit;
 	}
 	
     public function index()

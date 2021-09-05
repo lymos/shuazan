@@ -140,6 +140,62 @@
 					swipeBack: true //启用右滑关闭功能
 				});
 				mui.plusReady(function() {
+					// 资源版本号  
+					plus.runtime.getProperty(plus.runtime.appid,function(inf){  
+						return ; // debug
+					    wgt_ver = inf.version;  
+					    console.log("当前应用版本：" + wgt_ver); 
+						if(mui.os.ios){
+							
+						}else{
+							var app_ver = getAndroidVer();
+							if(app_ver != wgt_ver){ 
+								mui.confirm("检测到新版本", "版本更新", ["取消", "更新"], function(){
+									console.log(config.host + "doucc.apk");
+									var url = config.host + "doucc.apk"; // 下载文件地址  
+									var dtask = plus.downloader.createDownload( url, {}, function ( d, status ) {  
+									    if ( status == 200 ) { // 下载成功  
+									        var path = d.filename;  
+									        console.log(d.filename); 
+											plus.runtime.install(path);
+									    } else {//下载失败  
+									        mui.alert( "Download failed: " + status );   
+									    }    
+									});  
+									dtask.start(); 
+								})
+								
+							}
+						}
+						
+					});
+					
+					
+					// 应用版本号 暂不用
+					/*
+					var app_ver = plus.runtime.version; 
+					console.log("当前应用版本：" + app_ver); 
+					var app_ser_ver = getVer();
+					if(app_ser_ver != app_ver){
+						console.log(9999)
+					}
+					*/
+					
+					var getAndroidVer = function(){
+						mui.ajax(config.host + 'Home/getAndroidAppVer', {
+								data: {},
+								dataType:'json',//服务器返回json格式数据
+								type:'post',//HTTP请求类型
+								timeout:10000,//超时时间设置为10秒；
+								headers:{'Content-Type':'application/json'},
+								success:function(data){
+									console.log(data);
+								},
+								error:function(xhr,type,errorThrown){
+								}
+						});
+					};
+					
 					
 					// var self = plus.webview.currentWebview();
 					if(isLogin("", false)){
