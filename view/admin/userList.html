@@ -138,8 +138,24 @@
 						<tr>
 							<td>{$rs.id}</td>
 							<td>{$rs.mobile}</td>
-							<td>{$rs.count1}</td>
-							<td>{$rs.count2}</td>
+							<td>
+								<?php
+								if($rs['count1_pay']){
+									echo $rs['count1'] . '(' . $rs['count1_pay'] . ')';
+								}else{
+									echo $rs['count1'];
+								}
+								?>
+							</td>
+							<td>
+								<?php
+								if($rs['count2_pay']){
+									echo $rs['count2'] . '(' . $rs['count2_pay'] . ')';
+								}else{
+									echo $rs['count2'];
+								}
+								?>
+							</td>
 							<td>{$rs.added_date}</td>
 						</tr>
 						{/foreach}

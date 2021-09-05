@@ -184,10 +184,13 @@ class Admin extends BackController
         if($keyword){
         	$where .= 'and a.mobile like "%' . $keyword . '%"';
         }
-		$field = 'a.id, a.mobile, a.added_date, count(distinct b.invite_userid) as count1, count(c.invite_userid) as count2';
+		$field = 'a.id, a.mobile, a.added_date, count(distinct b.invite_userid) as count1, count(c.invite_userid) as count2,';
+		$field .= 'count(distinct if(d.userid is null, null, d.userid)) as count1_pay, count(distinct if(e.userid is null, null, e.userid)) as count2_pay';
         $list = Db::name('user')->alias('a')
         	->join('user_invite b', 'a.id = b.userid', 'left')
 			->join('user_invite c', 'b.invite_userid = c.userid', 'left')
+			->join('dcc_order d', 'd.userid = b.invite_userid and d.`status` = 1', 'left')
+			->join('dcc_order e', 'e.userid = c.invite_userid and e.`status` = 1', 'left')
         	->field($field)
             ->where($where)
             ->order('a.id', 'desc')

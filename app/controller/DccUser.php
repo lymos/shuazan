@@ -77,7 +77,9 @@ class DccUser extends BaseController
 	private function _getInvite($userid){
 		$data = [
 			'count' => 0,
-			'sub_count' => 0
+			'sub_count' => 0,
+			'count_pay' => 0,
+			'sub_count_pay' => 0
 		];
 		
 	    $invite_data = $this->_getInviteUser($userid);
@@ -85,7 +87,8 @@ class DccUser extends BaseController
 	        return $data;
 	    }
 		$data['count'] = $invite_data['count'];
-	
+		$data['count_pay'] = $this->getOrderPayCount(array_column($invite_data['list']->toArray(), 'invite_userid'));
+		
 	    // 算二级
 	    foreach($invite_data['list'] as $rs){
 	        $temp = $this->_getInviteUser($rs['invite_userid']);
@@ -93,8 +96,23 @@ class DccUser extends BaseController
 	            continue;
 	        }
 	        $data['sub_count'] += $temp['count'];
+			$data['sub_count_pay'] += $this->getOrderPayCount(array_column($temp['list']->toArray(), 'invite_userid'));
 	    }
 	    return $data;
+	}
+	
+	public function getOrderPayCount($userids = []){
+		$where_order = [
+			'userid' => $userids,
+			'status' => 1
+		];
+		$order = Db::name('order')
+			->field('count(distinct userid) as count')
+			->where($where_order)
+			->find();
+		error_log(print_r(Db::getLastSql(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		
+		return isset($order['count']) ? $order['count'] : 0;
 	}
 	
 	/**

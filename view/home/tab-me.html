@@ -199,8 +199,21 @@
 								code = document.getElementById("invite-code");
 							mobile.innerHTML = data.data.user.mobile;
 							code.innerHTML = data.data.user.invite_code;
-							count.innerHTML = data.data.invite_data.count;
-							sub_count.innerHTML = data.data.invite_data.sub_count;
+							var invite = data.data.invite_data;
+							if(invite.count_pay != 0 && invite.count_pay != "0"){
+								var count_val = invite.count + "(" + invite.count_pay + ")";
+							}else{
+								var count_val = invite.count;
+							}
+							count.innerHTML = count_val;
+							
+							if(invite.sub_count_pay != 0 && invite.sub_count_pay != "0"){
+								var sub_count_val = invite.sub_count + "(" + invite.sub_count_pay + ")";
+							}else{
+								var sub_count_val = invite.sub_count;
+							}
+							sub_count.innerHTML = sub_count_val;
+							
 							if(! isLocalStorageSupported()){
 								setCookie("invite_code", data.data.user.invite_code, 5);
 							}else{
