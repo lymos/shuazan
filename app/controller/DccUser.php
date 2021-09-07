@@ -470,7 +470,7 @@ class DccUser extends BaseController
 			'userid' => $userid
 		];
 		$data = Db::name('user_card')
-			->field('wx_qrcode, ali_qrcode')
+			->field('*')
 			->where($where)->find();
 		if($data['wx_qrcode']){
 			$data['wx_qrcode'] = $this->url($data['wx_qrcode']);

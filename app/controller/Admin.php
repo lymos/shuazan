@@ -115,7 +115,7 @@ class Admin extends BackController
 			->join('user b', 'a.userid = b.id', 'left')
 			->join('user_card c', 'a.userid = c.userid', 'left')
 			->where($where)
-			->field('a.*, b.mobile, c.wx_qrcode, c.ali_qrcode')
+			->field('a.*, b.mobile, c.*')
 		    ->order('a.id', 'desc')
 			->select();
 		
@@ -232,7 +232,37 @@ class Admin extends BackController
         return View::fetch('taskEdit');
     }
 
-    public function actionTaskEditAction(){
+    public function actionTaskDelete(){
+        $ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+        $id = trim(Request::param('id'));
+        $is_enabled = trim(Request::param('is_enabled'));
+		if(!$id || ! $name){
+			$ret['msg'] = '参数错误';
+			return json($ret);
+		}
+		$date = date('Y-m-d H:i:s');
+		$data = [
+			'updated_by' => $this->userid,
+			'updated_date' => $date,
+			'is_enabled' => $is_enabled
+        ];
+        $where = [
+            'id' => $id
+        ];
+		$status = Db::name('task')->where($where)->update($data);
+		if(! $status){
+			$ret['msg'] = '删除失败';
+			return json($ret);
+		}
+		$ret['code'] = 1;
+		return json($ret);
+    }
+
+    public function actionTaskEdit(){
         $ret = [
 			'code' => 0,
 			'data' => '',

@@ -181,7 +181,11 @@
 					      ,{field: 'ali_qrcode', title: '支付宝收款码', width: 200, templet: function(a){
 							  var html = '<img class="btn-img" onclick="showImg(\'' + a.ali_qrcode + '\', \'' + a.mobile + '\')" src="' + a.ali_qrcode + '">';
 							  return html;
-						  }}
+						  }},
+						  {field: 'name', title: '姓名', width: 80, },
+						  {field: 'card', title: '卡号', width: 180, },
+						  {field: 'brand', title: '开户行', width: 120, }
+
 					      ,{field: 'status', title: '状态', width: 100, templet: function(a){
 							  var status_list = JSON.parse('<?php echo json_encode($cashout_status_list); ?>');
 							  return status_list[a.status];

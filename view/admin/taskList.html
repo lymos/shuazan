@@ -116,6 +116,7 @@
 							<th>ID</th>
 							<th>任务名称</th>
 							<th>添加时间</th>
+							<th>操作</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -124,6 +125,10 @@
 							<td>{$rs.id}</td>
 							<td>{$rs.name}</td>
 							<td>{$rs.added_date}</td>
+							<td>
+								<button type="button" class="layui-btn" onclick="updateTask(' + a.id + ')">编辑</button>
+								<button type="button" class="layui-btn" onclick="deleteTask(' + a.id + ')">删除</button>
+							</td>
 						</tr>
 						{/foreach}
 					</tbody>
@@ -138,13 +143,15 @@
 		</div>
 		<script src="static/extend/layui/layui.js"></script>
 		<script>
-				//JS 
+				//JS
+				var $ = null; 
 				layui.use(['element', 'layer', 'util', 'jquery'], function() {
 					var element = layui.element,
 						layer = layui.layer,
-						util = layui.util,
-						$ = layui.$;
+						util = layui.util;
+						
 
+					$ = layui.$;
 					//头部事件
 					util.event('lay-header-event', {
 						//左侧菜单事件
@@ -177,6 +184,25 @@
 
 				});
 				
+				function updateTask(id){
+					layer.open({
+						title: "更新状态",
+						type: 2,
+						area: ["680px", "320px"],
+						content: "/Admin/taskEdit/?id=" + id
+					}); 
+				}
+
+				function deleteTask(id){
+					$.ajax({
+						type: "POST",
+						data: {id: id},
+						url: "/Admin/actionTaskDelete",
+						success: function(res){
+							console.log(res);
+						}
+					}); 
+				}
 			
 		</script>
 	</body>

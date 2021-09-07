@@ -97,14 +97,17 @@ class Task extends BaseController
 			case 1:
 				$info = '您今日已领取该任务';
 				break;
-			case 2:
-				$info = '每天最多只能领取2个任务';
+			case 999:
+				
 				break;
 			case 3:
 				$info = '请先购买机器人';
 				break;
+			default:
+				$info = '您今天最多只能领取' . $can . '个任务';
+				break;
 		}
-		if($can != 4){
+		if($can != 999){
 			$ret['msg'] = $info;
 			return json($ret);
 		}
@@ -133,7 +136,7 @@ class Task extends BaseController
 
 	private function _checkCanTake($userid, $taskid, $date){
 		$order = Db::name('order')
-			->field('id')
+			->field('count(*) as count')
 			->where(
 				[
 					'userid' => $userid,
@@ -141,7 +144,7 @@ class Task extends BaseController
 					'total' => Config::get('app.p_price')
 				]
 			)->find();
-		if(! $order){
+		if(! $order || ! $order['count']){
 			return 3;
 		}
 		
@@ -164,9 +167,9 @@ class Task extends BaseController
 				'date' => $date
 			])->find();
 		
-		if($count_data && $count_data['count'] >= 2){
-			return 2;
+		if($count_data && $count_data['count'] >= 2 * $order['count']){
+			return 2 * $order['count'];
 		}
-		return 4;
+		return 999;
 	}
 }
