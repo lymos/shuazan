@@ -110,7 +110,6 @@ class DccUser extends BaseController
 			->field('count(distinct userid) as count')
 			->where($where_order)
 			->find();
-		error_log(print_r(Db::getLastSql(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
 		return isset($order['count']) ? $order['count'] : 0;
 	}
@@ -826,27 +825,43 @@ class DccUser extends BaseController
 		$brand = trim(Request::param('brand'));
 		$name = trim(Request::param('name'));
 		$userid = $this->decrypt(trim(Request::param('userid')));
-		if(! $mobile || ! $card || ! $userid || ! $name || ! $brand){
+		if(! $card || ! $userid || ! $name || ! $brand){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
 		$date = date('Y-m-d H:i:s');
 	
+		/*
 		if($this->_checkCardIsExists($card, $userid)){
 			$ret['msg'] = '您已绑定银行卡';
 			return json($ret);
 		}
+		*/
+		$old_id = $this->_checkQrcodeIsExists($userid);
 		
-		$data = [
-			'userid' => $userid,
-			'card' => $card,
-			'name' => $name,
-			'brand' => $brand,
-			'added_by' => $userid,
-			'mobile' => $mobile,
-			'added_date' => $date
-		];
-		$status = Db::name('user_card')->insert($data);
+		if($old_id){
+			$data = [
+				'card' => $card,
+				'name' => $name,
+				'brand' => $brand,
+				'updated_by' => $userid,
+				// 'mobile' => $mobile,
+				'updated_date' => $date
+			];
+			$status = Db::name('user_card')->where(['id' => $old_id])->update($data);
+		}else{
+			$data = [
+				'userid' => $userid,
+				'card' => $card,
+				'name' => $name,
+				'brand' => $brand,
+				'added_by' => $userid,
+				// 'mobile' => $mobile,
+				'added_date' => $date
+			];
+			$status = Db::name('user_card')->insert($data);
+		}
+		
 		if(! $status){
 			$ret['msg'] = '绑卡失败 code: 50001';
 			return json($ret);

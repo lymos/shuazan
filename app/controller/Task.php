@@ -60,7 +60,8 @@ class Task extends BaseController
 		}
 		$date = date('Y-m-d');
 		$where = [
-			['b.id', '=', null]
+			['b.id', '=', null],
+			['a.is_enabled', '=', 1]
 		];
 		$list = Db::name('task')
 			->alias('a')

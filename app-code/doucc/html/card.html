@@ -57,24 +57,7 @@
 		<div class="mui-content">
 			
 			<form id='login-form' class="mui-input-group">
-				<!-- 
-				<div class="mui-input-row">
-					<label>开户名</label>
-					<input id='name' type="text" class="mui-input-clear mui-input" placeholder="开户名">
-				</div>
-				<div class="mui-input-row">
-					<label>卡号</label>
-					<input id='card' type="text" class="mui-input-clear mui-input" placeholder="卡号">
-				</div>
-				<div class="mui-input-row">
-					<label>银行名称</label>
-					<input id='brand' type="text" class="mui-input-clear mui-input" placeholder="银行名称">
-				</div>
-				<div class="mui-input-row">
-					<label>预留手机号</label>
-					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
-				</div>
-				-->
+				
 				<div class="mui-input-row">
 					<label>微信收款码</label>
 					<button id="wx_btn" type="button"
@@ -91,12 +74,31 @@
 				<div class="img">
 					<img id="ali-qrcode-img" src="">
 				</div>
+				
+				<div class="mui-input-row">
+					<label>开户名</label>
+					<input id='name' type="text" class="mui-input-clear mui-input" placeholder="开户名">
+				</div>
+				<div class="mui-input-row">
+					<label>卡号</label>
+					<input id='card' type="text" class="mui-input-clear mui-input" placeholder="卡号">
+				</div>
+				<div class="mui-input-row">
+					<label>银行名称</label>
+					<input id='brand' type="text" class="mui-input-clear mui-input" placeholder="银行名称">
+				</div>
+				<!--
+				<div class="mui-input-row">
+					<label>预留手机号</label>
+					<input id='mobile' type="text" class="mui-input-clear mui-input" placeholder="预留手机号">
+				</div>
+				-->
 			</form>
-			<!--
+			
 			<div class="mui-content-padded">
-				<button id='btn-add' class="mui-btn mui-btn-block mui-btn-primary">确认</button>
+				<button id='btn-add' type="button" class="mui-btn mui-btn-block mui-btn-primary">确认</button>
 			</div>
-			-->
+			
 		</div>
 		<script src="../js/mui.min.js"></script> 
 		<script src="../js/main.js"></script>
@@ -106,13 +108,13 @@
 					statusBarBackground: '#f7f7f7'
 				});
 				$.plusReady(function() {
-					/*
+					
 					doc.getElementById("btn-add").addEventListener('tap', function(event) {
 						var form_data = {
 							name: doc.getElementById("name").value,
 							card: doc.getElementById("card").value,
 							brand: doc.getElementById("brand").value,
-							mobile: doc.getElementById("mobile").value,
+						//	mobile: doc.getElementById("mobile").value,
 						};
 							
 						// 操作
@@ -133,7 +135,7 @@
 										});
 									}else{
 										mui.alert("绑卡成功", '', '', function(){
-											mui.back();
+											// mui.back();
 										});
 									}
 									
@@ -144,7 +146,7 @@
 								}
 						});
 					});
-					*/
+					
 				   
 					// 获取图片
 					$.ajax(config.host + 'DccUser/getCard', {
@@ -164,10 +166,17 @@
 								// delToken();
 							} else {
 								var img = document.getElementById("wx-qrcode-img"),
-									img2 = document.getElementById("ali-qrcode-img")
+									img2 = document.getElementById("ali-qrcode-img"),
+									name = doc.getElementById("name"),
+									card = doc.getElementById("card"),
+									brand = doc.getElementById("brand");
 									
+								var ret = data.data; 
 								img.src = data.data.wx_qrcode;
 								img2.src = data.data.ali_qrcode;
+								name.value = ret.name;
+								card.value = ret.card;
+								brand.value = ret.brand;
 							}
 					
 						},

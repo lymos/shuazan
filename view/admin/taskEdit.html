@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<link href="static/extend/layui/css/layui.css" rel="stylesheet">
-		<link href="static/backend.css" rel="stylesheet">
+		<link href="/static/extend/layui/css/layui.css" rel="stylesheet">
+		<link href="/static/backend.css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="layui-container">
@@ -12,19 +12,20 @@
 						<label class="layui-form-label">任务名称</label>
 						<div class="layui-input-block">
 							<input type="text" name="name" required lay-verify="required" placeholder="请输入任务名称"
-								autocomplete="off" class="layui-input">
+								autocomplete="off" class="layui-input" value="{$data.name}">
 						</div>
 					</div>
 			
 					<div class="layui-form-item">
 						<div class="layui-input-block">
+							<input type="hidden" name="id" id="id" value="{$data.id}">
 							<button class="layui-btn" lay-submit lay-filter="task-form">提交</button>
 						</div>
 					</div>
 				</form>
 			</div>
 		</div>
-		<script src="static/extend/layui/layui.js"></script>
+		<script src="/static/extend/layui/layui.js"></script>
 		<script>
 			layui.use(['element', 'layer', 'util', 'jquery', "form"], function() {
 				var form = layui.form,

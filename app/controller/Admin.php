@@ -78,7 +78,7 @@ class Admin extends BackController
     public function taskList(){
 		$list = Db::name('task')
 			->field('id, name, added_date')
-            ->where(1)
+            ->where(['is_enabled' => 1])
             ->order('id', 'desc')
 			->select();
 		
@@ -227,8 +227,21 @@ class Admin extends BackController
     }
 
     public function taskEdit(){
-		$url = $this->url('/index.php?s=Admin/actionTaskAdd');
-		View::assign('url', $url);
+		$id = intval(Request::param('id'));
+		$data = [
+			'name' => '',
+			'id' => ''
+		];
+		$url = $this->url('/Admin/actionTaskAdd');
+		$url_update = $this->url('/Admin/actionTaskEdit');
+		if(! $id){
+			View::assign('url', $url);
+		}else{
+			$data = Db::name('task')->field('id, name')->where(['id' => $id])->find();
+			View::assign('url', $url_update);
+		}
+		
+		View::assign('data', $data);
         return View::fetch('taskEdit');
     }
 
@@ -239,8 +252,7 @@ class Admin extends BackController
 			'msg' => ''
 		];
         $id = trim(Request::param('id'));
-        $is_enabled = trim(Request::param('is_enabled'));
-		if(!$id || ! $name){
+		if(!$id){
 			$ret['msg'] = '参数错误';
 			return json($ret);
 		}
@@ -248,7 +260,7 @@ class Admin extends BackController
 		$data = [
 			'updated_by' => $this->userid,
 			'updated_date' => $date,
-			'is_enabled' => $is_enabled
+			'is_enabled' => 0
         ];
         $where = [
             'id' => $id
@@ -270,7 +282,6 @@ class Admin extends BackController
 		];
         $id = trim(Request::param('id'));
         $name = trim(Request::param('name'));
-        $is_enabled = trim(Request::param('is_enabled'));
 		if(!$id || ! $name){
 			$ret['msg'] = '参数错误';
 			return json($ret);
@@ -279,8 +290,7 @@ class Admin extends BackController
 		$data = [
 			'name' => $name,
 			'updated_by' => $this->userid,
-			'updated_date' => $date,
-			'is_enabled' => $is_enabled
+			'updated_date' => $date
         ];
         $where = [
             'id' => $id
