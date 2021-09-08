@@ -400,7 +400,7 @@
                     },
                     "weixin" : {
                         "__platform__" : [ "ios", "android" ],
-                        "appid" : "88888888888",
+                        "appid" : "wxfe1d7a5c3326dc83",
                         "UniversalLinks" : ""
                     }
                 }

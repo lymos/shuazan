@@ -56,14 +56,16 @@
 			<div class="mui-content-padded">
 				<button id="btn-alipay" class="mui-btn mui-btn-block mui-btn-primary">支付宝</button>
 			</div>
-			<!--
+			
 			<div class="mui-content-padded">
 				<button id="btn-wxpay" class="mui-btn mui-btn-block mui-btn-primary">微信</button>
 			</div>
-			-->
+			
+			<!--
 			<div class="mui-content-padded">
 				<button id="btn-unionpay" class="mui-btn mui-btn-block mui-btn-primary">银联</button>
 			</div>
+			-->
 		</div>
 		<script src="../js/mui.min.js"></script>
 		<script src="../js/main.js"></script>
@@ -116,15 +118,17 @@
 					pay2("alipay");
 				});
 				
-				/*
-				document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
-					pay("wxpay");
-				});
-				*/
 				
+				document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
+					plusReady();
+					pay2("wxpay"); 
+				});
+				
+				/*
 				document.getElementById("btn-unionpay").addEventListener('tap', function(event) {
 					pay("unionpay");
 				});
+				*/
 				
 				/**
 				 * 网页方式
@@ -174,8 +178,8 @@
 						return ;
 					}
 					$pobj = this;
-					mui.trigger(document.getElementById("btn-alipay"), "tap");
-					// mui('#popover').popover("toggle");
+					// mui.trigger(document.getElementById("btn-alipay"), "tap");
+					mui('#popover').popover("toggle");
 					return ; 
 				});
 				
@@ -188,7 +192,7 @@
 					if(id == "wxpay"){
 						uri = "wxOrder";
 					}
-					var order_url = config.host + 'index.php?s=Cash/' + uri;
+					var order_url = config.host + 'Cash/' + uri;
 					var productid = $pobj.getAttribute("data-id");
 					mui.ajax(order_url, {
 						data: Object.assign(getToken(), {productid: productid}),
@@ -197,7 +201,7 @@
 						timeout:10000,//超时时间设置为10秒；
 						// headers:{'Content-Type':'application/json'},
 						success:function(data){
-							// mui.alert(JSON.stringify(data));
+							mui.alert(JSON.stringify(data));
 							//服务器返回响应，根据响应结果，分析是否登录成功；
 							if(data.code == 0){
 								mui.alert(data.msg);
@@ -219,7 +223,7 @@
 								});  			   
 							}
 							
-						},
+						}, 
 						error:function(xhr,type,errorThrown){
 							mui.alert(JSON.stringify(type));
 							

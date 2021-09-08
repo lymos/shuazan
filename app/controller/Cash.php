@@ -394,111 +394,42 @@ class Cash extends BaseController
 		require $wxpay_path . 'config.php';
 		
 		$arr = $_POST;
-		$alipaySevice = new AlipayTradeService($config); 
-		$alipaySevice->writeLog(var_export($_POST,true));
-		$result = $alipaySevice->check($arr);
+		//use WeChatPay\Crypto\Rsa;
+		//use WeChatPay\Crypto\AesGcm;
+		//use WeChatPay\Formatter;
 		
-		/* 实际验证过程建议商户添加以下校验。
-		1、商户需要验证该通知数据中的out_trade_no是否为商户系统中创建的订单号，
-		2、判断total_amount是否确实为该订单的实际金额（即商户订单创建时的金额），
-		3、校验通知中的seller_id（或者seller_email) 是否为out_trade_no这笔单据的对应的操作方（有的时候，一个商户可能有多个seller_id/seller_email）
-		4、验证app_id是否为该商户本身。
-		*/
-		if($result) {//验证成功
-			/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			//请在这里加上商户的业务逻辑程序代
+		$inWechatpaySignature = '';// 请根据实际情况获取
+		$inWechatpayTimestamp = '';// 请根据实际情况获取
+		$inWechatpaySerial = '';// 请根据实际情况获取
+		$inWechatpayNonce = '';// 请根据实际情况获取
+		$inBody = '';// 请根据实际情况获取，例如: file_get_contents('php://input');
 		
-			
-			//——请根据您的业务逻辑来编写程序（以下代码仅作参考）——
-			
-		    //获取支付宝的通知返回参数，可参考技术文档中服务器异步通知参数列表
-
-		    $merId = Request::param('merId');
-			$orderId = Request::param('orderId');
-			$respCode = Request::param('respCode');
-			$respMsg = Request::param('respMsg');
-			
-			if(! isset ( $_POST ['signature'] )){
-				echo '非法操作 code: 40001';
-				exit;
-			}
-			$check = \com\unionpay\acp\sdk\AcpService::validate ( $_POST );
-			if(! $check){
-				echo '非法操作 code: 40002';
-				exit;
-			}
-			
-			if(Config::get('app.unionpay_merid') != $merId){
-				echo '非法操作 code: 40003';
-				exit;
-			}
-			
-			if($respCode != '00' && $respMsg != 'success'){
-				echo '非法操作 code: 40004';
-				exit;
-			}
-			
-			$date = date('Y-m-d H:i:s');
-			// 修改订单状态
-			$update_data = [
-				'status' => 1,
-				'updated_date' => $date
-			];
-			$update_where = [
-				'orderid' => $orderId
-			];
-
-			// 更新订单付款状态
-			$update_status = Db::name('order')
-				->where($update_where)
-				->update($update_data);
-			if($update_status === false){
-				echo '付款失败';
-				exit;
-			}
-			$url = $this->url('/index.php?s=home');
-			header('Location: ' . $url);
-			// echo '付款成功<a href="">首页</a>';
-			exit;
-			
-			//商户订单号
+		$apiv3Key = '';// 在商户平台上设置的APIv3密钥
 		
-			$out_trade_no = $_POST['out_trade_no'];
+		// 根据通知的平台证书序列号，查询本地平台证书文件，
+		// 假定为 `/path/to/wechatpay/inWechatpaySerial.pem`
+		$platformPublicKeyInstance = Rsa::from('file:///path/to/wechatpay/inWechatpaySerial.pem', Rsa::KEY_TYPE_PUBLIC);
 		
-			//支付宝交易号
-			$trade_no = $_POST['trade_no'];
-		
-			//交易状态
-			$trade_status = $_POST['trade_status'];
-		
-		
-		    if($_POST['trade_status'] == 'TRADE_FINISHED') {
-		
-				//判断该笔订单是否在商户网站中已经做过处理
-					//如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-					//请务必判断请求时的total_amount与通知时获取的total_fee为一致的
-					//如果有做过处理，不执行商户的业务程序
-						
-				//注意：
-				//退款日期超过可退款期限后（如三个月可退款），支付宝系统发送该交易状态通知
-		    }
-		    else if ($_POST['trade_status'] == 'TRADE_SUCCESS') {
-				//判断该笔订单是否在商户网站中已经做过处理
-					//如果没有做过处理，根据订单号（out_trade_no）在商户网站的订单系统中查到该笔订单的详细，并执行商户的业务程序
-					//请务必判断请求时的total_amount与通知时获取的total_fee为一致的
-					//如果有做过处理，不执行商户的业务程序			
-				//注意：
-				//付款完成后，支付宝系统发送该交易状态通知
-		    }
-			//——请根据您的业务逻辑来编写程序（以上代码仅作参考）——
-		        
-			echo "success";		//请不要修改或删除
-				
-		}else {
-		    //验证失败
-		    echo "fail";	//请不要修改或删除
-		
+		// 检查通知时间偏移量，允许5分钟之内的偏移
+		$timeOffsetStatus = 300 >= abs(Formatter::timestamp() - (int)$inWechatpayTimestamp);
+		$verifiedStatus = Rsa::verify(
+		    // 构造验签名串
+		    Formatter::joinedByLineFeed($inWechatpayTimestamp, $inWechatpayNonce, $inBody),
+		    $inWechatpaySignature,
+		    $platformPublicKeyInstance
+		);
+		if ($timeOffsetStatus && $verifiedStatus) {
+		    $inBodyArray = (array)json_decode($inBody, true);
+		    ['resource' => [
+		        'ciphertext'      => $ciphertext,
+		        'nonce'           => $nonce,
+		        'associated_data' => $aad
+		    ]] = $inBodyArray;
+		    $inBodyResource = AesGcm::decrypt($ciphertext, $apiv3Key, $nonce, $aad);
+		    $inBodyResourceArray = (array)json_decode($inBodyResource, true);
+		    // print_r($inBodyResourceArray);// 打印解密后的结果
 		}
+
 		
 	}
 	
@@ -773,33 +704,76 @@ class Cash extends BaseController
 			return json($ret);
 		}
 		
+		// 商户号，假定为`1000100`
+		$merchantId = $config['mchid'];
+		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
+		$merchantPrivateKeyFilePath = 'file:///path/to/merchant/apiclient_key.pem';// 注意 `file://` 开头协议不能少
+		// 加载商户私钥
+		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
+		$merchantCertificateSerial = '可以从商户平台直接获取到';// API证书不重置，商户证书序列号就是个常量
+		// // 也可以使用openssl命令行获取证书序列号
+		// // openssl x509 -in /path/to/merchant/apiclient_cert.pem -noout -serial | awk -F= '{print $2}'
+		// // 或者从以下代码也可以直接加载
+		// // 「商户证书」，文件路径假定为 `/path/to/merchant/apiclient_cert.pem`
+		// $merchantCertificateFilePath = 'file:///path/to/merchant/apiclient_cert.pem';// 注意 `file://` 开头协议不能少
+		// // 解析「商户证书」序列号
+		// $merchantCertificateSerial = PemUtil::parseCertificateSerialNo($merchantCertificateFilePath);
 		
-		$order_info = [
-			'appid' => $config['app_id'],
-			/*
-			'partnerid' => '',
-			'prepayid' => '',
-			'timestamp' => time(),
-			'noncestr' => '',
-			*/
-			'mchid' => '',
-			'description' => $order['name'],
-			'out_trade_no' => $order['orderid'],
-			'notify_url' => '',
-			'amount' => [
-				'total' => $order['total']
-			],
-			'scene_info' => [
-				'payer_client_ip' => '',
-				'h5_info' => [
-					'type' => 'IOS' // iOS, Android, Wap
-				]
-			]
-		];
-		$aop = new \AopClient();
-		$aop->rsaPrivateKey = $config['merchant_private_key'];
-		$order_info['sign']	= $aop->rsaSign($order_info, 'RSA2');
-		$order_info['biz_content'] = json_decode($order_info['biz_content'], true);
+		// 「平台证书」，可由下载器 `./bin/CertificateDownloader.php` 生成并假定保存为 `/path/to/wechatpay/cert.pem`
+		$platformCertificateFilePath = 'file:///path/to/wechatpay/cert.pem';// 注意 `file://` 开头协议不能少
+		// 加载「平台证书」公钥
+		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
+		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
+		$platformCertificateSerial = PemUtil::parseCertificateSerialNo($platformCertificateFilePath);
+		
+		// 工厂方法构造一个实例
+		$instance = Builder::factory([
+		    'mchid'      => $merchantId,
+		    'serial'     => $merchantCertificateSerial,
+		    'privateKey' => $merchantPrivateKeyInstance,
+		    'certs'      => [
+		        $platformCertificateSerial => $platformPublicKeyInstance,
+		    ],
+		    // APIv2密钥(32字节)--不使用APIv2可选
+		    // 'secret' => 'exposed_your_key_here_have_risks',// 值为占位符，如需使用APIv2请替换为实际值
+		    // 'merchant' => [// --不使用APIv2可选
+		    //     // 商户证书 文件路径 --不使用APIv2可选
+		    //     'cert' => $merchantCertificateFilePath,
+		    //     // 商户API私钥 文件路径 --不使用APIv2可选
+		    //     'key' => $merchantPrivateKeyFilePath,
+		    // ],
+		]);
+		
+		try {
+		    $resp = $instance
+		    ->v3->pay->transactions->native
+		    ->post(['json' => [
+		        'mchid'        => $merchantId,
+		        'out_trade_no' => $order['orderid'],
+		        'appid'        => $config['appid'],
+		        'description'  => $order['name'],
+		        'notify_url'   => $config['notify_url'],
+		        'amount'       => [
+		            'total'    => $order[''],
+		            'currency' => 'CNY'
+		        ],
+		    ]]);
+		
+		    echo $resp->getStatusCode(), PHP_EOL;
+		    echo $resp->getBody(), PHP_EOL;
+		} catch (\Exception $e) {
+		    // 进行错误处理
+		    echo $e->getMessage(), PHP_EOL;
+		    if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
+		        $r = $e->getResponse();
+		        echo $r->getStatusCode() . ' ' . $r->getReasonPhrase(), PHP_EOL;
+		        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
+		    }
+		    echo $e->getTraceAsString(), PHP_EOL;
+		}
+
+		
+		// {"appid":"wx0411fa6a39d61297","noncestr":"Y6XCXVOoUJoc7MHR","package":"Sign=WXPay","partnerid":"1230636401","prepayid":"wx0822052722326175440bc04e880e6a0000","timestamp":1631109927,"sign":"20E78BBCAE30F898C4E9ED958DF5F1FC"}
 		$ret['data'] = $order_info;
 		$ret['code'] = 1;
 		return json($ret);
