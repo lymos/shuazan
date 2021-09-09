@@ -389,11 +389,17 @@ class Cash extends BaseController
 	}
 
 	public function wxpayNotify(){
-		
+		error_log(print_r('wxpayNotify', true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		error_log(print_r($_SERVER, true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		$cert_path = $wxpay_path . 'cert/';
 		require $wxpay_path . 'config.php';
 		
 		$arr = $_POST;
+		Log::write('wxpay notify in ' . $arr['out_trade_no'], 'wxpay-notify');
+
 		//use WeChatPay\Crypto\Rsa;
 		//use WeChatPay\Crypto\AesGcm;
 		//use WeChatPay\Formatter;
@@ -408,7 +414,7 @@ class Cash extends BaseController
 		
 		// 根据通知的平台证书序列号，查询本地平台证书文件，
 		// 假定为 `/path/to/wechatpay/inWechatpaySerial.pem`
-		$platformPublicKeyInstance = Rsa::from('file:///path/to/wechatpay/inWechatpaySerial.pem', Rsa::KEY_TYPE_PUBLIC);
+		$platformPublicKeyInstance = Rsa::from($cert_path . 'wxclient_key.pem', Rsa::KEY_TYPE_PUBLIC);
 		
 		// 检查通知时间偏移量，允许5分钟之内的偏移
 		$timeOffsetStatus = 300 >= abs(Formatter::timestamp() - (int)$inWechatpayTimestamp);
@@ -428,6 +434,58 @@ class Cash extends BaseController
 		    $inBodyResource = AesGcm::decrypt($ciphertext, $apiv3Key, $nonce, $aad);
 		    $inBodyResourceArray = (array)json_decode($inBodyResource, true);
 		    // print_r($inBodyResourceArray);// 打印解密后的结果
+
+		    $app_id = Request::param('app_id');
+		    $orderId = Request::param('out_trade_no');
+			$trade_status = Request::param('trade_status');
+			$total_amount = Request::param('total_amount');
+			Log::write('wxpay notify orderid: ' . $orderId . ' in', 'wxpay-notify');
+
+
+			if($config['appid'] != $app_id){
+				Log::write('wxpay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'wxpay-notify');
+				json(['error' => true], 500);
+				exit;
+			}
+			
+			if($trade_status != 'TRADE_SUCCESS'){
+				// log
+				Log::write('wxpay notify orderid: ' . $orderId . ' trade failed status: ' . $trade_status, 'wxpay-notify');
+				json(['error' => true], 500);
+				exit;
+			}
+			Log::write('wxpay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'wxpay-notify');
+
+			$date = date('Y-m-d H:i:s');
+			// 修改订单状态
+			$update_data = [
+				'status' => 1,
+				'pay_type' => 2,
+				'updated_date' => $date
+			];
+			$update_where = [
+				'orderid' => $orderId,
+				'status' => 0,
+				'total' => str_replace('.00', '', $arr['total_amount'])
+			];
+
+			// 更新订单付款状态
+			$update_status = Db::name('order')
+				->where($update_where)
+				->update($update_data);
+			if(! $update_status){
+				Log::write('wxpay notify orderid: ' . $orderId . ' update sql error ' . Db::getLastSql(), 'wxpay-notify');
+				json(['error' => true], 500);
+				exit;
+			}
+			// header('HTTP/1.1 200');
+			json(['error' => false], 200);
+		}else{
+			Log::write('wxpay notify verify fail ' . $arr['out_trade_no'], 'wxpay-notify');
+		    //验证失败
+		   // header('HTTP/1.1 500');
+			json(['error' => true], 500);
+		    exit;
 		}
 
 		
@@ -435,8 +493,18 @@ class Cash extends BaseController
 	
 	public function wxpay(){
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		$cert_path = $wxpay_path . 'cert/';
 		require $wxpay_path . 'config.php';
+
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
 		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
+		
+		/*
 		// 工厂方法构造一个实例
 		$instance = \WeChatPay\Builder::factory([
 		    // 商户号
@@ -458,17 +526,60 @@ class Cash extends BaseController
 		        'key' => '/path/to/mch/apiclient_key.pem',
 		    ],
 		]);
+		*/
+
+		// 商户号，假定为`1000100`
+		$merchantId = $config['mchid'];
+		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
+		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
+		// 加载商户私钥
+		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
+		$merchantCertificateSerial = '可以从商户平台直接获取到';// API证书不重置，商户证书序列号就是个常量
+		// // 也可以使用openssl命令行获取证书序列号
+		// // openssl x509 -in /path/to/merchant/apiclient_cert.pem -noout -serial | awk -F= '{print $2}'
+		// // 或者从以下代码也可以直接加载
+		// // 「商户证书」，文件路径假定为 `/path/to/merchant/apiclient_cert.pem`
+		// $merchantCertificateFilePath = 'file:///path/to/merchant/apiclient_cert.pem';// 注意 `file://` 开头协议不能少
+		// // 解析「商户证书」序列号
+		// $merchantCertificateSerial = PemUtil::parseCertificateSerialNo($merchantCertificateFilePath);
+		
+		// 「平台证书」，可由下载器 `./bin/CertificateDownloader.php` 生成并假定保存为 `/path/to/wechatpay/cert.pem`
+		$platformCertificateFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
+		// 加载「平台证书」公钥
+		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
+		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
+		$platformCertificateSerial = PemUtil::parseCertificateSerialNo($platformCertificateFilePath);
+		
+		// 工厂方法构造一个实例
+		$instance = Builder::factory([
+		    'mchid'      => $merchantId,
+		    'serial'     => $merchantCertificateSerial,
+		    'privateKey' => $merchantPrivateKeyInstance,
+		    'certs'      => [
+		        $platformCertificateSerial => $platformPublicKeyInstance,
+		    ],
+		    // APIv2密钥(32字节)--不使用APIv2可选
+		    // 'secret' => 'exposed_your_key_here_have_risks',// 值为占位符，如需使用APIv2请替换为实际值
+		    // 'merchant' => [// --不使用APIv2可选
+		    //     // 商户证书 文件路径 --不使用APIv2可选
+		    //     'cert' => $merchantCertificateFilePath,
+		    //     // 商户API私钥 文件路径 --不使用APIv2可选
+		    //     'key' => $merchantPrivateKeyFilePath,
+		    // ],
+		]);
 		
 		try {
 			// $instance->v3->pay->transactions->h5->post
-		    $resp = $instance->v3->pay->transactions->native->post(['json' => [
-		        'mchid' => '1900006XXX',
-		        'out_trade_no' => 'native12177525012014070332333',
-		        'appid' => 'wxdace645e0bc2cXXX',
-		        'description' => 'Image形象店-深圳腾大-QQ公仔',
-		        'notify_url' => 'https://weixin.qq.com/',
-		        'amount' => [
-		            'total' => 1,
+		   $resp = $instance
+		    ->v3->pay->transactions->native
+		    ->post(['json' => [
+		        'mchid'        => $merchantId,
+		        'out_trade_no' => $order['orderid'],
+		        'appid'        => $config['appid'],
+		        'description'  => $order['name'],
+		        'notify_url'   => $config['notify_url'],
+		        'amount'       => [
+		            'total'    => $order['total'],
 		            'currency' => 'CNY'
 		        ],
 		    ]]);
@@ -694,6 +805,7 @@ class Cash extends BaseController
 		];
 
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		$cert_path = $wxpay_path . 'cert/';
 		require $wxpay_path . 'config.php';
 		
 		$order_obj = new Order($this->app);
@@ -707,7 +819,7 @@ class Cash extends BaseController
 		// 商户号，假定为`1000100`
 		$merchantId = $config['mchid'];
 		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
-		$merchantPrivateKeyFilePath = 'file:///path/to/merchant/apiclient_key.pem';// 注意 `file://` 开头协议不能少
+		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
 		// 加载商户私钥
 		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
 		$merchantCertificateSerial = '可以从商户平台直接获取到';// API证书不重置，商户证书序列号就是个常量
@@ -720,7 +832,7 @@ class Cash extends BaseController
 		// $merchantCertificateSerial = PemUtil::parseCertificateSerialNo($merchantCertificateFilePath);
 		
 		// 「平台证书」，可由下载器 `./bin/CertificateDownloader.php` 生成并假定保存为 `/path/to/wechatpay/cert.pem`
-		$platformCertificateFilePath = 'file:///path/to/wechatpay/cert.pem';// 注意 `file://` 开头协议不能少
+		$platformCertificateFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
 		// 加载「平台证书」公钥
 		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
 		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
@@ -754,7 +866,7 @@ class Cash extends BaseController
 		        'description'  => $order['name'],
 		        'notify_url'   => $config['notify_url'],
 		        'amount'       => [
-		            'total'    => $order[''],
+		            'total'    => $order['total'],
 		            'currency' => 'CNY'
 		        ],
 		    ]]);
