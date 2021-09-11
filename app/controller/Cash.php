@@ -399,7 +399,7 @@ class Cash extends BaseController
 		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
-		$cert_path = $wxpay_path . 'cert/';
+		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
 		
 		$arr = $_POST;
@@ -494,7 +494,7 @@ class Cash extends BaseController
 	
 	public function wxpay(){
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
-		$cert_path = $wxpay_path . 'cert/';
+		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
 
 		$userid = intval($this->decrypt(str_replace(' ', '+', Request::param('userid'))));
@@ -532,12 +532,13 @@ class Cash extends BaseController
 		*/
 
 		// 商户号，假定为`1000100`
-		$merchantId = $config['mchid'];
+		$merchantId = $wxpay_config['mchid'];
 		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
 		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'apiclient_key.pem';// 注意 `file://` 开头协议不能少
 		// 加载商户私钥
 		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
-		$merchantCertificateSerial = $config['serial'];// API证书不重置，商户证书序列号就是个常量
+		$merchantCertificateSerial = $wxpay_config['serial_num'];// API证书不重置，商户证书序列号就是个常量
+		// $merchantCertificateSerial = '';
 		// // 也可以使用openssl命令行获取证书序列号
 		// // openssl x509 -in /path/to/merchant/apiclient_cert.pem -noout -serial | awk -F= '{print $2}'
 		// // 或者从以下代码也可以直接加载
@@ -547,7 +548,7 @@ class Cash extends BaseController
 		// $merchantCertificateSerial = PemUtil::parseCertificateSerialNo($merchantCertificateFilePath);
 		
 		// 「平台证书」，可由下载器 `./bin/CertificateDownloader.php` 生成并假定保存为 `/path/to/wechatpay/cert.pem`
-		$platformCertificateFilePath = 'file://' . $cert_path . 'apiclient_cert.pem';// 注意 `file://` 开头协议不能少
+		$platformCertificateFilePath = 'file://' . $cert_path . 'wechatpay_platform_cert.pem';// 注意 `file://` 开头协议不能少
 		// 加载「平台证书」公钥
 		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
 		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
@@ -560,6 +561,7 @@ class Cash extends BaseController
 		    'privateKey' => $merchantPrivateKeyInstance,
 		    'certs'      => [
 		        $platformCertificateSerial => $platformPublicKeyInstance,
+				// '68AECFD1DA78E4A8FAF6F6CC26C5F3178BA4D8BA' => $platformPublicKeyInstance,
 		    ],
 		    // APIv2密钥(32字节)--不使用APIv2可选
 		    // 'secret' => 'exposed_your_key_here_have_risks',// 值为占位符，如需使用APIv2请替换为实际值
@@ -572,23 +574,34 @@ class Cash extends BaseController
 		]);
 		
 		try {
-			// $instance->v3->pay->transactions->h5->post
-		  // $resp = $instance->v3->pay->transactions->native
-		   $resp = $instance->v3->pay->transactions->h5
-		    ->post(['json' => [
+			$data = [
 		        'mchid'        => $merchantId,
 		        'out_trade_no' => $orderid,
-		        'appid'        => $config['appid'],
+		        'appid'        => $wxpay_config['appid'],
 		        'description'  => $order['name'],
-		        'notify_url'   => $config['notify_url'],
+		        'notify_url'   => $wxpay_config['notify_url'],
 		        'amount'       => [
-		            'total'    => $order['total'],
+		            'total'    => floatval($order['total']),
 		            'currency' => 'CNY'
 		        ],
-		    ]]);
-		error_log(print_r($resp, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log'); die;
+				/*
+				'scene_info' => [
+					'payer_client_ip' => '127.0.0.1',
+					'h5_info' => [
+						'type' => 'Wap'
+					]
+				]
+				*/
+		    ];
+			
+			// $instance->v3->pay->transactions->h5->post
+			$resp = $instance->v3->pay->transactions->native
+		  // $resp = $instance->chain('v3/pay/transactions/h5')
+			// $resp = $instance->v3->pay->transactions->h5
+		    ->post(['json' => $data, 'body'=> '']);
+		error_log(print_r($resp->getBody(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
-		    echo $resp->getStatusCode() . ' ' . $resp->getReasonPhrase(), PHP_EOL;
+			echo $resp->getStatusCode() . ' ' . $resp->getReasonPhrase(), PHP_EOL;
 		    echo $resp->getBody(), PHP_EOL;
 		} catch (Exception $e) {
 		    // 进行错误处理
@@ -807,9 +820,10 @@ class Cash extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
-
+		$data = [];
+		
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
-		$cert_path = $wxpay_path . 'cert/';
+		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
 		
 		$order_obj = new Order($this->app);
@@ -821,12 +835,12 @@ class Cash extends BaseController
 		}
 		
 		// 商户号，假定为`1000100`
-		$merchantId = $config['mchid'];
+		$merchantId = $wxpay_config['mchid'];
 		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
-		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
+		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'apiclient_key.pem';// 注意 `file://` 开头协议不能少
 		// 加载商户私钥
 		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
-		$merchantCertificateSerial = '可以从商户平台直接获取到';// API证书不重置，商户证书序列号就是个常量
+		$merchantCertificateSerial = $wxpay_config['serial_num'];// API证书不重置，商户证书序列号就是个常量
 		// // 也可以使用openssl命令行获取证书序列号
 		// // openssl x509 -in /path/to/merchant/apiclient_cert.pem -noout -serial | awk -F= '{print $2}'
 		// // 或者从以下代码也可以直接加载
@@ -836,7 +850,7 @@ class Cash extends BaseController
 		// $merchantCertificateSerial = PemUtil::parseCertificateSerialNo($merchantCertificateFilePath);
 		
 		// 「平台证书」，可由下载器 `./bin/CertificateDownloader.php` 生成并假定保存为 `/path/to/wechatpay/cert.pem`
-		$platformCertificateFilePath = 'file://' . $cert_path . 'wxclient_key.pem';// 注意 `file://` 开头协议不能少
+		$platformCertificateFilePath = 'file://' . $cert_path . 'wechatpay_platform_cert.pem';// 注意 `file://` 开头协议不能少
 		// 加载「平台证书」公钥
 		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
 		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
@@ -862,21 +876,38 @@ class Cash extends BaseController
 		
 		try {
 		    $resp = $instance
-		    ->v3->pay->transactions->native
+		    ->v3->pay->transactions->app
 		    ->post(['json' => [
 		        'mchid'        => $merchantId,
 		        'out_trade_no' => $order['orderid'],
-		        'appid'        => $config['appid'],
+		        'appid'        => $wxpay_config['appid'],
 		        'description'  => $order['name'],
-		        'notify_url'   => $config['notify_url'],
+		        'notify_url'   => $wxpay_config['notify_url'],
 		        'amount'       => [
-		            'total'    => $order['total'],
+		            'total'    => floatval($order['total']) * 100,
 		            'currency' => 'CNY'
 		        ],
 		    ]]);
-		
-		    echo $resp->getStatusCode(), PHP_EOL;
-		    echo $resp->getBody(), PHP_EOL;
+			$res = $resp->getBody()->getContents();
+			if(strpos($res, 'prepay_id') === false){
+				$ret['code'] = 0;
+				$ret['msg'] = '下单失败';
+				return json($ret);
+			}
+			$prepay = json_decode($res, true);
+			$data = [
+				'appid' => $wxpay_config['appid'],
+				'partnerid' => $merchantId,
+				'prepayid' => $prepay['prepay_id'],
+				'package' => 'Sign=WXPay',
+				'noncestr' => uniqid(),
+				'timestamp' => time()
+			];
+			$data['sign'] = $this->_signStr($data);
+			
+		// error_log(print_r($data, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		  //  echo $resp->getStatusCode(), PHP_EOL;
+		  //  echo $resp->getBody(), PHP_EOL;
 		} catch (\Exception $e) {
 		    // 进行错误处理
 		    echo $e->getMessage(), PHP_EOL;
@@ -890,9 +921,16 @@ class Cash extends BaseController
 
 		
 		// {"appid":"wx0411fa6a39d61297","noncestr":"Y6XCXVOoUJoc7MHR","package":"Sign=WXPay","partnerid":"1230636401","prepayid":"wx0822052722326175440bc04e880e6a0000","timestamp":1631109927,"sign":"20E78BBCAE30F898C4E9ED958DF5F1FC"}
-		$ret['data'] = $order_info;
+		$ret['data'] = $data;
 		$ret['code'] = 1;
 		return json($ret);
+	}
+
+	private function _signStr($arr){
+		ksort($arr);
+		$str = urlencode(http_build_query($arr));
+		$sign = strtoupper(md5($str));
+		return $sign;
 	}
 	
 	/**

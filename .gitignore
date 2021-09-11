@@ -6,4 +6,4 @@ app-code/doucc/unpackage/*
 *.DS_Store
 extend/alipay/log.*
 public/upload
-extend/WechatPay/cert/*
+extend/WechatPay/cert*

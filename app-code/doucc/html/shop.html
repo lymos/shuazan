@@ -73,15 +73,15 @@
 			var $pobj = {};
 			var ali_channel = null;  
 			// 1. 获取支付通道  
-			function plusReady(){ //uni-app中将此function里的代码放入vue页面的onLoad生命周期中  
+			function plusReady(type){ //uni-app中将此function里的代码放入vue页面的onLoad生命周期中  
 				// mui.alert("进入支付");
 			    // 获取支付通道  
 			    plus.payment.getChannels(function(channels){   
 					// mui.alert(JSON.stringify(channels));
 					for (var i in channels) {  
-					    if (channels[i].id == "wxpay") { 
-					       // wxChannel=channels[i];
-					    }else if(channels[i].id == "alipay"){ 
+					    if (channels[i].id == "wxpay" && type == "wxpay") { 
+					       ali_channel = channels[i];
+					    }else if(channels[i].id == "alipay" && type == "alipay"){ 
 							// mui.alert("alipay");
 					        ali_channel = channels[i];
 					    }
@@ -114,13 +114,13 @@
 					
 				document.getElementById("btn-alipay").addEventListener('tap', function(event) {
 					// pay("alipay");
-					plusReady();
+					plusReady('alipay');
 					pay2("alipay");
 				});
 				
 				
 				document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
-					plusReady();
+					plusReady('wxpay');
 					pay2("wxpay"); 
 				});
 				
@@ -209,7 +209,8 @@
 								
 							}else{
 								var statement = data.data;
-								// mui.alert(JSON.stringify(ali_channel));
+								mui.alert(JSON.stringify(ali_channel));
+								
 								// mui.alert(statement);
 								plus.payment.request(ali_channel, statement, function(result){
 									    plus.nativeUI.alert("支付成功！",function(){  
@@ -222,7 +223,7 @@
 									});  
 								});  			   
 							}
-							
+							  
 						}, 
 						error:function(xhr,type,errorThrown){
 							mui.alert(JSON.stringify(type));

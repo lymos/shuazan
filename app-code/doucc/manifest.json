@@ -320,14 +320,14 @@
                         "settings-normal" : "", /*iPhone4设置页面程序图标，分辨率：29x29*/
                         "settings-retina" : "", /*iPhone4S/5/6设置页面程序图标，分辨率：58x58*/
                         "settings-retina8" : "",
-                        "app@2x" : "images/app.png",
-                        "app@3x" : "images/app.png",
-                        "spotlight@2x" : "images/app.png",
-                        "spotlight@3x" : "images/app.png",
-                        "settings@2x" : "images/app.png",
-                        "notification@2x" : "images/app.png",
-                        "settings@3x" : "images/app.png",
-                        "notification@3x" : "images/app.png"
+                        "app@2x" : "",
+                        "app@3x" : "",
+                        "spotlight@2x" : "",
+                        "spotlight@3x" : "",
+                        "settings@2x" : "",
+                        "notification@2x" : "",
+                        "settings@3x" : "",
+                        "notification@3x" : ""
                     },
                     "ipad" : {
                         "normal" : "", /*iPad普通屏幕程序图标，分辨率：72x72*/
@@ -340,14 +340,14 @@
                         "spotlight-retina7" : "", /*iPad iOS7高分屏Spotlight搜索程序图标，分辨率：80x80*/
                         "settings-normal" : "", /*iPad设置页面程序图标，分辨率：29x29*/
                         "settings-retina" : "",
-                        "app" : "images/app.png",
-                        "app@2x" : "images/app.png",
-                        "proapp@2x" : "images/app.png",
-                        "spotlight@2x" : "images/app.png",
-                        "settings" : "images/app.png",
-                        "settings@2x" : "images/app.png",
-                        "notification" : "images/app.png",
-                        "notification@2x" : "images/app.png"
+                        "app" : "",
+                        "app@2x" : "",
+                        "proapp@2x" : "",
+                        "spotlight@2x" : "",
+                        "settings" : "",
+                        "settings@2x" : "",
+                        "notification" : "",
+                        "notification@2x" : ""
                     },
                     "appstore" : "images/app.png"
                 },
@@ -400,8 +400,8 @@
                     },
                     "weixin" : {
                         "__platform__" : [ "ios", "android" ],
-                        "appid" : "wxfe1d7a5c3326dc83",
-                        "UniversalLinks" : ""
+                        "appid" : "wx721dd1fa0538e248",
+                        "UniversalLinks" : "https://doucaicai66.com/"
                     }
                 }
             }

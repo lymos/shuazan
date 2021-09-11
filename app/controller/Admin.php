@@ -115,7 +115,7 @@ class Admin extends BackController
 			->join('user b', 'a.userid = b.id', 'left')
 			->join('user_card c', 'a.userid = c.userid', 'left')
 			->where($where)
-			->field('a.*, b.mobile, c.*')
+			->field('a.*, c.*, b.mobile')
 		    ->order('a.id', 'desc')
 			->select();
 		
