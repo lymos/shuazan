@@ -398,6 +398,7 @@ class Cash extends BaseController
 		error_log(print_r($_SERVER, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		error_log(print_r($_REQUEST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
 		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
@@ -445,15 +446,13 @@ class Cash extends BaseController
 
 			if($config['appid'] != $app_id){
 				Log::write('wxpay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'wxpay-notify');
-				json(['error' => true], 500);
-				exit;
+				return json(['error' => true], 500);
 			}
 			
 			if($trade_status != 'TRADE_SUCCESS'){
 				// log
 				Log::write('wxpay notify orderid: ' . $orderId . ' trade failed status: ' . $trade_status, 'wxpay-notify');
-				json(['error' => true], 500);
-				exit;
+				return json(['error' => true], 500);
 			}
 			Log::write('wxpay notify orderid: ' . $orderId . ' trade status: ' . $trade_status, 'wxpay-notify');
 
@@ -476,20 +475,16 @@ class Cash extends BaseController
 				->update($update_data);
 			if(! $update_status){
 				Log::write('wxpay notify orderid: ' . $orderId . ' update sql error ' . Db::getLastSql(), 'wxpay-notify');
-				json(['error' => true], 500);
-				exit;
+				return json(['error' => true], 500);
 			}
 			// header('HTTP/1.1 200');
-			json(['error' => false], 200);
+			return json(['error' => false], 200);
 		}else{
 			Log::write('wxpay notify verify fail ' . $arr['out_trade_no'], 'wxpay-notify');
 		    //验证失败
 		   // header('HTTP/1.1 500');
-			json(['error' => true], 500);
-		    exit;
+			return json(['error' => true], 500);
 		}
-
-		
 	}
 	
 	public function wxpay(){
@@ -574,6 +569,8 @@ class Cash extends BaseController
 		]);
 		
 		try {
+			$total = floatval($order['total']) * 100;
+			$total = intval(1); // debug
 			$data = [
 		        'mchid'        => $merchantId,
 		        'out_trade_no' => $orderid,
@@ -581,23 +578,21 @@ class Cash extends BaseController
 		        'description'  => $order['name'],
 		        'notify_url'   => $wxpay_config['notify_url'],
 		        'amount'       => [
-		            'total'    => floatval($order['total']),
+		            'total'    => $total,
 		            'currency' => 'CNY'
 		        ],
-				/*
 				'scene_info' => [
 					'payer_client_ip' => '127.0.0.1',
 					'h5_info' => [
 						'type' => 'Wap'
 					]
 				]
-				*/
 		    ];
 			
 			// $instance->v3->pay->transactions->h5->post
-			$resp = $instance->v3->pay->transactions->native
+			// $resp = $instance->v3->pay->transactions->native
 		  // $resp = $instance->chain('v3/pay/transactions/h5')
-			// $resp = $instance->v3->pay->transactions->h5
+			$resp = $instance->v3->pay->transactions->h5
 		    ->post(['json' => $data, 'body'=> '']);
 		error_log(print_r($resp->getBody(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
@@ -875,6 +870,8 @@ class Cash extends BaseController
 		]);
 		
 		try {
+			$total = floatval($order['total']) * 100;
+			$total = intval(1); // debug
 		    $resp = $instance
 		    ->v3->pay->transactions->app
 		    ->post(['json' => [
@@ -884,13 +881,13 @@ class Cash extends BaseController
 		        'description'  => $order['name'],
 		        'notify_url'   => $wxpay_config['notify_url'],
 		        'amount'       => [
-		            'total'    => floatval($order['total']) * 100,
+		            'total'    => $total,
 		            'currency' => 'CNY'
 		        ],
 		    ]]);
+			error_log(print_r($wxpay_config['notify_url'], true) . "\r\n", 3, '/tmp/url-debug.log');
 			$res = $resp->getBody()->getContents();
 			if(strpos($res, 'prepay_id') === false){
-				$ret['code'] = 0;
 				$ret['msg'] = '下单失败';
 				return json($ret);
 			}
@@ -909,6 +906,14 @@ class Cash extends BaseController
 		  //  echo $resp->getStatusCode(), PHP_EOL;
 		  //  echo $resp->getBody(), PHP_EOL;
 		} catch (\Exception $e) {
+			$msg = '付款失败 code wx_00001';
+			if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
+			    $r = $e->getResponse();
+			    $msg = 'error: ' . $r->getStatusCode() . ' ' . $r->getReasonPhrase() . ' ' . $r->getBody();
+			}
+			$ret['msg'] = $msg;
+			return json($ret);
+			/*
 		    // 进行错误处理
 		    echo $e->getMessage(), PHP_EOL;
 		    if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
@@ -917,6 +922,7 @@ class Cash extends BaseController
 		        echo $r->getBody(), PHP_EOL, PHP_EOL, PHP_EOL;
 		    }
 		    echo $e->getTraceAsString(), PHP_EOL;
+			*/
 		}
 
 		

@@ -143,7 +143,7 @@
 						timeout:10000,//超时时间设置为10秒；
 						headers:{'Content-Type':'application/json'},
 						success:function(data){
-							console.log(data)
+						//	console.log(data)
 							//服务器返回响应，根据响应结果，分析是否登录成功；
 							if(data.code == 0){
 								mui.alert(data.msg);
@@ -178,8 +178,8 @@
 						return ;
 					}
 					$pobj = this;
-					// mui.trigger(document.getElementById("btn-alipay"), "tap");
-					mui('#popover').popover("toggle");
+					mui.trigger(document.getElementById("btn-alipay"), "tap");
+					// mui('#popover').popover("toggle");
 					return ; 
 				});
 				
@@ -201,15 +201,16 @@
 						timeout:10000,//超时时间设置为10秒；
 						// headers:{'Content-Type':'application/json'},
 						success:function(data){
-							mui.alert(JSON.stringify(data));
+						//	mui.alert(JSON.stringify(data)); 
+							
 							//服务器返回响应，根据响应结果，分析是否登录成功；
 							if(data.code == 0){
 								mui.alert(data.msg);
 							}else if(data.code == 2){
-								
+							 	
 							}else{
 								var statement = data.data;
-								mui.alert(JSON.stringify(ali_channel));
+							//	mui.alert(JSON.stringify(ali_channel));
 								
 								// mui.alert(statement);
 								plus.payment.request(ali_channel, statement, function(result){
@@ -226,7 +227,8 @@
 							  
 						}, 
 						error:function(xhr,type,errorThrown){
-							mui.alert(JSON.stringify(type));
+							console.log(JSON.stringify(xhr))
+							mui.alert(JSON.stringify(xhr));
 							
 						}
 					});
@@ -241,7 +243,7 @@
 					timeout:10000,//超时时间设置为10秒；
 					headers:{'Content-Type':'application/json'},
 					success:function(data){
-						console.log(JSON.stringify(data));
+					//	console.log(JSON.stringify(data));
 						//服务器返回响应，根据响应结果，分析是否登录成功；
 						if(data.code == 0){
 							// mui.alert(data.msg);

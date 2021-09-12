@@ -97,7 +97,7 @@
 					</div>
 					<div class="signin-item">
 						<div class="signin-inner">
-							<div id="sbg3" class="sbg"></div>
+							<div id="sbg13" class="sbg"></div>
 							<div class="stxt">13天</div>
 						</div>
 						<div class="signin-inner line"><div></div></div>
@@ -146,8 +146,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				success: function(data) {
-					console.log(data)
+				success: function(data) {				
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if (data.code == 0) {
 						mui.alert(data.msg);

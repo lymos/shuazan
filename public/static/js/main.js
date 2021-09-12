@@ -1,5 +1,5 @@
 var config = {
-	// host: "http://www.doucaicai66.com/"
+	// host: "https://www.doucaicai66.com/"
 	host: "http://doucc.com/",
 };
 var isLogin = function(path, retect) {
@@ -21,7 +21,7 @@ var isLogin = function(path, retect) {
 	return true;
 };
 
-var copyFun = function(node) {
+var copyFun = function(node) {					
 	if (!node) {
 		return;
 	}

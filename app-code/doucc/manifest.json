@@ -320,8 +320,8 @@
                         "settings-normal" : "", /*iPhone4设置页面程序图标，分辨率：29x29*/
                         "settings-retina" : "", /*iPhone4S/5/6设置页面程序图标，分辨率：58x58*/
                         "settings-retina8" : "",
-                        "app@2x" : "",
-                        "app@3x" : "",
+                        "app@2x" : "images/app120.png",
+                        "app@3x" : "images/app180.png",
                         "spotlight@2x" : "",
                         "spotlight@3x" : "",
                         "settings@2x" : "",

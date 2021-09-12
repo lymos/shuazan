@@ -11,7 +11,7 @@
                     <key>kind</key> 
                     <string>software-package</string> 
                     <key>url</key> 
-                    <string>http://121.37.3.176/doucc.ipa</string> 
+                    <string>https://www.doucaicai66.com/doucc.ipa</string> 
                 </dict>
 				<!--
                 <dict> 
@@ -31,13 +31,13 @@
             <key>metadata</key> 
             <dict> 
                 <key>bundle-identifier</key> 
-                <string>com.company.doucc</string> 
+                <string>com.doucc66.doucc</string> 
                 <key>bundle-version</key> 
                 <string>1.0</string> 
                 <key>kind</key> 
                 <string>software</string> 
                 <key>title</key> 
-                <string>doucc</string> 
+                <string>抖财财</string> 
             </dict> 
         </dict> 
     </array> 

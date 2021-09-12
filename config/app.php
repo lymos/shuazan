@@ -36,5 +36,5 @@ return [
 	'p_price' => '1800', // 商品价格 元
 	
 	// 'host' => 'http://doucc.com/',
-	'host' => 'http://www.doucaicai66.com/',
+	'host' => 'https://www.doucaicai66.com/',
 ];
