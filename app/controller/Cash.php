@@ -593,18 +593,37 @@ class Cash extends BaseController
 			// $resp = $instance->v3->pay->transactions->native
 		  // $resp = $instance->chain('v3/pay/transactions/h5')
 			$resp = $instance->v3->pay->transactions->h5
-		    ->post(['json' => $data, 'body'=> '']);
-		error_log(print_r($resp->getBody(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		    ->post(['json' => $data]);
+		    $res = $resp->getBody()->getContents();
+			if(strpos($res, 'h5_url') === false){
+				$ret['msg'] = '下单失败';
+				return json($ret);
+			}
+			$urls = json_decode($res, true);
+			header('Location: ' . $urls['h5_url']);
+			exit;
+		// error_log(print_r($resp->getBody(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
-			echo $resp->getStatusCode() . ' ' . $resp->getReasonPhrase(), PHP_EOL;
-		    echo $resp->getBody(), PHP_EOL;
+			//echo $resp->getStatusCode() . ' ' . $resp->getReasonPhrase(), PHP_EOL;
+		   // echo $resp->getBody(), PHP_EOL;
 		} catch (Exception $e) {
+			/*
+			$msg = '付款失败 code wx_00002';
+			if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
+			    $r = $e->getResponse();
+			    $msg = 'error: ' . $r->getStatusCode() . ' ' . $r->getReasonPhrase() . ' ' . $r->getBody();
+			}
+			$ret['msg'] = $msg;
+			return json($ret);
+			*/
 		    // 进行错误处理
+		    
 		    echo $e->getMessage(), PHP_EOL;
 		    if ($e instanceof \Psr\Http\Message\ResponseInterface && $e->hasResponse()) {
 		        echo $e->getResponse()->getStatusCode() . ' ' . $e->getResponse()->getReasonPhrase(), PHP_EOL;
 		        echo $e->getResponse()->getBody();
 		    }
+		    
 		}
 
 	}
