@@ -172,14 +172,13 @@
 					});
 				}
 				
-				
 				mui("#product-list").on('tap', '.btn-buy', function(){
 					if(! isLogin("", true)){
 						return ;
 					}
 					$pobj = this;
-					mui.trigger(document.getElementById("btn-alipay"), "tap");
-					// mui('#popover').popover("toggle");
+					// mui.trigger(document.getElementById("btn-alipay"), "tap");
+					mui('#popover').popover("toggle");
 					return ; 
 				});
 				

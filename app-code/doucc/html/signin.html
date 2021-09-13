@@ -146,7 +146,7 @@
 				headers: {
 					'Content-Type': 'application/json'
 				},
-				success: function(data) {				
+				success: function(data) {	
 					//服务器返回响应，根据响应结果，分析是否登录成功；
 					if (data.code == 0) {
 						mui.alert(data.msg);
@@ -172,7 +172,7 @@
 							}
 						//	document.getElementById("signin-box").innerHTML = html;
 							
-							if (ret.istoday) {
+							if (ret.istoday || ret.is14) {
 								document.getElementById("btn-signin").innerHTML = "已签到";
 								is_signin = true;
 								// document.getElementById("signin-action").innerHTML =
@@ -183,7 +183,7 @@
 				},
 				error: function(xhr, type, errorThrown) {
 					//异常处理；
-			
+					
 				}
 			});
 						
@@ -212,7 +212,6 @@
 					},
 					error: function(xhr, type, errorThrown) {
 						//异常处理；
-			
 					}
 				});
 			});

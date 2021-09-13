@@ -548,8 +548,12 @@ class DccUser extends BaseController
 			$is14 = false;
 		}
 
+		$days = count($data);
+		if($is14){
+			$days = 14;
+		}
 		$ret['data'] = [
-			'days' => count($data),
+			'days' => $days,
 			'istoday' => $istoday,
 			'list' => $data,
 			'is14' => $is14 // 满14

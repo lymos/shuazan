@@ -399,24 +399,32 @@ class Cash extends BaseController
 		error_log(print_r($_POST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		error_log(print_r($_GET, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		error_log(print_r($_REQUEST, true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		$xml = file_get_contents('php://input');
+		if(! $xml){
+			Log::write('wxpay notify xml empty', 'wxpay-notify');
+		}
+		$arr = json_decode($xml, true);
+		$ser = $_SERVER;
+		error_log(print_r($arr, true) . "\r\n", 3, '/tmp/lymos-debug.log');
+		Log::write('wxpay notify in ' . $arr['id'], 'wxpay-notify');
+		
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
 		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
+
+		// Log::write('wxpay notify in ' . $arr['out_trade_no'], 'wxpay-notify');
 		
-		$arr = $_POST;
-		Log::write('wxpay notify in ' . $arr['out_trade_no'], 'wxpay-notify');
+		$inWechatpaySignature = $ser['HTTP_WECHATPAY_SIGNATURE'];// 请根据实际情况获取
+		$inWechatpayTimestamp = $ser['HTTP_WECHATPAY_TIMESTAMP'];// 请根据实际情况获取
+		$inWechatpaySerial = $ser['HTTP_WECHATPAY_SERIAL'];// 请根据实际情况获取
+		$inWechatpayNonce = $ser['HTTP_WECHATPAY_NONCE'];// 请根据实际情况获取
+		$inBody = $xml;// 请根据实际情况获取，例如: file_get_contents('php://input');
 		
-		$inWechatpaySignature = '';// 请根据实际情况获取
-		$inWechatpayTimestamp = '';// 请根据实际情况获取
-		$inWechatpaySerial = '';// 请根据实际情况获取
-		$inWechatpayNonce = '';// 请根据实际情况获取
-		$inBody = '';// 请根据实际情况获取，例如: file_get_contents('php://input');
-		
-		$apiv3Key = '';// 在商户平台上设置的APIv3密钥
+		$apiv3Key = $wxpay_config['secret'];// 在商户平台上设置的APIv3密钥
 		
 		// 根据通知的平台证书序列号，查询本地平台证书文件，
 		// 假定为 `/path/to/wechatpay/inWechatpaySerial.pem`
-		$platformPublicKeyInstance = Rsa::from($cert_path . 'wxclient_key.pem', Rsa::KEY_TYPE_PUBLIC);
+		$platformPublicKeyInstance = Rsa::from('file://' . $cert_path . 'wechatpay_platform_cert.pem', Rsa::KEY_TYPE_PUBLIC);
 		
 		// 检查通知时间偏移量，允许5分钟之内的偏移
 		$timeOffsetStatus = 300 >= abs(Formatter::timestamp() - (int)$inWechatpayTimestamp);
@@ -435,21 +443,22 @@ class Cash extends BaseController
 		    ]] = $inBodyArray;
 		    $inBodyResource = AesGcm::decrypt($ciphertext, $apiv3Key, $nonce, $aad);
 		    $inBodyResourceArray = (array)json_decode($inBodyResource, true);
+			error_log(print_r($inBodyResourceArray, true) . "\r\n", 3, '/tmp/lymos-debug.log');
 		    // print_r($inBodyResourceArray);// 打印解密后的结果
 
-		    $app_id = Request::param('app_id');
-		    $orderId = Request::param('out_trade_no');
-			$trade_status = Request::param('trade_status');
-			$total_amount = Request::param('total_amount');
+		    $app_id = $inBodyResourceArray['appid'];
+		    $orderId = $inBodyResourceArray['out_trade_no'];
+			$trade_status = $inBodyResourceArray['trade_state'];
+			$total_amount = $inBodyResourceArray['amount']['total'];
 			Log::write('wxpay notify orderid: ' . $orderId . ' in', 'wxpay-notify');
 
 
-			if($config['appid'] != $app_id){
+			if($wxpay_config['appid'] != $app_id){
 				Log::write('wxpay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'wxpay-notify');
 				return json(['error' => true], 500);
 			}
 			
-			if($trade_status != 'TRADE_SUCCESS'){
+			if($trade_status != 'SUCCESS'){
 				// log
 				Log::write('wxpay notify orderid: ' . $orderId . ' trade failed status: ' . $trade_status, 'wxpay-notify');
 				return json(['error' => true], 500);
@@ -466,7 +475,7 @@ class Cash extends BaseController
 			$update_where = [
 				'orderid' => $orderId,
 				'status' => 0,
-				'total' => str_replace('.00', '', $arr['total_amount'])
+				'total' => $total_amount / 100
 			];
 
 			// 更新订单付款状态
@@ -480,7 +489,7 @@ class Cash extends BaseController
 			// header('HTTP/1.1 200');
 			return json(['error' => false], 200);
 		}else{
-			Log::write('wxpay notify verify fail ' . $arr['out_trade_no'], 'wxpay-notify');
+			Log::write('wxpay notify verify fail ' . $arr['id'], 'wxpay-notify');
 		    //验证失败
 		   // header('HTTP/1.1 500');
 			return json(['error' => true], 500);
