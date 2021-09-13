@@ -626,6 +626,7 @@ class DccUser extends BaseController
 			$insert_data = [
 				'mobile' => uniqid(),
 				'type' => 2,
+				'status' => 1,
 				'added_date' => $time
 			];
 			$insert_userid = Db::name('user')->insertGetId($insert_data);
@@ -636,6 +637,7 @@ class DccUser extends BaseController
 			}
 			$invite_data = [
 				'userid' => $userid,
+				'status' => 1,
 				'invite_userid' => $insert_userid
 			];
 			$invite_status = Db::name('user_invite')->insertGetId($invite_data);
