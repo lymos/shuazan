@@ -29,6 +29,11 @@ class Home extends BaseController
     {
         return View::fetch('login');
     }
+	
+	public function privacy()
+	{
+	    return View::fetch('privacy');
+	}
 
     public function reg()
     {

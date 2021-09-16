@@ -270,7 +270,12 @@
                 "password" : "", /*iOS应用打包个人证书导入密码*/
                 "p12" : "", /*iOS应用打包个人证书，打包配置文件关联的个人证书*/
                 "devices" : "universal", /*iOS应用支持的设备类型，可取值iphone/ipad/universal*/
-                "frameworks" : []
+                "frameworks" : [],
+                "capabilities" : {
+                    "entitlements" : {
+                        "com.apple.developer.associated-domains" : [ "applinks:www.doucaicai66.com" ]
+                    }
+                }
             },
             "google" : {
                 "packagename" : "", /*Android应用包名，如io.dcloud.HelloH5*/
@@ -349,7 +354,7 @@
                         "notification" : "",
                         "notification@2x" : ""
                     },
-                    "appstore" : "images/app.png"
+                    "appstore" : "images/app1024.png"
                 },
                 "android" : {
                     "mdpi" : "", /*普通屏程序图标，分辨率：48x48*/
@@ -401,7 +406,7 @@
                     "weixin" : {
                         "__platform__" : [ "ios", "android" ],
                         "appid" : "wx721dd1fa0538e248",
-                        "UniversalLinks" : "https://doucaicai66.com/"
+                        "UniversalLinks" : "https://www.doucaicai66.com/"
                     }
                 }
             }

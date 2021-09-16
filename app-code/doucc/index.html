@@ -142,7 +142,7 @@
 				mui.plusReady(function() {
 					// 资源版本号  
 					plus.runtime.getProperty(plus.runtime.appid,function(inf){  
-						return ; // debug
+						// return ; // debug
 					    wgt_ver = inf.version;  
 					    console.log("当前应用版本：" + wgt_ver); 
 						if(mui.os.ios){
@@ -150,19 +150,32 @@
 						}else{
 							var app_ver = getAndroidVer();
 							if(app_ver != wgt_ver){ 
-								mui.confirm("检测到新版本", "版本更新", ["取消", "更新"], function(){
-									console.log(config.host + "doucc.apk");
+								mui.confirm("检测到新版本", "版本更新", ["取消", "更新"], function(e){
+									if(e.index == 0 || e.index == "0"){
+										return ;
+									}
 									var url = config.host + "doucc.apk"; // 下载文件地址  
+									var w = plus.nativeUI.showWaiting("开始下载...");
 									var dtask = plus.downloader.createDownload( url, {}, function ( d, status ) {  
 									    if ( status == 200 ) { // 下载成功  
 									        var path = d.filename;  
-									        console.log(d.filename); 
 											plus.runtime.install(path);
 									    } else {//下载失败  
 									        mui.alert( "Download failed: " + status );   
 									    }    
 									});  
 									dtask.start(); 
+									dtask.addEventListener("statechanged", function(task, status){
+										switch(task.state){
+											case 3:
+												var a = task.downloadedSize / task.totalSize * 100;
+												w.setTitle("已下载" + parseInt(a) + "%");
+												break;
+											case 4:
+												w.close();
+												break;
+										}
+									});
 								})
 								
 							}
