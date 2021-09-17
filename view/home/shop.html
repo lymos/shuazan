@@ -27,7 +27,7 @@
 			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
 			<h1 class="mui-title">商城</h1>
 		</header>
-		<div id="shop-box" class="mui-content mui-scroll-wrapper">
+		<div id="shop-box" class="mui-content">
 			
 			<ul id="product-list" class="mui-scroll mui-table-view mui-table-view-striped mui-table-view-condensed">
 				<li class="mui-table-view-cell">
@@ -178,10 +178,12 @@
 			
 			
 			mui("#product-list").on('tap', '.btn-buy', function(){
+				/*
 				if(! isLogin()){
 					gotoLogin();
 					return ;
 				}
+				*/
 				$pobj = this; 
 				// mui.trigger(document.getElementById("btn-alipay"), "tap");
 				mui('#popover').popover("toggle");

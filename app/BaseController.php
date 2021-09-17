@@ -141,7 +141,8 @@ abstract class BaseController
     }
 
 	public function verifyToken(){
-
+		return true; // debug
+		
         $ret = [
             'code' => 2,
             'data' => '',

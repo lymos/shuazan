@@ -130,6 +130,9 @@
 				<li class="mui-table-view-cell icon-link">
 					<a id="link-rule" class="mui-navigate-right"><span class="mui-icon mui-icon-paperplane"></span>收益规则</a>
 				</li>
+				<li class="mui-table-view-cell icon-link">
+					<a id="link-privacy" class="mui-navigate-right"><span class="mui-icon mui-icon-paperplane"></span>用户协议/隐私政策</a>
+				</li>
 
 			</ul>
 			
@@ -162,6 +165,8 @@
 				</div>
 			</div>	
 			-->
+			<p style="padding-top: 10px; text-align: center; padding-bottom: 60px;">鲁ICP备2021028236号-1 <br />淄博抖财财网络科技有限公司版权所有<br />© 2021 - 2022 Doucaicai All Right Reserved.
+</p>
 		</div>
 		
 		<div class="footer">
@@ -178,7 +183,7 @@
 			swipeBack: true //启用右滑关闭功能
 		});
 		// mui.plusReady(function() { 
-			mui.ajax(config.host + 'index.php?s=DccUser/info', {
+			mui.ajax(config.host + 'DccUser/info', {
 					data: getToken(),
 					dataType:'json',//服务器返回json格式数据
 					type:'post',//HTTP请求类型
@@ -190,7 +195,7 @@
 						if(data.code == 0){
 							// mui.alert(data.msg);
 						}else if(data.code == 2){
-							delToken();	
+							// delToken();	
 						}else{
 							
 							var mobile = document.getElementById("mobile"),
@@ -250,6 +255,24 @@
 					}
 				});
 			}, false);
+			
+			document.getElementById('link-privacy').addEventListener('tap', function(event) {
+				mui.openWindow({
+					url: 'Home/privacy',
+					id: 'link-privacy',
+					preload: true,
+					show: {
+						aniShow: 'pop-in'
+					},
+					styles: {
+						popGesture: 'hide'
+					},
+					waiting: {
+						autoShow: false
+					}
+				});
+			}, false);
+			
 
 			document.getElementById('link-gain2').addEventListener('tap', function(event) {
 				mui.openWindow({

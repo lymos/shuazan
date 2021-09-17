@@ -6,6 +6,7 @@ use think\facade\View;
 use app\model\User; 
 use think\facade\Request;
 use think\facade\Db;
+use think\response\Json;
 
 class Home extends BaseController
 {
@@ -16,8 +17,12 @@ class Home extends BaseController
 	}
 	
 	public function getAndroidAppVer(){
-		echo $this->$app_android_ver;
-		exit;
+		$ret = [
+			'code' => 1,
+			'data' => $this->app_android_ver,
+			'msg' => ''
+		];
+		return json($ret);
 	}
 	
     public function index()
