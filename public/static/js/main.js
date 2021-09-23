@@ -204,11 +204,13 @@ if (typeof $link_box != null && $link_box) {
 var getToken = function() {
 	
 	// debug
+	/*
 	return {
 		userid: "btrkGuLLcszRSfAWYEUpFw==",
 		token: "c9215a3c72cf773b8ffbab00a49ae1a3",
 		token_expire: "1932315677"
 	};
+	*/
 
 	
 	if(! isLocalStorageSupported()){

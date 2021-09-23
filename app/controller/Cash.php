@@ -453,7 +453,7 @@ class Cash extends BaseController
 			Log::write('wxpay notify orderid: ' . $orderId . ' in', 'wxpay-notify');
 
 
-			if($wxpay_config['appid'] != $app_id){
+			if($wxpay_config['appid'] != $app_id && $wxpay_config['app_appid'] != $app_id){
 				Log::write('wxpay notify orderid: ' . $orderId . ' app_id error ' . $app_id, 'wxpay-notify');
 				return json(['error' => true], 500);
 			}
@@ -579,7 +579,7 @@ class Cash extends BaseController
 		
 		try {
 			$total = floatval($order['total']) * 100;
-			$total = intval(1); // debug
+			// $total = intval(1); // debug
 			$data = [
 		        'mchid'        => $merchantId,
 		        'out_trade_no' => $orderid,
@@ -591,7 +591,7 @@ class Cash extends BaseController
 		            'currency' => 'CNY'
 		        ],
 				'scene_info' => [
-					'payer_client_ip' => '127.0.0.1',
+					'payer_client_ip' => $this->getIp(),
 					'h5_info' => [
 						'type' => 'Wap'
 					]
@@ -609,7 +609,7 @@ class Cash extends BaseController
 				return json($ret);
 			}
 			$urls = json_decode($res, true);
-			header('Location: ' . $urls['h5_url']);
+			header('Location: ' . $urls['h5_url'] . '&redirect_url=' . urlencode($this->url('/Home/shop')));
 			exit;
 		// error_log(print_r($resp->getBody(), true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
 		
@@ -843,11 +843,14 @@ class Cash extends BaseController
 			'data' => '',
 			'msg' => ''
 		];
+		
 		$data = [];
 		
 		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
 		$cert_path = $wxpay_path . 'cert2/';
 		require $wxpay_path . 'config.php';
+		
+		$os_type = Request::param('os_type');
 		
 		$order_obj = new Order($this->app);
 		$order = $order_obj->createOrder(true);
@@ -897,15 +900,19 @@ class Cash extends BaseController
 		    // ],
 		]);
 		
+		$appid = $wxpay_config['appid'];
+		if($os_type == 'android'){
+			$appid = $wxpay_config['app_appid'];
+		}
 		try {
 			$total = floatval($order['total']) * 100;
-			$total = intval(1); // debug
+			// $total = intval(1); // debug
 		    $resp = $instance
 		    ->v3->pay->transactions->app
 		    ->post(['json' => [
 		        'mchid'        => $merchantId,
 		        'out_trade_no' => $order['orderid'],
-		        'appid'        => $wxpay_config['appid'],
+		        'appid'        => $appid,
 		        'description'  => $order['name'],
 		        'notify_url'   => $wxpay_config['notify_url'],
 		        'amount'       => [
@@ -921,7 +928,7 @@ class Cash extends BaseController
 			}
 			$prepay = json_decode($res, true);
 			$data = [
-				'appid' => $wxpay_config['appid'],
+				'appid' => $appid,
 				'partnerid' => $merchantId,
 				'prepayid' => $prepay['prepay_id'],
 				'package' => 'Sign=WXPay',

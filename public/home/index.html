@@ -1,0 +1,372 @@
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+		<link rel="shortcut icon" href="./images/toplogo.png" type="image/x-icon">
+		<link rel="stylesheet" type="text/css" href="css/whole.css" />
+		<title>抖财财</title>
+		<style>
+			html,
+			body {
+				margin: 0;
+				padding: 0;
+				position: relative;
+
+			}
+
+			.bottom {
+				width: 100%;
+				position: relative;
+				bottom: 0;
+
+			}
+
+			.a1 {
+				font-size: 16px;
+				color: #999;
+				line-height: 30px;
+				text-align: center;
+				background-color: #222222;
+			}
+
+			.gongCount {
+				font-size: 16px;
+				color: #999;
+				line-height: 30px;
+			}
+
+			.homeTaoxue {
+				background-color: #333;
+			}
+
+			#boxHome {
+				width: 300px;
+				height: auto;
+				margin: 0 auto;
+				margin-top: 30px;
+				background-color: #333;
+			}
+
+			.zhongzicount {
+				width: 89%;
+				height: auto;
+				margin: 0 auto;
+				margin-top: 20px;
+				font-size: 18px;
+
+			}
+
+			.zhongzicount span {
+				color: #969b9d;
+					font-size: 18px;
+			}
+
+			.underline {
+				width: 80%;
+				height: auto;
+				border: 1px solid #969b9d;
+				margin: 0 auto;
+				margin-top: 50px;
+			}
+
+			.jietu {
+				width: 89%;
+				height: auto;
+				margin: 0 auto;
+				display: flex;
+				margin-top: 20px;
+				/* justify-content: space-around; */
+			}
+
+			.jietu img {
+				height: 510px;
+				margin-top: 50px;
+			}
+
+			.jietu h2 {
+				width: 10%;
+			}
+
+			.boxAll {
+				width: 100%;
+			}
+
+			.appscreenshot {
+				width: 80%;
+				height: auto;
+			}
+
+			.topNav {
+				position: fixed;
+				top: 0;
+				left: 0;
+				z-index: 9;
+				width: 100%;
+				height: 60px;
+				background-color: #ffffff;
+			}
+
+			.head {
+				width: 100%;
+				height: 60px;
+				line-height: 60px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center
+			}
+
+			.head img {
+				height: 3rem;
+				margin-left: 5%;
+			}
+
+			.navleft {
+				display: flex;
+				width: 60%;
+				justify-content: space-around;
+			}
+
+			.navleft li {
+				cursor: pointer;
+				font-size: 1rem;
+				font-weight: 600;
+				color: #2d2d2d;
+			}
+
+			.navleft li:hover {
+				color: #FF3225;
+			}
+
+			.navleft .active {
+				color: #FF3225;
+			}
+
+			.stance {
+				height: 60px;
+			}
+
+			.homepage {
+				position: relative;
+			}
+			.downloadios{
+				width:260px;
+				height: 90px;
+				text-align: center;
+				line-height: 90px;
+				align-items: center;
+				background-color: #00c8b4;
+				border-radius: 14px;
+				border: 1px solid #FFFFFF;
+				position: absolute;
+				color: #FFFFFF;
+				bottom: 40%;
+				left: 42%;
+				font-size: 38px;
+				cursor: pointer;
+			}
+			.downloadios:hover{
+				background-color: #0088f2;
+			}
+			.downloadios img{
+				width: 24px;
+				height: 31px;
+				margin-right: 28px;
+			}
+			.downloadiosandroid{
+				width:260px;
+				height: 90px;
+				text-align: center;
+				line-height: 90px;
+				align-items: center;
+				background-color: #00c8b4;
+				border-radius: 14px;
+				border: 1px solid #FFFFFF;
+				position: absolute;
+				color: #FFFFFF;
+				bottom: 40%;
+				left: 62%;
+				font-size: 38px;
+				cursor: pointer;
+			}
+			.downloadiosandroid:hover{
+				background-color: #0088f2;
+			}
+			.downloadiosandroid img{
+				width: 24px;
+				height: 31px;
+			}
+			.downloadiosphone{
+				width:20%;
+				height: 1.875rem;
+				text-align: center;
+				line-height: 1.875rem;
+				align-items: center;
+				background-color: #00c8b4;
+				border-radius: 14px;
+				border: 1px solid #FFFFFF;
+				position: absolute;
+				color: #FFFFFF;
+				bottom: 30%;
+				left: 42%;
+				font-size: 0.75rem;
+				cursor: pointer;
+			}
+			.downloadiosphone img{
+				width: 0.9375rem;
+				height: 1.125rem;
+				vertical-align: middle;
+			}
+			.downloadandroidphone{
+				width:25%;
+				height: 1.875rem;
+				text-align: center;
+				line-height: 1.875rem;
+				align-items: center;
+				background-color: #00c8b4;
+				border-radius: 14px;
+				border: 1px solid #FFFFFF;
+				position: absolute;
+				color: #FFFFFF;
+				bottom: 30%;
+				left: 65%;
+				font-size: 0.75rem;
+				cursor: pointer;
+			}
+			.downloadandroidphone img{
+				width: 0.9375rem;
+				height: 1.125rem;
+				vertical-align: middle;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="boxAll">
+
+			<div class="topNav">
+				<div class="head">
+					<img src="./images/logo.png">
+					<ul class="navleft">
+						<li class="active">首页</li>
+						<li>企业介绍</li>
+						<ul>
+				</div>
+			</div>
+			<div class="stance"></div>
+			<div>
+				<!-- <img src="./images/homePage.png" id="homeImage" style="width:100%" ;> -->
+				<a href="#">
+				<div class="homepage">
+					<img src="./images/Phone.png" id="homeImage" style="width:100%" ;>
+					<div class="replaceios   downloadios">
+						<img src="images/phonelogo.png">
+						ios下载
+					</div>
+				</a>
+					<a href="#">
+					<div class=" replaceandroid downloadiosandroid">
+						<img src="images/androidlogo.png">
+						android下载
+					</div>
+					</a>
+				</div>
+				<div class="zhongzicount">
+					<h2>企业介绍</h2>
+					<div>
+						<span>
+							山东抖财财网络科技有限公司是一家数码产品自营在线商城，通过直播、自媒体等不同营销手段，拓展线上销售渠道，根据用户消费习惯、用户行为，研究经济实惠的数码产品，帮助广大消费者能更好得享受科技带来的便利，实现公司与用户共赢的未来愿景。
+						</span>
+					</div>
+				</div>
+				<div class="underline"></div>
+				<div class="jietu">
+					<h2>应用截图</h2>
+					<div class="appscreenshot">
+						<img src="images/wod.png">
+						<img src="images/xuanze.png">
+						<img src="images/picture1.png">
+						<img src="images/lianti.png">
+					</div>
+				</div>
+			</div>
+
+			<div>
+				<div class="homeTaoxue">
+					<div id="boxHome">
+						<div style="height:20px;"></div>
+						<div class="gongCount"><span>公司名称：</span><span style="color: #fff;">淄博抖财财网络科技有限公司 </span></div>
+						<div class="gongCount"><span>公司电话：</span><span style="color: #fff;">17317340417</span></div>
+						<div class="gongCount"><span>公司邮箱：</span><span style="color: #fff;">2506343588@qq.com</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="bottom">
+					<div class="a1">Copyright © 2020 - 2021,All Rights Reserved 淄博抖财财网络科技有限公司 版权所有</div>
+					<div class="a1">鲁ICP备2021028236号-1</div>
+				</div>
+			</div>
+
+		</div>
+		<script type="text/javascript" src="js/jquery-3.5.1.js"></script>
+		<script type="text/javascript">
+			// window.onload=function(){
+			//     map_height=document.body.clientHeight;;//获取页面可见高度
+			//     document.getElementById("homeImage").style.height = (map_height - 170) +"px";
+			//     // document.getElementByIdx_x_x("maps").style.height=map_height+"px";
+			// }
+			/**
+			 * 判断访问类型是PC端还是手机端
+			 */
+			function isMobile() {
+			    var userAgentInfo = navigator.userAgent;
+			
+			    var mobileAgents = [ "Android", "iPhone", "SymbianOS", "Windows Phone", "iPad","iPod"];
+			
+			    var mobile_flag = false;
+			
+			    //根据userAgent判断是否是手机
+			    for (var v = 0; v < mobileAgents.length; v++) {
+			        if (userAgentInfo.indexOf(mobileAgents[v]) > 0) {
+			            mobile_flag = true;
+			            break;
+			        }
+			    }
+			
+			     var screen_width = window.screen.width;
+			     var screen_height = window.screen.height;    
+			
+			     //根据屏幕分辨率判断是否是手机
+			     if(screen_width < 500 && screen_height < 800){
+			         mobile_flag = true;
+			     }
+			
+			     return mobile_flag;
+			}
+			 var mobile = isMobile(); // true 为手机端  false为PC端，
+			 console.log(mobile,'我是谁')
+			 if(mobile ==true){
+				$('.replaceios').removeClass("downloadios").addClass("downloadiosphone")
+				$('.replaceandroid').removeClass("downloadiosandroid").addClass("downloadandroidphone")
+			 }
+             console.log(mobile,'当前内容')
+			$(".navleft li").click(function() {
+				$(this).addClass("active").siblings().removeClass("active");
+				var index = $(".navleft li").index(this);
+				console.log(index, 'ss')
+				if (index == 0) {
+					$('html,body').animate({
+						scrollTop: $(".stance").offset().top - 80
+					}, 200)
+				}
+				if (index == 1) {
+					$('html,body').animate({
+						scrollTop: $(".zhongzicount").offset().top - 80
+					}, 200)
+				}
+
+			});
+		</script>
+	</body>
+</html>

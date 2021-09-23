@@ -177,8 +177,8 @@
 						return ;
 					}
 					$pobj = this;
-					mui.trigger(document.getElementById("btn-alipay"), "tap");
-					// mui('#popover').popover("toggle");
+					// mui.trigger(document.getElementById("btn-alipay"), "tap");
+					mui('#popover').popover("toggle");
 					return ; 
 				});
 				
@@ -187,14 +187,19 @@
 				 * @param {Object} id
 				 */
 				function pay2(id){  
-					var uri = "aliOrder";
+					var uri = "aliOrder",
+						os_type = "ios";
 					if(id == "wxpay"){
 						uri = "wxOrder";
 					}
+					if(! mui.os.ios){
+						os_type = "android";
+					}
+					
 					var order_url = config.host + 'Cash/' + uri;
 					var productid = $pobj.getAttribute("data-id");
 					mui.ajax(order_url, {
-						data: Object.assign(getToken(), {productid: productid}),
+						data: Object.assign(getToken(), {productid: productid, os_type: os_type}),
 						dataType:'json',//服务器返回json格式数据
 						type:'post',//HTTP请求类型
 						timeout:10000,//超时时间设置为10秒；
@@ -211,7 +216,7 @@
 								var statement = data.data;
 							//	mui.alert(JSON.stringify(ali_channel));
 								
-								// mui.alert(statement);
+								// mui.alert(JSON.stringify(statement));
 								plus.payment.request(ali_channel, statement, function(result){
 									    plus.nativeUI.alert("支付成功！",function(){  
 											self.reload();
