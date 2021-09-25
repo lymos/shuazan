@@ -74,8 +74,51 @@ class Home extends BaseController
 
     public function shop()
     {
+		$this->_getWxOpenid();
+		$this->_setWxOpenid();
         return View::fetch('shop');
     }
+	
+	private function _setWxOpenid(){
+		if(! isset($_GET['code'])){
+			return ;
+		}
+		if(cookie('openid')){
+			return ;
+		}
+		
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		require $wxpay_path . 'config.php';
+		$appid = $wxpay_config['appid'];
+		$secret = $wxpay_config['app_secret'];
+		$url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . $appid . '&secret=' . $secret . '&code=' . $_GET['code'] . '&grant_type=authorization_code';
+		$res = file_get_contents($url);
+		$data = json_decode($res, true);
+		if(isset($data['openid'])){
+			$openid = $data['openid'];
+			cookie('openid', $openid);
+		}
+	}
+	
+	private function _getWxOpenid(){
+		if(strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger') === false){
+			return ;
+		}
+		if(cookie('openid')){
+			return ;
+		}
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		require $wxpay_path . 'config.php';
+		$appid = $wxpay_config['appid'];
+		if(! isset($_GET['code'])){
+			$redirect_uri = urlencode($this->url('/Home/shop'));
+			$oauth_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' . $appid . '&redirect_uri=' . $redirect_uri . '&response_type=code&scope=snsapi_base&state=' . rand(1, 127) . '#wechat_redirect';
+			
+			// header('user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.3 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 wechatdevtools/1.05.2106300 MicroMessenger/8.0.5 Language/zh_CN webview/16325499465061409 webdebugger port/35919 token/761e0b7d33e8b0964f5d816865081995', false);
+			header('Location: ' . $oauth_url, false);
+			exit;
+		}
+	}
 
     public function signin()
     {

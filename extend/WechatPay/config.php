@@ -3,6 +3,7 @@ $wxpay_config = array (
 		//应用ID,您的APPID。
 		// 'appid' => 'wxfe1d7a5c3326dc83',
 		'appid' => 'wx721dd1fa0538e248',
+		'app_secret' => '774dcbfbd4241e3d3f964ef39aa259f3', // 公众号secret
 		'app_appid' => 'wx10c72047e1fad980',
 		'mchid' => '1613946214',
 		'secret' => 'bUidFSB00eufKPcq2mdFlHCP7igfQVVu',

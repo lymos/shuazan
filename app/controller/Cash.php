@@ -637,6 +637,222 @@ class Cash extends BaseController
 
 	}
 	
+	public function getWxopenid(){
+		return ;
+		
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		require $wxpay_path . 'config.php';
+		$appid = $wxpay_config['appid'];
+		if(! isset($_GET['code'])){
+			$redirect_uri = urlencode($this->url('/Cash/getWxopenid'));
+			$oauth_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' . $appid . '&redirect_uri=' . $redirect_uri . '&response_type=code&scope=snsapi_base&state=' . rand(1, 127) . '#wechat_redirect';
+			
+			header('user-agent: Mozilla/5.0 (iPhone; CPU iPhone OS 10_3_1 like Mac OS X) AppleWebKit/603.1.3 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1 wechatdevtools/1.05.2106300 MicroMessenger/8.0.5 Language/zh_CN webview/16325499465061409 webdebugger port/35919 token/761e0b7d33e8b0964f5d816865081995', false);
+			header('Location: ' . $oauth_url, false);
+			exit;
+		}
+		$secret = $wxpay_config['app_secret'];
+		$url = 'https://api.weixin.qq.com/sns/oauth2/access_token?appid=' . $appid . '&secret=' . $secret . '&code=' . $_GET['code'] . '&grant_type=authorization_code';
+		$res = file_get_contents($url);
+		echo $res;
+		$data = json_decode($res, true);
+		if(isset($data['openid'])){
+			$openid = $data['openid'];
+			cookie('openid', $openid);
+		}else{
+			echo $res;
+		}
+		return '';
+	}
+	
+	public function wxpayJs(){
+		$ret = [
+			'code' => 0,
+			'data' => '',
+			'msg' => ''
+		];
+		
+		$data = [];
+		
+		/*
+		### 统一下单-JSAPI下单及数据二次签名
+		
+		```diff
+		- require_once "../lib/WxPay.Api.php";
+		- require_once "WxPay.JsApiPay.php";
+		- require_once "WxPay.Config.php";
+		
+		- $tools = new JsApiPay();
+		- $openId = $tools->GetOpenid();
+		- $input = new WxPayUnifiedOrder();
+		- $input->SetBody("test");
+		- $input->SetAttach("test");
+		- $input->SetOut_trade_no("sdkphp".date("YmdHis"));
+		- $input->SetTotal_fee("1");
+		- $input->SetTime_start(date("YmdHis"));
+		- $input->SetTime_expire(date("YmdHis", time() + 600));
+		- $input->SetGoods_tag("test");
+		- $input->SetNotify_url("http://paysdk.weixin.qq.com/notify.php");
+		- $input->SetTrade_type("JSAPI");
+		- $input->SetOpenid($openId);
+		- $config = new WxPayConfig();
+		- $order = WxPayApi::unifiedOrder($config, $input);
+		- printf_info($order);
+		- // 数据签名
+		- $jsapi = new WxPayJsApiPay();
+		- $jsapi->SetAppid($order["appid"]);
+		- $timeStamp = time();
+		- $jsapi->SetTimeStamp("$timeStamp");
+		- $jsapi->SetNonceStr(WxPayApi::getNonceStr());
+		- $jsapi->SetPackage("prepay_id=" . $order['prepay_id']);
+		- $config = new WxPayConfig();
+		- $jsapi->SetPaySign($jsapi->MakeSign($config));
+		- $parameters = json_encode($jsapi->GetValues());
+		+ use WeChatPay\Formatter;
+		+ use WeChatPay\Transformer;
+		+ use WeChatPay\Crypto\Hash;
+		+ // 直接构造请求数组参数
+		+ $input = [
+		+     'appid'        => $appid, // 从config拿到当前请求参数上
+		+     'mch_id'       => $mchid, // 从config拿到当前请求参数上
+		+     'body'         => 'test',
+		+     'attach'       => 'test',
+		+     'out_trade_no' => 'sdkphp' . date('YmdHis'),
+		+     'total_fee'    => '1',
+		+     'time_start'   => date('YmdHis'),
+		+     'time_expire'  => date('YmdHis, time() + 600),
+		+     'goods_tag'    => 'test',
+		+     'notify_url'   => 'http://paysdk.weixin.qq.com/notify.php',
+		+     'trade_type'   => 'JSAPI',
+		+     'openid'       => $openId, // 有太多优秀解决方案能够获取到这个值，这里假定已经有了
+		+     'sign_type'    => Hash::ALGO_HMAC_SHA256, // 以下二次数据签名「签名类型」需与预下单数据「签名类型」一致
+		+ ];
+		+ // 发起请求并取得结果，抑制`E_USER_DEPRECATED`提示
+		+ $resp  = @$instance->chain('v2/pay/unifiedorder')->post(['xml' => $input]);
+		+ $order = Transformer::toArray((string)$resp->getBody());
+		+ // print_r($order);
+		+ // 数据签名
+		+ $params = [
+		+     'appId'     => $appid,
+		+     'timeStamp' => (string)Formatter::timestamp(),
+		+     'nonceStr'  => Formatter::nonce(),
+		+     'package'   => 'prepay_id=' . $order['prepay_id'],
+		+     'signType'  => Hash::ALGO_HMAC_SHA256,
+		+ ];
+		+ // 二次数据签名「签名类型」需与预下单数据「签名类型」一致
+		+ $params['paySign'] = Hash::sign(Hash::ALGO_HMAC_SHA256, Formatter::queryStringLike(Formatter::ksort($parameters)), $apiv2Key);
+		+ $parameters = json_encode($params);
+		*/
+		
+		$wxpay_path = BASE_PATH . '/extend/WechatPay/';
+		$cert_path = $wxpay_path . 'cert2/';
+		require $wxpay_path . 'config.php';
+		
+		$os_type = Request::param('os_type');
+		$openid = trim(Request::param('openid'));
+		if(! $openid){
+			$ret['msg'] = '支付失败，请用其他浏览器进行支付';
+			return json($ret);
+		}
+		
+		$order_obj = new Order($this->app);
+		$order = $order_obj->createOrder(true);
+		
+		if(! $order || ! (is_array($order)) || ! isset($order['orderid'])){
+			$ret['msg'] = '创建订单失败';
+			return json($ret);
+		}
+		
+		// 商户号，假定为`1000100`
+		$merchantId = $wxpay_config['mchid'];
+		// 商户私钥，文件路径假定为 `/path/to/merchant/apiclient_key.pem`
+		$merchantPrivateKeyFilePath = 'file://' . $cert_path . 'apiclient_key.pem';// 注意 `file://` 开头协议不能少
+		// 加载商户私钥
+		$merchantPrivateKeyInstance = Rsa::from($merchantPrivateKeyFilePath, Rsa::KEY_TYPE_PRIVATE);
+		$merchantCertificateSerial = $wxpay_config['serial_num'];// API证书不重置，商户证书序列号就是个常量
+	
+		$platformCertificateFilePath = 'file://' . $cert_path . 'wechatpay_platform_cert.pem';// 注意 `file://` 开头协议不能少
+		// 加载「平台证书」公钥
+		$platformPublicKeyInstance = Rsa::from($platformCertificateFilePath, Rsa::KEY_TYPE_PUBLIC);
+		// 解析「平台证书」序列号，「平台证书」当前五年一换，缓存后就是个常量
+		$platformCertificateSerial = PemUtil::parseCertificateSerialNo($platformCertificateFilePath);
+		
+		// 工厂方法构造一个实例
+		$instance = Builder::factory([
+		    'mchid'      => $merchantId,
+		    'serial'     => $merchantCertificateSerial,
+		    'privateKey' => $merchantPrivateKeyInstance,
+		    'certs'      => [
+		        $platformCertificateSerial => $platformPublicKeyInstance,
+		    ],
+		    
+		]);
+		
+		$appid = $wxpay_config['appid'];
+		/*
+		if($os_type == 'android'){
+			$appid = $wxpay_config['app_appid'];
+		}
+		*/
+		try {
+			/*
+			$redirect_uri = urlencode('');
+			$oauth_url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid=' . $appid . '&redirect_uri=' . $redirect_uri . '&response_type=code&scope=snsapi_base&state=' . rand(1000, 9999) . '#wechat_redirect';
+			$openid = '';
+			*/
+			$total = floatval($order['total']) * 100;
+			// $total = intval(1); // debug 
+		    $resp = $instance
+		    ->v3->pay->transactions->jsapi
+		    ->post(['json' => [
+		        'mchid'        => $merchantId,
+		        'out_trade_no' => $order['orderid'],
+		        'appid'        => $appid,
+		        'description'  => $order['name'],
+		        'notify_url'   => $wxpay_config['notify_url'],
+		        'amount'       => [
+		            'total'    => $total,
+		            'currency' => 'CNY'
+		        ],
+				'payer' => [
+					'openid' => $openid
+				]
+		    ]]);
+			$res = $resp->getBody()->getContents();
+			
+			if(strpos($res, 'prepay_id') === false){
+				$ret['msg'] = '下单失败';
+				return json($ret);
+			}
+			$prepay = json_decode($res, true);
+			$data = [
+				'appId' => $appid,
+				'package' => 'prepay_id=' . $prepay['prepay_id'],
+				'nonceStr' => uniqid(),
+				'timeStamp' => strval(time())
+			];
+			$data['paySign'] = $this->_signStr2($data, $merchantPrivateKeyFilePath);
+			$data['signType'] = 'RSA';
+		// error_log(print_r($data, true) . "\r\n", 3, '/Volumes/mac-disk/work/www/debug.log');
+		  //  echo $resp->getStatusCode(), PHP_EOL;
+		  //  echo $resp->getBody(), PHP_EOL;
+		} catch (\Exception $e) {
+			$msg = '付款失败 code wx_10001 ';
+			if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
+			    $r = $e->getResponse();
+			    $msg .= 'error: ' . $r->getStatusCode() . ' ' . $r->getReasonPhrase() . ' ' . $r->getBody();
+			}
+			$ret['msg'] = $msg;
+			return json($ret);
+			
+		}
+
+		// {"appid":"wx0411fa6a39d61297","noncestr":"Y6XCXVOoUJoc7MHR","package":"Sign=WXPay","partnerid":"1230636401","prepayid":"wx0822052722326175440bc04e880e6a0000","timestamp":1631109927,"sign":"20E78BBCAE30F898C4E9ED958DF5F1FC"}
+		$ret['data'] = $data;
+		$ret['code'] = 1;
+		return json($ret);
+	}
+	
 	public function alipay(){
 		$alipay_path = BASE_PATH . '/extend/alipay/';
 		require_once $alipay_path . 'wappay/service/AlipayTradeService.php';
@@ -941,10 +1157,10 @@ class Cash extends BaseController
 		  //  echo $resp->getStatusCode(), PHP_EOL;
 		  //  echo $resp->getBody(), PHP_EOL;
 		} catch (\Exception $e) {
-			$msg = '付款失败 code wx_00001';
+			$msg = '付款失败 code wx_00001 ';
 			if ($e instanceof \GuzzleHttp\Exception\RequestException && $e->hasResponse()) {
 			    $r = $e->getResponse();
-			    $msg = 'error: ' . $r->getStatusCode() . ' ' . $r->getReasonPhrase() . ' ' . $r->getBody();
+			    $msg .= 'error: ' . $r->getStatusCode() . ' ' . $r->getReasonPhrase() . ' ' . $r->getBody();
 			}
 			$ret['msg'] = $msg;
 			return json($ret);
@@ -967,6 +1183,33 @@ class Cash extends BaseController
 		return json($ret);
 	}
 
+	private function _signStr2($arr, $key){
+		$str = $arr['appId'] . "\n" .
+			$arr['timeStamp'] . "\n" . 
+			$arr['nonceStr'] . "\n" . 
+			$arr['package'] . "\n";		
+		$sign = $this->_rsaEncrypt($str, $key);
+		return $sign;
+	} 
+	
+	private function _rsaEncrypt($str, $pri_key){
+		/*
+		$pi_key = openssl_pkey_get_private($pri_key);
+		if(!$pi_key){
+			return false;//秘钥不可用
+		}
+		openssl_private_encrypt($str, $encrypted_str, $pi_key);
+		$crypted = base64_encode($encrypted_str);
+		return $crypted;
+		*/
+		
+		$key = openssl_get_privatekey($pri_key);
+		openssl_sign($str, $signature, $key, 'SHA256');
+		openssl_free_key($key);
+		$sign = base64_encode($signature);
+		return $sign;
+	}
+	
 	private function _signStr($arr){
 		ksort($arr);
 		$str = urlencode(http_build_query($arr));

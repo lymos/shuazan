@@ -69,15 +69,29 @@
 			</div>
 			-->
 		</div>
+		<iframe id="iframe" style="display: none; " src=""></iframe>
 	</body>
 	<script src="../../static/js/mui.min.js"></script>
 		<script src="./../static/js/main.js"></script>
 	<script>
-		var $pobj = {};
+		var $pobj = {},
+			openid = getCookie("openid");
 		mui.init({
 			swipeBack:true ,//启用右滑关闭功能
 			
 		});
+		
+		// 判断是否微信内置浏览器
+		if(navigator.userAgent.indexOf('MicroMessenger')> -1){
+			if(openid == "" || ! openid || openid == null){
+				// getOpenid();
+			}
+		}
+		
+		function getOpenid(){
+			document.getElementById("iframe").src = config.host + "Cash/getWxopenid";
+		}
+		
 		// mui.plusReady(function() {
 			mui.ajax(config.host + 'Product/getProductList', {
 				data: getToken(),
@@ -130,7 +144,12 @@
 			});
 			
 			document.getElementById("btn-wxpay").addEventListener('tap', function(event) {
-				pay("wxpay");
+				// 判断是否微信内置浏览器
+				if(navigator.userAgent.indexOf('MicroMessenger')> -1){
+					wxpayJs();
+				}else{
+					pay("wxpay");
+				}
 			});
 			
 			/*
@@ -176,6 +195,38 @@
 				});
 			}
 			
+			function wxpayJs(){
+				var productid = $pobj.getAttribute("data-id");
+				if(! openid){
+					mui.alert("请用其他浏览器进行支付");
+					return ;
+				}
+				
+				mui.ajax(config.host + 'Cash/wxpayJs', {
+					data: Object.assign(getToken(), {productid: productid, openid: openid}),
+					dataType:'json',//服务器返回json格式数据
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						console.log(data)
+						//服务器返回响应，根据响应结果，分析是否登录成功；
+						if(data.code == 0){
+							mui.alert(data.msg);
+						}else if(data.code == 2){
+							
+						}else{
+							// alert(JSON.stringify(data.data));
+							onBridgeReady(data.data);				   
+						}
+						
+					},
+					error:function(xhr,type,errorThrown){
+						//异常处理；
+						console.log(type);
+					}
+				});
+			}
 			
 			mui("#product-list").on('tap', '.btn-buy', function(){
 				/*
@@ -190,5 +241,32 @@
 				return ;  
 				
 			});
+			
+			function onBridgeReady(data) {
+			    WeixinJSBridge.invoke('getBrandWCPayRequest', data,
+			    function(res) {
+			        if (res.err_msg == "get_brand_wcpay_request:ok") {
+			            // 使用以上方式判断前端返回,微信团队郑重提示：
+			            //res.err_msg将在用户支付成功后返回ok，但并不保证它绝对可靠。
+						mui.alert("支付成功", "", "", function(){
+							location.reload();
+						});
+			        }else{
+						mui.alert("支付失败: " + res.err_msg);
+					}
+			    });
+			}
+			/*
+			if (typeof WeixinJSBridge == "undefined") {
+			    if (document.addEventListener) {
+			        document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false);
+			    } else if (document.attachEvent) {
+			        document.attachEvent('WeixinJSBridgeReady', onBridgeReady);
+			        document.attachEvent('onWeixinJSBridgeReady', onBridgeReady);
+			    }
+			} else {
+			   // onBridgeReady();
+			}
+			*/
 	</script>
 </html>
