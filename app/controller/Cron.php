@@ -482,11 +482,13 @@ class Cron extends BaseController{
 
     private function _getInviteUser($userid){
         $where = [
-			'userid' => $userid,
-            'status' => 1
+			'a.userid' => $userid,
+            'a.status' => 1,
+            'b.status' => 1
 		];
-		$list = Db::name('user_invite')
-			->field('invite_userid')
+		$list = Db::name('user_invite')->alias('a')
+            ->join('order b', 'a.invite_userid = b.userid', 'left')
+			->field('distinct a.invite_userid')
 			->where($where)
             ->select()->toArray();
         $count = count($list);
