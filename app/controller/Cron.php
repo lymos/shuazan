@@ -137,20 +137,12 @@ class Cron extends BaseController{
 			}
             */
 			
-            $gain = $this->_gain($rs['id']);
-			if($gain === false){
-				$this->log('no do task continue userid: ' . $rs['id']);
+            $gains = $this->_gain($rs['id']);
+			if(! $gains){
+				$this->log('no gain continue userid: ' . $rs['id']);
 				continue;
 			}
-			
-            // order times
-            $order_times = $this->getOrderTimes($rs['id']);
-			if(! $order_times){
-				$this->log('no buy order continue userid: ' . $rs['id']);
-				continue;
-			}			
-            $gains = $gain * $order_times;
-						
+					
             /*
             $task_gain = $this->_taskGain($rs['id']);
 			
@@ -205,9 +197,10 @@ class Cron extends BaseController{
 			
             if(! $capital){
                 // log
-				$this->log('no capital continue');
-                continue;
+			//	$this->log('no capital continue');
+            //    continue;
             }
+			
             $data1 = [
                 'userid' => $userid,
                 'percent' => $rs['task_gain'] / 100,
@@ -257,9 +250,10 @@ class Cron extends BaseController{
             ->find();
             
             if(! $capital || ! $capital['total']){
+				$capital['total'] = 0;
                 // log
-                $this->log('no capital continue');
-                continue;
+               // $this->log('no capital continue');
+               // continue;
             }
             $data1 = [
                 'userid' => $userid,
@@ -350,7 +344,13 @@ class Cron extends BaseController{
      * rate %
      */
     private function _gain($userid){
-        $rate = 0;
+		$base_task_gain = 0;
+		// order times
+		$order_times = $this->getOrderTimes($userid);
+		if($order_times){
+			$base_task_gain = 36;
+		}
+		
         $where = [
             'userid' => $userid,
             'date' => $this->date,
@@ -362,36 +362,41 @@ class Cron extends BaseController{
             ->where($where)
             ->select()->toArray();
         if(! $list){
-            return false;
+            $base_task_gain = 0;
         }
         $count = count($list);
         // 满2个才给
         if($count < 2){
-            return false;
-        }
-
+            $base_task_gain = 0;
+        }else if($order_times){
+			$base_task_gain = 36;
+		}
+		
         $level_data = $this->getInviteSum($userid);
         $n = $level_data['count'];
         $sum = 0;
         switch($level_data['level']){
             case 1:
-                $sum = 36 + (18 * $n);
+                $sum = $base_task_gain + (18 * $n);
             break;
             case 2:
-                $sum = 36 + ((18 + 9) * $n);
+                $sum = $base_task_gain + ((18 + 9) * $n);
             break;
             case 3:
-                $sum = 36 + ((18 + 18) * $n);
+                $sum = $base_task_gain + ((18 + 18) * $n);
             break;
             case 4:
-                $sum = 36 + ((18 + 18 + 9) * $n);
+                $sum = $base_task_gain + ((18 + 18 + 9) * $n);
             break;
             case 5:
-                $sum = 36 + ((18 + 18 + 18) * $n);
+                $sum = $base_task_gain + ((18 + 18 + 18) * $n);
             break;
         }
-        
-        return round($sum, 2);
+        $gain = round($sum, 2);
+		if($order_times){
+			$gain = $gain * $order_times;
+		}
+        return $gain;
     }
 
 	/**
@@ -481,7 +486,22 @@ class Cron extends BaseController{
     }
 
     private function _getInviteUser($userid){
+	/*
         $where = [
+			'userid' => $userid,
+            'status' => 1
+		];
+		$list = Db::name('user_invite')
+			->field('invite_userid')
+			->where($where)
+            ->select()->toArray();
+        $count = count($list);
+        return [
+            'count' => $count,
+            'list' => $list
+        ];
+	*/
+	$where = [
 			'a.userid' => $userid,
             'a.status' => 1,
             'b.status' => 1

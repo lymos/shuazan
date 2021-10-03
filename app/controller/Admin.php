@@ -203,6 +203,45 @@ class Admin extends BackController
         View::assign('keyword', $keyword);
         return View::fetch('userList');
     }
+	
+	public function ajaxUserList(){
+		
+		$where = 'a.`status` = 1 ';
+		$keyword = addslashes(trim(Request::param('keyword')));
+		if($keyword){
+			$where .= 'and a.mobile like "%' . $keyword . '%"';
+		}
+		$field = 'a.id, a.mobile, a.added_date, count(distinct b.invite_userid) as count1, count(c.invite_userid) as count2,';
+		$field .= 'count(distinct if(d.userid is null, null, d.userid)) as count1_pay, count(distinct if(e.userid is null, null, e.userid)) as count2_pay';
+		$list = Db::name('user')->alias('a')
+			->join('user_invite b', 'a.id = b.userid', 'left')
+			->join('user_invite c', 'b.invite_userid = c.userid', 'left')
+			->join('dcc_order d', 'd.userid = b.invite_userid and d.`status` = 1', 'left')
+			->join('dcc_order e', 'e.userid = c.invite_userid and e.`status` = 1', 'left')
+			->field($field)
+		    ->where($where)
+		    ->order('a.id', 'desc')
+			->group('a.id')
+			->select();
+			
+		$count = Db::name('user')->alias('a')
+			->join('user_invite b', 'a.id = b.userid', 'left')
+			->join('user_invite c', 'b.invite_userid = c.userid', 'left')
+			->join('dcc_order d', 'd.userid = b.invite_userid and d.`status` = 1', 'left')
+			->join('dcc_order e', 'e.userid = c.invite_userid and e.`status` = 1', 'left')
+			->field('count(*) as count')
+		    ->where($where)
+			->group('a.id')
+			->select();
+	
+		$ret = [
+			'code' => 0,
+			'count' => $count[0]['count'],
+			'data' => $list,
+			'msg' => ''
+		];
+		return json($ret);
+	}
 
     public function orderList(){
 		
@@ -225,6 +264,35 @@ class Admin extends BackController
 		View::assign('order_status_list', $this->order_status_list);
 		return View::fetch('orderList');
     }
+	
+	public function ajaxOrderList(){
+		
+		$where = '';
+		$keyword = addslashes(trim(Request::param('keyword')));
+		if($keyword){
+			$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
+		}
+		$list = Db::name('order')->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
+		    ->where($where)
+		    ->order('id', 'desc')
+			->select();
+			
+		$count = Db::name('order')->alias('a')
+			->join('user b', 'a.userid = b.id', 'left')
+			->field('count(*) as count')
+		    ->where($where)
+			->select();
+	
+		$ret = [
+			'code' => 0,
+			'count' => $count[0]['count'],
+			'data' => $list,
+			'msg' => ''
+		];
+		return json($ret);
+	}
 
     public function taskEdit(){
 		$id = intval(Request::param('id'));

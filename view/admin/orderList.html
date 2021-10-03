@@ -118,7 +118,8 @@
 					  
 					</form>
 				</div>
-				<table class="layui-table">
+				<table class="layui-table" id="order-list">
+					<!--
 					<colgroup>
 						<col width="150">
 						<col width="400">
@@ -146,6 +147,7 @@
 						</tr>
 						{/foreach}
 					</tbody>
+					-->
 				</table>
 			</div>
 
@@ -158,11 +160,58 @@
 		<script src="static/extend/layui/layui.js"></script>
 		<script>
 				//JS 
-				layui.use(['element', 'layer', 'util', 'jquery', 'form'], function() {
+				layui.use(['element', 'layer', 'util', 'jquery', 'form', "table"], function() {
 					var element = layui.element,
 						layer = layui.layer,
 						util = layui.util,
 						$ = layui.$;
+						
+					var table = layui.table;
+					  
+					  //第一个实例
+					  var tablens = table.render({
+					    elem: '#order-list'
+					    ,height: 312
+					    ,url: "/Admin/ajaxCashoutList" //数据接口
+					    ,page: true ,//开启分页
+						height: 680,
+						limit: 1000
+					    ,cols: [[ //表头
+					      {field: 'id', title: 'ID', width:60,  fixed: 'left'}
+					      ,{field: 'mobile', title: '手机号', width: 120}
+					      ,{field: 'amount', title: '金额', width: 80, }
+					      ,{field: 'wx_qrcode', title: '微信收款码', width: 200, templet: function(a){
+							  var html = '<img class="btn-img" onclick="showImg(\'' + a.wx_qrcode + '\', \'' + a.mobile + '\')" src="' + a.wx_qrcode + '">';
+							  return html;
+						  }} 
+					      ,{field: 'ali_qrcode', title: '支付宝收款码', width: 200, templet: function(a){
+							  var html = '<img class="btn-img" onclick="showImg(\'' + a.ali_qrcode + '\', \'' + a.mobile + '\')" src="' + a.ali_qrcode + '">';
+							  return html;
+						  }},
+						  {field: 'name', title: '姓名', width: 80, },
+						  {field: 'card', title: '卡号', width: 180, },
+						  {field: 'brand', title: '开户行', width: 120, }
+					
+					      ,{field: 'status', title: '状态', width: 100, templet: function(a){
+							  var status_list = JSON.parse('<?php echo json_encode($cashout_status_list); ?>');
+							  return status_list[a.status];
+						  } }
+					      ,{field: 'added_date', title: '添加时间', width: 180}
+					      ,{field: 'updated_date', title: '更新时间', width: 180}
+					      ,{field: '', title: '操作', templet: function(a){
+							  var html = '<button type="button" class="layui-btn" onclick="update(' + a.id + ')">更新状态</button>';
+							  return html;
+						  }}
+					    ]]
+					  });
+					  
+					$("#btn-search").on("click", function(){
+						tablens.reload({
+							where: {
+								status: $("#status").val()
+							}
+						});
+					});
 
 					//头部事件
 					util.event('lay-header-event', {
