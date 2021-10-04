@@ -254,10 +254,10 @@ class Admin extends BackController
 		    ->where($where)
 			->group('a.id')
 			->select();
-	
+		
 		$ret = [
 			'code' => 0,
-			'count' => $count[0]['count'],
+			'count' => count($count),
 			'data' => $list,
 			'msg' => ''
 		];

@@ -192,8 +192,8 @@
 						limit: 20
 					    ,cols: [[ //表头
 					      {field: 'id', title: 'ID', width:60,  fixed: 'left'}
-					      ,{field: 'mobile', title: '手机号', width: 120}
-					      ,{field: 'count1', title: '一级邀请数', width: 80, templet: function(a){
+					      ,{field: 'mobile', title: '手机号', width: 140}
+					      ,{field: 'count1', title: '一级邀请数', width: 180, templet: function(a){
 							  if(a.count1_pay && a.count1_pay != 0){
 							  	return a.count1 + '(' + a.count1_pay + ')';
 							  }else{
