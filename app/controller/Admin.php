@@ -102,6 +102,15 @@ class Admin extends BackController
 			$where['a.status'] = $status;
 		}
 		
+		$page = intval(Request::param('page'));
+		if(! $page){
+			$page = 1;
+		}
+		$limit = intval(Request::param('limit'));
+		if(! $limit){
+			$limit = 20;
+		}
+		
 		$count = Db::name('cashout_record')
 			->alias('a')
 			->join('user b', 'a.userid = b.id', 'left')
@@ -117,6 +126,7 @@ class Admin extends BackController
 			->where($where)
 			->field('a.*, c.name, c.card, c.brand, c.wx_qrcode, c.ali_qrcode, b.mobile')
 		    ->order('a.id', 'desc')
+			->limit(($page - 1) * $limit, $limit)
 			->select();
 		
 		$url = $this->url('/index.php?s=Admin/cashoutEdit');
@@ -211,6 +221,16 @@ class Admin extends BackController
 		if($keyword){
 			$where .= 'and a.mobile like "%' . $keyword . '%"';
 		}
+		
+		$page = intval(Request::param('page'));
+		if(! $page){
+			$page = 1;
+		}
+		$limit = intval(Request::param('limit'));
+		if(! $limit){
+			$limit = 20;
+		}
+		
 		$field = 'a.id, a.mobile, a.added_date, count(distinct b.invite_userid) as count1, count(c.invite_userid) as count2,';
 		$field .= 'count(distinct if(d.userid is null, null, d.userid)) as count1_pay, count(distinct if(e.userid is null, null, e.userid)) as count2_pay';
 		$list = Db::name('user')->alias('a')
@@ -222,6 +242,7 @@ class Admin extends BackController
 		    ->where($where)
 		    ->order('a.id', 'desc')
 			->group('a.id')
+			->limit(($page - 1) * $limit, $limit)
 			->select();
 			
 		$count = Db::name('user')->alias('a')
@@ -250,6 +271,7 @@ class Admin extends BackController
 		if($keyword){
 			$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
 		}
+		
 		$list = Db::name('order')->alias('a')
 			->join('user b', 'a.userid = b.id', 'left')
 			->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
@@ -272,11 +294,21 @@ class Admin extends BackController
 		if($keyword){
 			$where .= 'a.orderid like "%' . $keyword . '%" or b.mobile like "%' . $keyword . '%"';
 		}
+		$page = intval(Request::param('page'));
+		if(! $page){
+			$page = 1;
+		}
+		$limit = intval(Request::param('limit'));
+		if(! $limit){
+			$limit = 20;
+		}
+		
 		$list = Db::name('order')->alias('a')
 			->join('user b', 'a.userid = b.id', 'left')
 			->field('a.id, a.orderid, a.total, a.status, a.added_date, b.mobile')
 		    ->where($where)
 		    ->order('id', 'desc')
+			->limit(($page - 1) * $limit, $limit)
 			->select();
 			
 		$count = Db::name('order')->alias('a')

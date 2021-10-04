@@ -106,48 +106,19 @@
 				<!-- 内容主体区域 -->
 				
 				<div style="padding: 15px;">
-					<form class="layui-form" action="index.php">
+					<form class="layui-form">
 						<input type="hidden" name="s" value="Admin/orderList">
 					  <div class="layui-form-item">
 					    <label class="layui-form-label" style="width: 100px; ">关键词</label>
 					    <div class="layui-input-block" style="width: 300px; display: inline-block; margin-left: 0; ">
-					      <input type="text" name="keyword" value="{$keyword}" placeholder="手机号/订单号" autocomplete="off" class="layui-input">
+					      <input type="text" id="keyword" name="keyword" value="{$keyword}" placeholder="手机号/订单号" autocomplete="off" class="layui-input">
 					    </div>
-						<button class="layui-btn" lay-submit type="submit" lay-filter="formDemo">搜索</button>
+						<button class="layui-btn" lay-submit type="button" id="btn-search" lay-filter="formDemo">搜索</button>
 					  </div>
 					  
 					</form>
 				</div>
 				<table class="layui-table" id="order-list">
-					<!--
-					<colgroup>
-						<col width="150">
-						<col width="400">
-						<col>
-					</colgroup>
-					<thead>
-						<tr>
-							<th>ID</th>
-							<th>订单号</th>
-							<th>手机号</th>
-							<th>金额</th>
-							<th>状态</th>
-							<th>下单时间</th>
-						</tr>
-					</thead>
-					<tbody>
-						{foreach $list as $rs}
-						<tr>
-							<td>{$rs.id}</td>
-							<td>{$rs.orderid}</td>
-							<td>{$rs.mobile}</td>
-							<td>{$rs.total}</td>
-							<td>{$order_status_list[$rs.status]}</td>
-							<td>{$rs.added_date}</td>
-						</tr>
-						{/foreach}
-					</tbody>
-					-->
 				</table>
 			</div>
 
@@ -172,43 +143,29 @@
 					  var tablens = table.render({
 					    elem: '#order-list'
 					    ,height: 312
-					    ,url: "/Admin/ajaxCashoutList" //数据接口
+					    ,url: "/Admin/ajaxOrderList" //数据接口
 					    ,page: true ,//开启分页
 						height: 680,
-						limit: 1000
+						limit: 20
 					    ,cols: [[ //表头
 					      {field: 'id', title: 'ID', width:60,  fixed: 'left'}
-					      ,{field: 'mobile', title: '手机号', width: 120}
-					      ,{field: 'amount', title: '金额', width: 80, }
-					      ,{field: 'wx_qrcode', title: '微信收款码', width: 200, templet: function(a){
-							  var html = '<img class="btn-img" onclick="showImg(\'' + a.wx_qrcode + '\', \'' + a.mobile + '\')" src="' + a.wx_qrcode + '">';
-							  return html;
-						  }} 
-					      ,{field: 'ali_qrcode', title: '支付宝收款码', width: 200, templet: function(a){
-							  var html = '<img class="btn-img" onclick="showImg(\'' + a.ali_qrcode + '\', \'' + a.mobile + '\')" src="' + a.ali_qrcode + '">';
-							  return html;
-						  }},
-						  {field: 'name', title: '姓名', width: 80, },
-						  {field: 'card', title: '卡号', width: 180, },
-						  {field: 'brand', title: '开户行', width: 120, }
-					
+					      ,{field: 'orderid', title: '订单号', width: 180}
+					      ,{field: 'mobile', title: '手机号', width: 180 }
+					      ,
+						  {field: 'total', title: '金额', width: 100},
 					      ,{field: 'status', title: '状态', width: 100, templet: function(a){
-							  var status_list = JSON.parse('<?php echo json_encode($cashout_status_list); ?>');
+							  var status_list = JSON.parse('<?php echo json_encode($order_status_list); ?>');
 							  return status_list[a.status];
-						  } }
-					      ,{field: 'added_date', title: '添加时间', width: 180}
-					      ,{field: 'updated_date', title: '更新时间', width: 180}
-					      ,{field: '', title: '操作', templet: function(a){
-							  var html = '<button type="button" class="layui-btn" onclick="update(' + a.id + ')">更新状态</button>';
-							  return html;
 						  }}
+					      ,{field: 'added_date', title: '添加时间'}
+					      
 					    ]]
 					  });
 					  
 					$("#btn-search").on("click", function(){
 						tablens.reload({
 							where: {
-								status: $("#status").val()
+								keyword: $("#keyword").val()
 							}
 						});
 					});
